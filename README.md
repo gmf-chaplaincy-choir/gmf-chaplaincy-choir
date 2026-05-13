@@ -1,19 +1,8 @@
-# GMF Chaplaincy Choir — Music Library App
+# GMF Chaplaincy Choir — Music Library
 
-The official digital music library of the **Ghanaian Methodist Fellowship (GMF) Chaplaincy Choir**, UK & Ireland.
+Official digital score library of the **Ghanaian Methodist Fellowship Chaplaincy Choir**, UK & Ireland.
 
-## About
-A mobile-first web application providing GMF Chaplaincy Choir members with instant access to choral scores in both Tonic Sol-fa and Staff Notation across all repertoire categories — Anthems, Hymns, Highlife, Easter, Christmas, Patriotic, Classical, and Collections.
+A mobile web app giving choir members instant access to scores in Tonic Sol-fa and Staff Notation — Anthems, Hymns, Highlife, Easter, Christmas, Patriotic, Classical and more.
 
-## Features
-- 📖 PDF score reader with fullscreen mode
-- 🎯 Rehearsal Picks — curated song selections for rehearsals and performances  
-- 🎵 All Scores browser with category filtering
-- 👥 Meet Your Executives section with photos
-- 📱 Works as a mobile app (Add to Home Screen on iOS/Android)
-
-## Repertoire
-Scores are organised into: Anthems · Hymns · Easter · Highlife · Patriotic · Classical · Christmas · Collections · Documents
-
-## Contact
-gmfchaplainchoiruk@gmail.com
+🌐 Live app: [your-netlify-url.netlify.app]
+📧 gmfchaplainchoiruk@gmail.com
