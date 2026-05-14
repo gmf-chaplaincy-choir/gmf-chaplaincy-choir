@@ -4,6 +4,6 @@ Official digital score library of the **Ghanaian Methodist Fellowship Chaplaincy
 
 A mobile web app giving choir members instant access to scores in Tonic Sol-fa and Staff Notation — Anthems, Hymns, Highlife, Easter, Christmas, Patriotic, Classical and more.
 
-🌐 Live app: [your-netlify-url.netlify.app]
+🌐 Live app: https://gmf-chaplaincy-choir.netlify.app/
 
 📧 gmfchaplainchoiruk@gmail.com
