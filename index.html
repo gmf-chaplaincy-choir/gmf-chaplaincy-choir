@@ -1,0 +1,1433 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="GMF Choir">
+<meta name="theme-color" content="#0a2540">
+<title>GMF Chaplaincy Choir</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+:root{
+  --navy:#0a2540;--teal:#0e7490;--gold:#c9973a;--gl:#f0c060;--gp:#fdf6e3;
+  --cream:#f7f9fc;--white:#fff;
+  --td:#0d1b2a;--tm:#3d556e;--tu:#8fa3b8;
+  --ss:0 2px 12px rgba(10,37,64,.10);--sm:0 6px 28px rgba(10,37,64,.18);
+  --rm:16px;--rs:12px;
+  --aw:480px;--nh:64px;--hh:200px;
+}
+@media(min-width:600px) and (max-width:899px){:root{--aw:700px;--hh:280px;--nh:68px;}}
+@media(min-width:900px){:root{--aw:960px;--hh:290px;--nh:70px;}}
+@media(min-width:1200px){:root{--aw:1140px;--hh:330px;}}
+html,body{height:100%;overflow:hidden;background:#04111e;}
+body{font-family:'Nunito',sans-serif;color:var(--td);display:flex;flex-direction:column;max-width:var(--aw);margin:0 auto;background:var(--cream);position:relative;box-shadow:0 0 80px rgba(10,37,64,.4);}
+.screen{display:none;flex-direction:column;height:100%;overflow:hidden;}
+.screen.active{display:flex;}
+#s-home{overflow:hidden;position:relative;}
+.home-hdr{position:relative;overflow:hidden;flex-shrink:0;height:var(--hh);transform:translateZ(0);will-change:transform;}
+.hdr-img{width:100%;height:115%;object-fit:cover;object-position:center 22%;display:block;will-change:transform;transform:translateY(0px);transform-origin:center top;backface-visibility:hidden;-webkit-backface-visibility:hidden;}
+.hdr-ov{position:absolute;inset:0;background:linear-gradient(175deg,rgba(4,17,30,.05) 0%,rgba(4,17,30,.18) 35%,rgba(4,17,30,.88) 100%);display:flex;flex-direction:column;justify-content:flex-end;padding:0 22px 24px;transform:translateZ(0);}
+.hdr-badge{position:absolute;top:14px;right:14px;background:rgba(201,151,58,.18);border:1px solid rgba(240,192,96,.55);border-radius:20px;padding:5px 14px;font-size:10px;font-weight:700;color:var(--gl);letter-spacing:1.1px;text-transform:uppercase;backdrop-filter:blur(8px);}
+.logo-row{display:flex;align-items:center;gap:14px;margin-bottom:8px;}
+.logo-ring{width:56px;height:56px;border-radius:50%;background:rgba(201,151,58,.12);border:2px solid var(--gl);display:flex;align-items:center;justify-content:center;flex-shrink:0;box-shadow:0 0 0 4px rgba(240,192,96,.10),0 4px 24px rgba(0,0,0,.4);}
+.choir-title{font-family:'Playfair Display',serif;font-size:21px;font-weight:700;color:#fff;line-height:1.2;text-shadow:0 2px 18px rgba(0,0,0,.65);}
+.choir-sub{font-size:10px;color:rgba(255,255,255,.72);letter-spacing:1.4px;text-transform:uppercase;font-weight:700;margin-top:3px;}
+.hdr-div{width:38px;height:2px;background:var(--gl);border-radius:2px;margin:8px 0 7px;opacity:.7;}
+.hdr-tag{font-size:11px;color:rgba(255,255,255,.58);letter-spacing:.5px;font-weight:600;}
+@media(min-width:600px){.choir-title{font-size:24px;}.logo-ring{width:62px;height:62px;}}
+@media(min-width:900px){.choir-title{font-size:28px;}.logo-ring{width:70px;height:70px;}}
+.home-body{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;padding-bottom:calc(var(--nh) + 56px);background:var(--cream);will-change:scroll-position;}
+.srch-wrap{padding:16px 16px 4px;}
+.srch-box{display:flex;align-items:center;gap:10px;background:var(--white);border-radius:50px;border:1.5px solid rgba(10,37,64,.12);padding:12px 20px;box-shadow:var(--ss);transition:border-color .2s,box-shadow .2s;}
+.srch-box:focus-within{border-color:var(--gold);box-shadow:0 2px 18px rgba(201,151,58,.2);}
+.srch-box input{border:none;outline:none;font-family:'Nunito',sans-serif;font-size:14px;color:var(--td);background:transparent;flex:1;}
+.srch-box input::placeholder{color:var(--tu);}
+.sec-lbl{font-family:'Playfair Display',serif;font-size:17px;font-weight:700;color:var(--navy);padding:16px 16px 10px;display:flex;align-items:center;gap:10px;}
+.sec-lbl::after{content:'';flex:1;height:1px;background:rgba(10,37,64,.09);}
+.cat-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;padding:0 16px;}
+@media(min-width:600px){.cat-grid{grid-template-columns:repeat(4,1fr);gap:12px;padding:0 18px;}}
+@media(min-width:900px){.cat-grid{grid-template-columns:repeat(5,1fr);gap:14px;padding:0 20px;}}
+.cat-card{background:var(--white);border-radius:var(--rm);padding:16px 10px 14px;text-align:center;cursor:pointer;box-shadow:var(--ss);border:1.5px solid transparent;transition:transform .18s,border-color .18s,box-shadow .18s;user-select:none;}
+.cat-card:active{transform:scale(.95);}
+.cat-card:hover{border-color:var(--gold);box-shadow:var(--sm);transform:translateY(-2px);}
+.cat-emoji{font-size:26px;margin-bottom:7px;display:block;line-height:1;}
+.cat-lbl{font-size:12px;font-weight:800;color:var(--navy);line-height:1.2;}
+.cat-count{display:inline-block;font-size:10px;font-weight:700;color:var(--teal);background:rgba(14,116,144,.09);border-radius:20px;padding:2px 8px;margin-top:5px;}
+@media(min-width:600px) and (max-width:899px){.cat-emoji{font-size:28px;}.cat-lbl{font-size:13px;}}
+.quick-list{padding:0 16px;}
+@media(min-width:600px){.quick-list{display:grid;grid-template-columns:1fr 1fr;gap:10px;padding:0 18px;}}
+@media(min-width:900px){.quick-list{padding:0 20px;}}
+.quick-item{display:flex;align-items:center;gap:12px;background:var(--white);border-radius:var(--rs);padding:13px 14px;margin-bottom:9px;box-shadow:var(--ss);cursor:pointer;transition:transform .15s,box-shadow .15s;border:1px solid rgba(10,37,64,.06);}
+@media(min-width:600px){.quick-item{margin-bottom:0;}}
+.quick-item:active{transform:scale(.98);}
+.quick-item:hover{box-shadow:var(--sm);transform:translateX(3px);}
+.qi-thumb{width:38px;height:38px;border-radius:10px;background:var(--navy);display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0;}
+.qi-name{font-size:13px;font-weight:700;color:var(--td);margin-bottom:2px;}
+.qi-meta{font-size:11px;color:var(--tu);}
+.qi-arrow{color:#bbb;font-size:18px;}
+.sa{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;padding-bottom:calc(var(--nh) + 56px);}
+.cat-hdr{background:linear-gradient(135deg,var(--navy) 0%,var(--teal) 100%);padding:52px 20px 22px;flex-shrink:0;}
+@media(min-width:600px){.cat-hdr{padding:40px 24px 22px;}}
+@media(min-width:900px){.cat-hdr{padding:28px 28px 24px;}}
+.back-row{display:flex;align-items:center;gap:12px;margin-bottom:10px;}
+.back-btn{width:36px;height:36px;border-radius:50%;background:rgba(255,255,255,.15);border:1px solid rgba(255,255,255,.22);cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:18px;color:white;flex-shrink:0;transition:background .2s;}
+.back-btn:hover{background:rgba(255,255,255,.28);}
+.cat-name{font-family:'Playfair Display',serif;font-size:24px;font-weight:700;color:var(--gl);}
+.cat-hint{font-size:11px;color:rgba(255,255,255,.5);margin-top:2px;}
+.notab-wrap{display:flex;margin:16px 16px 0;background:rgba(10,37,64,.07);border-radius:50px;padding:4px;flex-shrink:0;max-width:420px;}
+@media(min-width:600px){.notab-wrap{margin:16px 20px 0;}}
+.notab{flex:1;text-align:center;padding:10px 8px;border-radius:50px;font-size:13px;font-weight:700;cursor:pointer;transition:background .2s,color .2s;color:var(--tm);user-select:none;}
+.notab.active{background:var(--navy);color:var(--gl);box-shadow:var(--ss);}
+.scores-wrap{padding:14px 16px;}
+@media(min-width:600px){.scores-wrap{padding:14px 18px 0;display:grid;grid-template-columns:1fr 1fr;gap:12px;align-items:start;}}
+@media(min-width:900px){.scores-wrap{padding:16px 20px 0;}}
+.score-card{background:var(--white);border-radius:var(--rm);margin-bottom:10px;overflow:hidden;box-shadow:var(--ss);border:1px solid rgba(10,37,64,.07);cursor:pointer;transition:transform .15s,box-shadow .15s;}
+@media(min-width:600px){.score-card{margin-bottom:0;}}
+.score-card:active{transform:scale(.98);}
+.score-card:hover:not(.unavailable){box-shadow:var(--sm);transform:translateY(-2px);}
+.score-card.unavailable{opacity:.65;cursor:default;}
+.score-inner{display:flex;align-items:center;gap:12px;padding:15px 16px;}
+.score-icon{width:46px;height:46px;border-radius:12px;background:var(--gp);border:1px solid rgba(201,151,58,.28);display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0;}
+.score-info{flex:1;min-width:0;}
+.score-name{font-size:14px;font-weight:700;color:var(--td);margin-bottom:4px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.score-tag{display:inline-block;font-size:10px;font-weight:700;padding:2px 9px;border-radius:20px;background:rgba(14,116,144,.09);color:var(--teal);}
+.score-cloud{display:inline-block;font-size:9px;font-weight:700;padding:2px 8px;border-radius:20px;background:rgba(201,151,58,.12);color:var(--gold);margin-left:4px;vertical-align:middle;}
+.score-na{display:inline-block;font-size:9px;font-weight:700;padding:2px 8px;border-radius:20px;background:rgba(160,60,60,.10);color:#994040;margin-left:4px;vertical-align:middle;}
+.score-play{width:36px;height:36px;border-radius:50%;background:var(--navy);display:flex;align-items:center;justify-content:center;color:var(--gl);font-size:14px;flex-shrink:0;transition:background .2s;}
+.score-card:hover:not(.unavailable) .score-play{background:var(--teal);}
+.score-card.unavailable .score-play{background:rgba(10,37,64,.14);color:rgba(10,37,64,.28);}
+.empty-state{text-align:center;padding:50px 20px;color:var(--tu);}
+.empty-icon{font-size:46px;margin-bottom:14px;}
+.empty-txt{font-size:13px;line-height:1.7;}
+.unavail-hdr{background:linear-gradient(135deg,var(--navy) 0%,var(--teal) 100%);padding:52px 20px 22px;flex-shrink:0;}
+@media(min-width:600px){.unavail-hdr{padding:40px 24px 22px;}}
+.unavail-body{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:32px 24px;text-align:center;gap:18px;}
+.unavail-icon{font-size:54px;}
+.unavail-title{font-family:'Playfair Display',serif;font-size:18px;color:var(--navy);}
+.unavail-msg{font-size:13px;color:var(--tm);line-height:1.8;max-width:320px;}
+.unavail-back{display:inline-flex;align-items:center;gap:8px;background:var(--navy);color:var(--gl);border-radius:50px;padding:13px 28px;font-size:13px;font-weight:700;border:none;cursor:pointer;transition:background .2s;}
+.unavail-back:hover{background:var(--teal);}
+.allsc-hdr{background:linear-gradient(135deg,var(--navy) 0%,var(--teal) 100%);padding:52px 20px 22px;flex-shrink:0;}
+@media(min-width:600px){.allsc-hdr{padding:40px 24px 22px;}}
+@media(min-width:900px){.allsc-hdr{padding:28px 28px 24px;}}
+.allsc-title{font-family:'Playfair Display',serif;font-size:24px;font-weight:700;color:var(--gl);margin-bottom:4px;}
+.allsc-sub{font-size:11px;color:rgba(255,255,255,.5);}
+.allsc-notab{display:flex;margin:16px 16px 0;background:rgba(10,37,64,.07);border-radius:50px;padding:4px;flex-shrink:0;max-width:420px;}
+@media(min-width:600px){.allsc-notab{margin:16px 20px 0;}}
+.allsc-cat-strip{display:flex;gap:8px;padding:12px 16px 0;overflow-x:auto;flex-shrink:0;-webkit-overflow-scrolling:touch;scrollbar-width:none;}
+.allsc-cat-strip::-webkit-scrollbar{display:none;}
+.ac-chip{padding:6px 14px;border-radius:50px;font-size:12px;font-weight:700;cursor:pointer;border:1.5px solid rgba(10,37,64,.12);background:var(--white);color:var(--tm);white-space:nowrap;transition:background .18s,color .18s,border-color .18s;user-select:none;}
+.ac-chip.active{background:var(--navy);color:var(--gl);border-color:var(--navy);}
+.ac-chip:hover{border-color:var(--gold);}
+.gen-hdr{background:linear-gradient(135deg,var(--navy) 0%,var(--teal) 100%);padding:52px 20px 22px;flex-shrink:0;}
+@media(min-width:600px){.gen-hdr{padding:40px 24px 22px;}}
+@media(min-width:900px){.gen-hdr{padding:28px 28px 24px;}}
+.gen-intro-card{margin:16px 16px 0;flex-shrink:0;background:var(--navy);border-radius:var(--rm);border:1px solid rgba(240,192,96,.22);overflow:hidden;box-shadow:var(--ss);}
+.gen-intro-inner{padding:18px 18px 16px;display:flex;gap:14px;align-items:flex-start;}
+.gen-intro-icon{width:44px;height:44px;border-radius:12px;background:rgba(240,192,96,.14);border:1px solid rgba(240,192,96,.3);display:flex;align-items:center;justify-content:center;font-size:22px;flex-shrink:0;}
+.gen-intro-text h4{font-family:'Playfair Display',serif;font-size:14px;color:var(--gl);margin-bottom:6px;font-weight:600;}
+.gen-intro-text p{font-size:12px;color:rgba(255,255,255,.72);line-height:1.75;}
+.gen-intro-text strong{color:var(--gl);font-weight:700;}
+.gen-intro-footer{background:rgba(240,192,96,.07);border-top:1px solid rgba(240,192,96,.14);padding:10px 18px;font-size:11px;color:rgba(255,255,255,.48);letter-spacing:.3px;}
+.doc-card{background:var(--white);border-radius:var(--rm);margin-bottom:10px;overflow:hidden;box-shadow:var(--ss);border:1px solid rgba(10,37,64,.07);cursor:pointer;transition:transform .15s,box-shadow .15s;}
+.doc-card:active{transform:scale(.98);}
+.doc-card:hover{box-shadow:var(--sm);transform:translateY(-2px);}
+.doc-inner{display:flex;align-items:center;gap:12px;padding:15px 16px;}
+.doc-icon{width:46px;height:46px;border-radius:12px;background:rgba(10,37,64,.06);border:1px solid rgba(10,37,64,.1);display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0;}
+.doc-info{flex:1;min-width:0;}
+.doc-name{font-size:14px;font-weight:700;color:var(--td);margin-bottom:4px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.doc-tag{display:inline-block;font-size:10px;font-weight:700;padding:2px 9px;border-radius:20px;background:rgba(10,37,64,.07);color:var(--navy);}
+.doc-open{width:36px;height:36px;border-radius:50%;background:var(--navy);display:flex;align-items:center;justify-content:center;color:var(--gl);font-size:14px;flex-shrink:0;transition:background .2s;}
+.doc-card:hover .doc-open{background:var(--teal);}
+.gen-empty{text-align:center;padding:40px 20px;}
+.gen-empty .ge-icon{font-size:48px;margin-bottom:14px;}
+.gen-empty .ge-title{font-family:'Playfair Display',serif;font-size:16px;color:var(--navy);margin-bottom:8px;}
+.gen-empty .ge-txt{font-size:13px;line-height:1.75;color:var(--tu);}
+.vinfo-hdr{background:linear-gradient(135deg,var(--navy) 0%,var(--teal) 100%);padding:52px 20px 22px;flex-shrink:0;}
+@media(min-width:600px){.vinfo-hdr{padding:40px 24px 22px;}}
+.vinfo-body{padding:16px;}
+@media(min-width:600px){.vinfo-body{padding:18px 20px;}}
+.vinfo-author-card{background:var(--navy);border-radius:var(--rm);border:1px solid rgba(240,192,96,.22);padding:20px;margin-bottom:14px;box-shadow:var(--sm);}
+.vinfo-author-top{display:flex;align-items:center;gap:14px;margin-bottom:14px;}
+.vinfo-avatar{width:56px;height:56px;border-radius:50%;background:rgba(240,192,96,.18);border:2px solid var(--gl);display:flex;align-items:center;justify-content:center;font-size:22px;flex-shrink:0;}
+.vinfo-author-name{font-family:'Playfair Display',serif;font-size:16px;color:var(--gl);font-weight:700;}
+.vinfo-author-role{font-size:11px;color:rgba(255,255,255,.6);margin-top:3px;letter-spacing:.4px;}
+.vinfo-author-text{font-size:12px;color:rgba(255,255,255,.78);line-height:1.85;}
+.vinfo-tag{display:inline-block;background:rgba(240,192,96,.14);border:1px solid rgba(240,192,96,.3);border-radius:20px;padding:3px 10px;font-size:10px;font-weight:700;color:var(--gl);margin-top:10px;margin-right:5px;}
+.vinfo-book-card{background:var(--white);border-radius:var(--rm);border:1px solid rgba(10,37,64,.08);padding:18px;margin-bottom:14px;box-shadow:var(--ss);}
+.vinfo-book-card h3{font-family:'Playfair Display',serif;font-size:15px;color:var(--navy);margin-bottom:10px;}
+.vinfo-book-card p{font-size:12px;color:var(--tm);line-height:1.8;margin-bottom:8px;}
+.vinfo-book-card p:last-child{margin-bottom:0;}
+.vinfo-contents-card{background:var(--white);border-radius:var(--rm);border:1px solid rgba(10,37,64,.08);padding:18px;margin-bottom:14px;box-shadow:var(--ss);}
+.vinfo-contents-card h3{font-family:'Playfair Display',serif;font-size:15px;color:var(--navy);margin-bottom:4px;}
+.vinfo-contents-sub{font-size:11px;color:var(--tu);margin-bottom:12px;}
+.vinfo-section-lbl{font-size:11px;font-weight:800;color:var(--teal);letter-spacing:.8px;text-transform:uppercase;margin:12px 0 6px;padding-bottom:4px;border-bottom:1px solid rgba(10,37,64,.08);}
+.vinfo-song-row{display:flex;align-items:center;gap:10px;padding:6px 0;border-bottom:1px solid rgba(10,37,64,.04);}
+.vinfo-song-row:last-child{border-bottom:none;}
+.vinfo-song-num{width:22px;font-size:11px;font-weight:700;color:var(--tu);flex-shrink:0;text-align:right;}
+.vinfo-song-name{flex:1;font-size:12px;font-weight:700;color:var(--td);}
+.vinfo-pg-badge{display:inline-block;background:rgba(14,116,144,.09);border-radius:8px;padding:2px 8px;font-size:10px;font-weight:700;color:var(--teal);}
+.vinfo-open-btn{display:flex;align-items:center;justify-content:center;gap:8px;background:var(--navy);color:var(--gl);border-radius:50px;padding:13px 28px;font-size:13px;font-weight:700;border:none;cursor:pointer;transition:background .2s;width:100%;margin-top:12px;}
+.vinfo-open-btn:hover{background:var(--teal);}
+.modal-overlay{position:fixed;inset:0;background:rgba(4,17,30,.72);z-index:500;display:none;align-items:flex-end;justify-content:center;backdrop-filter:blur(4px);}
+.modal-overlay.open{display:flex;}
+.modal-sheet{background:var(--white);border-radius:24px 24px 0 0;width:100%;max-width:var(--aw);padding:28px 22px 40px;animation:sheetUp .28s ease;}
+@keyframes sheetUp{from{transform:translateY(100%);}to{transform:translateY(0);}}
+.modal-title{font-family:'Playfair Display',serif;font-size:18px;color:var(--navy);margin-bottom:6px;}
+.modal-sub{font-size:12px;color:var(--tu);margin-bottom:22px;line-height:1.6;}
+.modal-btn{display:flex;align-items:center;gap:14px;background:var(--cream);border:1.5px solid rgba(10,37,64,.10);border-radius:var(--rm);padding:16px 18px;margin-bottom:12px;cursor:pointer;transition:border-color .18s,box-shadow .18s;}
+.modal-btn:hover{border-color:var(--gold);box-shadow:var(--ss);}
+.modal-btn-icon{width:44px;height:44px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:22px;flex-shrink:0;}
+.modal-btn-icon.dl{background:rgba(14,116,144,.10);}
+.modal-btn-icon.drv{background:rgba(201,151,58,.12);}
+.modal-btn-text strong{display:block;font-size:14px;font-weight:700;color:var(--td);margin-bottom:3px;}
+.modal-btn-text span{font-size:11px;color:var(--tu);line-height:1.5;}
+.modal-cancel{display:block;width:100%;margin-top:16px;padding:13px;background:transparent;border:1.5px solid rgba(10,37,64,.12);border-radius:50px;font-family:'Nunito',sans-serif;font-size:13px;font-weight:700;color:var(--tm);cursor:pointer;transition:background .18s;}
+.modal-cancel:hover{background:rgba(10,37,64,.05);}
+.pdf-screen{background:#04111e;}
+.pdf-topbar{background:linear-gradient(135deg,var(--navy) 0%,var(--teal) 100%);padding:calc(env(safe-area-inset-top,0px) + 48px) 14px 14px;flex-shrink:0;display:flex;align-items:center;gap:10px;}
+@media(min-width:600px){.pdf-topbar{padding:calc(env(safe-area-inset-top,0px) + 32px) 18px 14px;}}
+@media(min-width:900px){.pdf-topbar{padding:16px 22px;}}
+.pdf-title-txt{font-family:'Playfair Display',serif;font-size:16px;font-weight:700;color:var(--gl);flex:1;line-height:1.3;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.icon-btn{width:38px;height:38px;border-radius:50%;background:rgba(255,255,255,.14);border:1px solid rgba(255,255,255,.22);display:flex;align-items:center;justify-content:center;font-size:17px;color:white;cursor:pointer;flex-shrink:0;transition:background .2s;-webkit-appearance:none;}
+.icon-btn:hover{background:rgba(255,255,255,.26);}
+@media(min-width:600px) and (max-width:899px){.icon-btn{width:44px;height:44px;font-size:19px;}}
+.pdf-scroll-area{flex:1;overflow-y:auto;overflow-x:hidden;-webkit-overflow-scrolling:touch;background:#0d1b2a;display:flex;flex-direction:column;align-items:center;padding:12px 0;gap:8px;}
+.pdf-page-canvas{display:block;max-width:calc(100% - 16px);box-shadow:0 2px 20px rgba(0,0,0,.55);background:#fff;}
+.pdf-controls{background:rgba(4,17,30,.97);border-top:1px solid rgba(201,151,58,.13);padding:8px 16px;padding-bottom:calc(var(--nh)+8px);display:flex;align-items:center;justify-content:center;gap:14px;flex-shrink:0;}
+.pg-btn{width:42px;height:42px;border-radius:50%;background:rgba(14,116,144,.28);border:1px solid rgba(14,116,144,.42);display:flex;align-items:center;justify-content:center;font-size:20px;color:#7dd3e8;cursor:pointer;transition:background .2s,transform .12s;user-select:none;}
+.pg-btn:active{transform:scale(.88);}
+.pg-btn:hover{background:rgba(14,116,144,.52);}
+.pg-btn:disabled{opacity:.22;cursor:default;}
+@media(min-width:600px) and (max-width:899px){.pg-btn{width:50px;height:50px;font-size:24px;}}
+.pg-counter{font-size:13px;font-weight:700;color:rgba(255,255,255,.62);min-width:90px;text-align:center;display:flex;align-items:center;justify-content:center;gap:5px;}
+.pg-input{width:42px;background:rgba(255,255,255,.10);border:1px solid rgba(255,255,255,.2);border-radius:8px;outline:none;font-family:'Nunito',sans-serif;font-size:14px;font-weight:700;color:var(--gl);text-align:center;padding:4px 2px;}
+.pdf-canvas-area{display:none;position:absolute;inset:0;background:#0d1b2a;align-items:center;justify-content:center;touch-action:none;z-index:10;overflow:hidden;}
+.pdf-canvas-area canvas{display:block;position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);max-width:100%;max-height:100%;object-fit:contain;}
+#pdfCanvasA{z-index:2;}
+#pdfCanvasB{z-index:1;}
+.pdf-loading{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;background:#0d1b2a;color:rgba(255,255,255,.48);font-size:13px;gap:14px;z-index:5;}
+.spin{width:38px;height:38px;border:3px solid rgba(201,151,58,.2);border-top-color:var(--gl);border-radius:50%;animation:spin .85s linear infinite;}
+@keyframes spin{to{transform:rotate(360deg);}}
+.exit-imm{position:absolute;top:max(14px,env(safe-area-inset-top,14px));left:14px;z-index:30;width:44px;height:44px;border-radius:50%;background:rgba(10,37,64,.85);border:1px solid rgba(255,255,255,.24);display:none;align-items:center;justify-content:center;font-size:16px;color:white;cursor:pointer;backdrop-filter:blur(6px);}
+@media(min-width:600px) and (max-width:899px){.exit-imm{width:52px;height:52px;font-size:20px;}}
+.imm-counter{position:absolute;bottom:24px;left:50%;transform:translateX(-50%);background:rgba(10,37,64,.78);border:1px solid rgba(240,192,96,.25);border-radius:50px;padding:6px 18px;font-size:12px;font-weight:700;color:rgba(255,255,255,.7);pointer-events:none;z-index:20;opacity:1;transition:opacity .6s;white-space:nowrap;backdrop-filter:blur(6px);}
+.imm-counter.fade{opacity:0;}
+body.hide-nav .bottom-nav{display:none!important;}
+.pdf-screen.immersive .pdf-topbar{display:none!important;}
+.pdf-screen.immersive .pdf-scroll-area{display:none!important;}
+.pdf-screen.immersive .pdf-controls{display:none!important;}
+.pdf-screen.immersive .pdf-canvas-area{display:flex;}
+.pdf-screen.immersive .exit-imm{display:flex;}
+.drv-screen{background:#04111e;}
+.drv-topbar{background:linear-gradient(135deg,var(--navy) 0%,var(--teal) 100%);padding:calc(env(safe-area-inset-top,0px) + 48px) 14px 14px;flex-shrink:0;display:flex;align-items:center;gap:10px;}
+@media(min-width:600px){.drv-topbar{padding:calc(env(safe-area-inset-top,0px) + 32px) 18px 14px;}}
+@media(min-width:900px){.drv-topbar{padding:16px 22px;}}
+.drv-title{font-family:'Playfair Display',serif;font-size:16px;font-weight:700;color:var(--gl);flex:1;line-height:1.3;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.drv-frame-wrap{flex:1;position:relative;background:#0d1b2a;overflow:hidden;min-height:0;}
+.drv-frame-wrap iframe{position:absolute;inset:0;width:100%;height:100%;border:none;display:block;background:#0d1b2a;}
+.drv-loading{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;background:#0d1b2a;color:rgba(255,255,255,.48);font-size:13px;gap:14px;pointer-events:none;transition:opacity .5s;z-index:2;}
+.drv-loading.hidden{opacity:0;pointer-events:none;}
+.drv-hint-bar{background:rgba(4,17,30,.97);border-top:1px solid rgba(201,151,58,.13);padding:10px 18px;padding-bottom:calc(var(--nh)+10px);display:flex;align-items:center;justify-content:space-between;flex-shrink:0;gap:12px;}
+.drv-hint-txt{font-size:11px;color:rgba(255,255,255,.42);letter-spacing:.3px;line-height:1.5;}
+.drv-fs-btn{display:flex;align-items:center;gap:6px;background:rgba(14,116,144,.28);border:1px solid rgba(14,116,144,.42);border-radius:50px;padding:8px 16px;font-size:12px;font-weight:700;color:#7dd3e8;cursor:pointer;transition:background .2s;white-space:nowrap;flex-shrink:0;}
+.drv-fs-btn:hover{background:rgba(14,116,144,.52);}
+@media(min-width:600px) and (max-width:899px){.drv-fs-btn{padding:10px 20px;font-size:13px;}}
+.drv-exit{position:absolute;top:max(14px,env(safe-area-inset-top,14px));left:14px;z-index:30;width:42px;height:42px;border-radius:50%;background:rgba(10,37,64,.85);border:1px solid rgba(255,255,255,.24);display:none;align-items:center;justify-content:center;font-size:16px;color:white;cursor:pointer;backdrop-filter:blur(6px);}
+.drv-screen.immersive .drv-topbar{display:none!important;}
+.drv-screen.immersive .drv-hint-bar{display:none!important;}
+.drv-screen.immersive .drv-frame-wrap{position:absolute;inset:0;flex:none;}
+.drv-screen.immersive .drv-exit{display:flex;}
+.about-hdr{position:relative;overflow:hidden;flex-shrink:0;}
+.about-img{width:100%;height:200px;object-fit:cover;object-position:center 22%;display:block;}
+@media(min-width:600px){.about-img{height:240px;}}
+.about-ov{position:absolute;inset:0;background:linear-gradient(180deg,rgba(4,17,30,.12) 0%,rgba(4,17,30,.82) 100%);display:flex;flex-direction:column;align-items:center;justify-content:center;padding:20px;}
+.about-name{font-family:'Playfair Display',serif;font-size:20px;font-weight:700;color:#fff;text-shadow:0 2px 14px rgba(0,0,0,.55);}
+.about-sub{font-size:10px;color:rgba(255,255,255,.65);margin-top:4px;letter-spacing:1.3px;text-transform:uppercase;font-weight:700;}
+.about-tabs{display:flex;margin:0;background:rgba(10,37,64,.07);padding:4px;flex-shrink:0;}
+.about-tab{flex:1;text-align:center;padding:11px 8px;font-size:12px;font-weight:700;cursor:pointer;transition:background .2s,color .2s;color:var(--tm);user-select:none;border-radius:0;}
+.about-tab.active{background:var(--navy);color:var(--gl);}
+.about-panel{display:none;}
+.about-panel.active{display:block;}
+.about-body{padding:20px 16px;}
+@media(min-width:600px){.about-body{padding:20px 18px;display:grid;grid-template-columns:1fr 1fr;gap:14px;align-items:start;}}
+@media(min-width:900px){.about-body{max-width:840px;margin:0 auto;gap:16px;}}
+.info-card{background:var(--white);border-radius:var(--rm);padding:18px;box-shadow:var(--ss);margin-bottom:12px;border:1px solid rgba(10,37,64,.06);}
+@media(min-width:600px){.info-card{margin-bottom:0;}}
+.info-card h3{font-family:'Playfair Display',serif;font-size:15px;color:var(--navy);margin-bottom:10px;}
+.info-card p{font-size:13px;color:var(--tm);line-height:1.75;}
+.info-row{display:flex;align-items:flex-start;gap:10px;padding:9px 0;border-bottom:1px solid rgba(10,37,64,.06);}
+.info-row:last-child{border-bottom:none;}
+.info-icon{font-size:15px;width:22px;text-align:center;flex-shrink:0;margin-top:1px;}
+.info-text{font-size:13px;color:var(--tm);line-height:1.5;}
+.contact-btn{display:flex;align-items:center;gap:8px;background:var(--navy);color:var(--gl);border-radius:50px;padding:13px 22px;font-size:13px;font-weight:700;text-decoration:none;margin-top:10px;justify-content:center;transition:background .2s;}
+.contact-btn:hover{background:var(--teal);}
+.exec-body{padding:16px;}
+@media(min-width:600px){.exec-body{padding:18px 20px;}}
+.exec-hierarchy{display:flex;flex-direction:column;gap:10px;}
+.exec-role-btn{display:flex;align-items:center;gap:14px;background:var(--white);border:1.5px solid rgba(10,37,64,.08);border-radius:var(--rm);padding:14px 16px;cursor:pointer;transition:border-color .18s,box-shadow .18s,transform .15s;box-shadow:var(--ss);user-select:none;}
+.exec-role-btn:active{transform:scale(.98);}
+.exec-role-btn:hover{border-color:var(--gold);box-shadow:var(--sm);}
+.exec-role-icon{width:42px;height:42px;border-radius:12px;background:linear-gradient(135deg,var(--navy),var(--teal));display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0;}
+.exec-role-info{flex:1;}
+.exec-role-title{font-size:14px;font-weight:800;color:var(--navy);}
+.exec-role-count{font-size:11px;color:var(--tu);margin-top:2px;}
+.exec-role-arrow{font-size:18px;color:#bbb;}
+.execd-hdr{background:linear-gradient(135deg,var(--navy) 0%,var(--teal) 100%);padding:52px 20px 22px;flex-shrink:0;}
+@media(min-width:600px){.execd-hdr{padding:40px 24px 22px;}}
+.execd-body{padding:16px;}
+@media(min-width:600px){.execd-body{padding:18px 20px;}}
+.execd-role-desc{background:var(--navy);border-radius:var(--rm);border:1px solid rgba(240,192,96,.2);padding:16px 18px;margin-bottom:18px;font-size:12px;color:rgba(255,255,255,.78);line-height:1.8;}
+.execd-role-desc strong{color:var(--gl);font-size:13px;display:block;margin-bottom:6px;font-family:'Playfair Display',serif;}
+/* ── SINGLE PERSON CARD — portrait style matching multi-person cards ── */
+.exec-single-wrap{display:flex;gap:12px;flex-wrap:wrap;justify-content:flex-start;}
+.exec-single{flex:0 0 calc(50% - 6px);max-width:calc(50% - 6px);background:var(--white);border-radius:var(--rm);overflow:hidden;box-shadow:var(--ss);border:1px solid rgba(10,37,64,.07);}
+@media(min-width:600px){.exec-single{flex:0 0 calc(33.33% - 9px);max-width:calc(33.33% - 9px);}}
+.exec-photo-wrap{width:100%;}
+.exec-photo{width:100%;aspect-ratio:3/4;object-fit:cover;object-position:center top;display:block;background:rgba(10,37,64,.08);}
+.exec-photo-placeholder{width:100%;aspect-ratio:3/4;background:linear-gradient(160deg,rgba(10,37,64,.07) 0%,rgba(14,116,144,.05) 100%);border-bottom:1px dashed rgba(10,37,64,.14);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;text-align:center;}
+.exec-photo-placeholder .epp-icon{font-size:34px;color:rgba(10,37,64,.20);}
+.exec-photo-placeholder .epp-txt{font-size:9px;color:rgba(10,37,64,.30);font-weight:700;line-height:1.4;padding:0 10px;}
+.exec-info{padding:12px 14px 16px;}
+.exec-name{font-family:'Playfair Display',serif;font-size:13px;color:var(--navy);font-weight:700;margin-bottom:3px;line-height:1.3;}
+.exec-post{font-size:10px;font-weight:700;color:var(--teal);letter-spacing:.4px;text-transform:uppercase;margin-bottom:8px;}
+.exec-bio{font-size:11px;color:var(--tm);line-height:1.7;}
+.exec-multi{display:flex;gap:12px;flex-wrap:wrap;justify-content:flex-start;}
+.exec-multi-card{flex:0 0 calc(50% - 6px);max-width:calc(50% - 6px);background:var(--white);border-radius:var(--rm);overflow:hidden;box-shadow:var(--ss);border:1px solid rgba(10,37,64,.07);}
+@media(min-width:600px){.exec-multi-card{flex:0 0 calc(33.33% - 9px);max-width:calc(33.33% - 9px);}}
+.exec-multi-photo{width:100%;aspect-ratio:3/4;object-fit:cover;object-position:center top;display:block;background:rgba(10,37,64,.06);}
+.exec-multi-placeholder{width:100%;aspect-ratio:3/4;background:linear-gradient(160deg,rgba(10,37,64,.07) 0%,rgba(14,116,144,.05) 100%);border-bottom:1px dashed rgba(10,37,64,.14);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;}
+.exec-multi-placeholder .epp-icon{font-size:32px;color:rgba(10,37,64,.18);}
+.exec-multi-placeholder .epp-txt{font-size:9px;color:rgba(10,37,64,.28);font-weight:700;text-align:center;padding:0 10px;line-height:1.4;}
+.exec-multi-info{padding:10px 12px 13px;}
+.exec-multi-name{font-family:'Playfair Display',serif;font-size:12px;color:var(--navy);font-weight:700;margin-bottom:3px;line-height:1.3;}
+.exec-multi-post{font-size:10px;color:var(--teal);font-weight:700;letter-spacing:.4px;text-transform:uppercase;}
+/* ── REHEARSAL PICKS ── */
+.reh-hdr{background:linear-gradient(135deg,#1a3a2a 0%,#0e7450 100%);padding:52px 20px 22px;flex-shrink:0;}
+@media(min-width:600px){.reh-hdr{padding:40px 24px 22px;}}
+.reh-intro{margin:16px 16px 0;flex-shrink:0;background:#0d2b1e;border-radius:var(--rm);border:1px solid rgba(100,220,150,.2);overflow:hidden;box-shadow:var(--ss);}
+.reh-intro-inner{padding:16px 18px;display:flex;gap:12px;align-items:flex-start;}
+.reh-intro-icon{width:42px;height:42px;border-radius:12px;background:rgba(100,220,150,.15);border:1px solid rgba(100,220,150,.3);display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0;}
+.reh-intro-text h4{font-family:'Playfair Display',serif;font-size:13px;color:#7defa0;margin-bottom:5px;font-weight:600;}
+.reh-intro-text p{font-size:11px;color:rgba(255,255,255,.65);line-height:1.7;}
+.reh-intro-footer{background:rgba(100,220,150,.06);border-top:1px solid rgba(100,220,150,.14);padding:9px 18px;font-size:11px;color:rgba(255,255,255,.4);display:flex;align-items:center;justify-content:space-between;gap:10px;}
+.reh-manage-btn{font-size:11px;font-weight:700;color:#7defa0;background:rgba(100,220,150,.14);border:1px solid rgba(100,220,150,.28);border-radius:20px;padding:4px 12px;cursor:pointer;transition:background .2s;}
+.reh-manage-btn:hover{background:rgba(100,220,150,.28);}
+.reh-empty{text-align:center;padding:50px 20px;color:var(--tu);}
+.reh-empty-icon{font-size:46px;margin-bottom:14px;}
+.reh-empty-txt{font-size:13px;line-height:1.75;}
+.reh-empty-hint{font-size:11px;color:rgba(10,37,64,.35);margin-top:10px;line-height:1.6;}
+/* Pin button on score cards */
+.score-pin{width:30px;height:30px;border-radius:50%;background:rgba(100,220,150,.14);border:1px solid rgba(100,220,150,.36);display:flex;align-items:center;justify-content:center;font-size:13px;cursor:pointer;flex-shrink:0;transition:background .2s;margin-left:6px;}
+.score-pin:hover{background:rgba(100,220,150,.32);}
+.score-pin.pinned{background:rgba(100,220,150,.36);border-color:rgba(100,220,150,.7);}
+/* Manage modal */
+.reh-modal{position:fixed;inset:0;background:rgba(4,17,30,.78);z-index:600;display:none;align-items:flex-end;justify-content:center;backdrop-filter:blur(4px);}
+.reh-modal.open{display:flex;}
+.reh-modal-sheet{background:var(--white);border-radius:24px 24px 0 0;width:100%;max-width:var(--aw);padding:24px 20px 40px;animation:sheetUp .28s ease;max-height:80vh;overflow-y:auto;}
+.reh-modal-title{font-family:'Playfair Display',serif;font-size:17px;color:var(--navy);margin-bottom:4px;}
+.reh-modal-sub{font-size:11px;color:var(--tu);margin-bottom:18px;line-height:1.5;}
+.reh-pin-row{display:flex;align-items:center;gap:10px;padding:10px 0;border-bottom:1px solid rgba(10,37,64,.06);}
+.reh-pin-row:last-child{border-bottom:none;}
+.reh-pin-check{width:22px;height:22px;border-radius:6px;border:2px solid rgba(10,37,64,.2);display:flex;align-items:center;justify-content:center;cursor:pointer;flex-shrink:0;transition:background .18s,border-color .18s;}
+.reh-pin-check.on{background:#0e7450;border-color:#0e7450;color:white;font-size:12px;}
+.reh-pin-name{flex:1;font-size:13px;font-weight:700;color:var(--td);}
+.reh-pin-cat{font-size:10px;color:var(--tu);}
+.reh-modal-close{display:block;width:100%;margin-top:20px;padding:13px;background:var(--navy);border:none;border-radius:50px;font-family:'Nunito',sans-serif;font-size:13px;font-weight:700;color:var(--gl);cursor:pointer;}
+.pwa-banner{position:fixed;bottom:calc(var(--nh)+8px);left:50%;transform:translateX(-50%);width:calc(100% - 32px);max-width:calc(var(--aw) - 32px);background:var(--navy);color:var(--gl);border-radius:var(--rm);border:1px solid rgba(240,192,96,.3);padding:12px 16px;display:flex;align-items:center;gap:10px;z-index:300;box-shadow:var(--sm);animation:slideUp .3s ease;}
+@keyframes slideUp{from{opacity:0;transform:translateX(-50%) translateY(20px);}to{opacity:1;transform:translateX(-50%) translateY(0);}}
+.pwa-banner p{font-size:12px;line-height:1.5;flex:1;color:rgba(255,255,255,.82);}
+.pwa-banner strong{color:var(--gl);}
+.pwa-banner-close{width:28px;height:28px;border-radius:50%;background:rgba(255,255,255,.12);border:none;color:white;font-size:14px;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.bottom-nav{position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:100%;max-width:var(--aw);background:var(--white);border-top:1px solid rgba(10,37,64,.09);display:flex;padding:8px 0 max(10px,env(safe-area-inset-bottom));z-index:200;box-shadow:0 -4px 24px rgba(10,37,64,.10);height:var(--nh);}
+.nav-btn{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;cursor:pointer;border:none;background:transparent;padding:4px 0;}
+.nav-icon{font-size:22px;line-height:1;}
+@media(min-width:600px) and (max-width:899px){.nav-icon{font-size:26px;}}
+.nav-lbl{font-size:10px;font-weight:700;color:#aab;letter-spacing:.3px;}
+@media(min-width:600px) and (max-width:899px){.nav-lbl{font-size:12px;}}
+.nav-btn.active .nav-lbl{color:var(--navy);}
+.nav-dot{width:4px;height:4px;border-radius:50%;background:var(--gold);margin-top:2px;display:none;}
+.nav-btn.active .nav-dot{display:block;}
+:fullscreen body,:-webkit-full-screen body{max-width:100%!important;box-shadow:none!important;}
+</style>
+</head>
+<body>
+
+<script>
+const SCORES = {
+  anthems: [
+    { title:"Abusua Naase",                   type:"tonic", path:"scores/anthems/abusua-naase-tonic.pdf" },
+    { title:"Abusua Naase",                   type:"staff", path:"scores/anthems/abusua-naase-staff.pdf" },
+    { title:"Choose You This Day",            type:"tonic", path:"scores/anthems/choose-you-this-day-tonic.pdf" },
+    { title:"Choose You This Day",            type:"staff", path:null },
+    { title:"Ɛnyɛ Yen",                       type:"tonic", path:"scores/anthems/enye-yen-tonic.pdf" },
+    { title:"Ɛnyɛ Yen",                       type:"staff", path:"scores/anthems/enye-yen-staff.pdf" },
+    { title:"Gye Me Taataa",                  type:"tonic", path:"scores/anthems/gye-me-taataa-tonic.pdf" },
+    { title:"Gye Me Taataa",                  type:"staff", path:"scores/anthems/gye-me-taataa-staff.pdf" },
+    { title:"Gyatabruwa",                     type:"tonic", path:"scores/anthems/gyatabruwa-tonic.pdf" },
+    { title:"Gyatabruwa",                     type:"staff", path:"scores/anthems/gyatabruwa-staff.pdf" },
+    { title:"Heaven",                         type:"tonic", path:"scores/anthems/heaven-tonic.pdf" },
+    { title:"Heaven",                         type:"staff", path:null },
+    { title:"Hen Egya Christ",                type:"tonic", path:null },
+    { title:"Hen Egya Christ",                type:"staff", path:"scores/anthems/hen-egya-christ-staff.pdf" },
+    { title:"Holy Holy",                      type:"tonic", path:"scores/anthems/holy-holy-tonic.pdf" },
+    { title:"Holy Holy",                      type:"staff", path:"scores/anthems/holy-holy-staff.pdf" },
+    { title:"Hyeren",                         type:"tonic", path:null },
+    { title:"Hyeren",                         type:"staff", path:"scores/anthems/hyeren-staff.pdf" },
+    { title:"Ka Ma Amansan Te",               type:"tonic", path:"scores/anthems/ka-ma-amansan-te-tonic.pdf" },
+    { title:"Ka Ma Amansan Te",               type:"staff", path:null },
+    { title:"Kyerɛ Me Kwan",                  type:"tonic", path:"scores/anthems/kyerɛ-me-kwan-tonic.pdf" },
+    { title:"Kyerɛ Me Kwan",                  type:"staff", path:"scores/anthems/kyere-me-kwan-staff.pdf" },
+    { title:"Makokyɛm Nyame",                 type:"tonic", path:"scores/anthems/makokyɛm-nyame-tonic.pdf" },
+    { title:"Makokyɛm Nyame",                 type:"staff", path:"scores/anthems/makokyem-nyame-staff.pdf" },
+    { title:"Me Ye Adansidie",                type:"tonic", path:null },
+    { title:"Me Ye Adansidie",                type:"staff", path:"scores/anthems/me-ye-adansidie-staff.pdf" },
+    { title:"Mensiden",                       type:"tonic", path:"scores/anthems/mensiden-tonic.pdf" },
+    { title:"Mensiden",                       type:"staff", path:"scores/anthems/mensiden-staff.pdf" },
+    { title:"Meye Dede Ama Wo",               type:"tonic", path:"scores/anthems/meye-dede-ama-wo-solfa.pdf" },
+    { title:"Meye Dede Ama Wo",               type:"staff", path:"scores/anthems/meye-dede-staff.pdf" },
+    { title:"Momma Yen Nkodi Adanse",         type:"tonic", path:"scores/anthems/momma-yen-nkodi-adanse-tonic.pdf" },
+    { title:"Momma Yen Nkodi Adanse",         type:"staff", path:"scores/anthems/momma-yen-nkodi-adanse-staff.pdf" },
+    { title:"My Help Comes From the Lord",    type:"tonic", path:"scores/anthems/my-help-comes-from-the-lord-tonic.pdf" },
+    { title:"My Help Comes From the Lord",    type:"staff", path:"scores/anthems/my-help-comes-from-the-Lord-staff.pdf" },
+    { title:"Nya Gyedzi",                     type:"tonic", path:"scores/anthems/nya-gyedzi-tonic.pdf" },
+    { title:"Nya Gyedzi",                     type:"staff", path:"scores/anthems/nya-gyedzi-staff.pdf" },
+    { title:"Nyame Yɛ Kɛse",                  type:"tonic", path:null },
+    { title:"Nyame Yɛ Kɛse",                  type:"staff", path:"scores/anthems/nyame-yɛ-kɛse-staff.pdf" },
+    { title:"Okyɛso Nyame",                   type:"tonic", path:"scores/anthems/okyɛso-nyame-tonic.pdf" },
+    { title:"Okyɛso Nyame",                   type:"staff", path:"scores/anthems/okyɛso-nyame-staff.pdf" },
+    { title:"Onim Nea Eye",                   type:"tonic", path:"scores/anthems/onim-nea-eye-tonic.pdf" },
+    { title:"Onim Nea Eye",                   type:"staff", path:"scores/anthems/onim-nea-eye-staff.pdf" },
+    { title:"Our Sacrifice of Praise",        type:"tonic", path:"scores/anthems/our-sacrifice-of-praise-tonic.pdf" },
+    { title:"Our Sacrifice of Praise",        type:"staff", path:"scores/anthems/our-sacrifice-of-praise-staff.pdf" },
+    { title:"This Is the Day",                type:"tonic", path:"scores/anthems/this-is-the-day-jva-tonic.pdf" },
+    { title:"This Is the Day",                type:"staff", path:"scores/anthems/this-is-the-day-jva-staff.pdf" },
+    { title:"Through It All",                 type:"tonic", path:"scores/anthems/through-it-all-tonic.pdf" },
+    { title:"Through It All",                 type:"staff", path:"scores/anthems/through-it-all-staff.pdf" },
+    { title:"Where Is Our God",               type:"tonic", path:"scores/anthems/where-is-our-god-tonic.pdf" },
+    { title:"Where Is Our God",               type:"staff", path:"scores/anthems/where-is-our-god-staff.pdf" },
+    { title:"Yesu Ka Wo Ho",                  type:"tonic", path:"scores/anthems/yesu-ka-wo-ho-tonic.pdf" },
+    { title:"Yesu Ka Wo Ho",                  type:"staff", path:"scores/anthems/yesu-ka-wo-ho-staff.pdf" },
+    { title:"Your Grace and Mercy",           type:"tonic", path:"scores/anthems/your-grace-and-mercy-tonic.pdf" },
+    { title:"Your Grace and Mercy",           type:"staff", path:"scores/anthems/your-grace-and-mercy-staff.pdf" },
+  ],
+  hymns: [
+    { title:"Soul of My Saviour",             type:"tonic", path:"scores/hymns/soul-of-my-saviour-tonic.pdf" },
+    { title:"Soul of My Saviour",             type:"staff", path:"scores/hymns/soul-of-my-saviour-staff.pdf" },
+    { title:"Methodist Praise Songs",         type:"tonic", drive:"1cP-mta_6uEPcOnguC3xSgPsoemJyHbBG" },
+    { title:"Methodist Praise Songs",         type:"staff", drive:"1cP-mta_6uEPcOnguC3xSgPsoemJyHbBG" },
+    { title:"Methodist Hymnbook",             type:"hymnModal", notation:"tonic", tonicId:"1as_6XVRDlv-HjNiZGAilv7_UfGlPSJbc", staffId:"15kS4RaO1tQ6d26V_Bz95ei-akzI-LYGj" },
+    { title:"Methodist Hymnbook",             type:"hymnModal", notation:"staff", tonicId:"1as_6XVRDlv-HjNiZGAilv7_UfGlPSJbc", staffId:"15kS4RaO1tQ6d26V_Bz95ei-akzI-LYGj" },
+  ],
+  easter: [
+    { title:"Christ Edzi Nkunyim",            type:"tonic", path:"scores/easter/christ-edzi-nkunyim-tonic.pdf" },
+    { title:"Christ Edzi Nkunyim",            type:"staff", path:null },
+    { title:"Debonyeni Te Sɛ Me",             type:"tonic", path:"scores/easter/debonyeni-te-sɛ-me-tonic.pdf" },
+    { title:"Debonyeni Te Sɛ Me",             type:"staff", path:null },
+    { title:"Heaven Came Down",               type:"tonic", path:"scores/easter/heaven-came-down-tonic.pdf" },
+    { title:"Heaven Came Down",               type:"staff", path:"scores/easter/heaven-came-down-staff.pdf" },
+    { title:"Hen Egya Christ",                type:"tonic", path:null },
+    { title:"Hen Egya Christ",                type:"staff", path:"scores/easter/hen-egya-christ-staff.pdf" },
+    { title:"Hosanna",                        type:"tonic", path:"scores/easter/hosanna-jva-tonic.pdf" },
+    { title:"Hosanna",                        type:"staff", path:null },
+    { title:"Kae Me",                         type:"tonic", path:"scores/easter/kae-me-tonic.pdf" },
+    { title:"Kae Me",                         type:"staff", path:"scores/easter/kae-me-staff.pdf" },
+    { title:"Kan Na Meyɛ Nifrani",            type:"tonic", path:null },
+    { title:"Kan Na Meyɛ Nifrani",            type:"staff", path:"scores/easter/kan-na-meyɛ-nifrani-staff.pdf" },
+    { title:"Ɔdɔ Bi Ntse Sɛ Wo",             type:"tonic", path:"scores/easter/ɔdɔ-bi-ntse-sɛ-wo-tonic.pdf" },
+    { title:"Ɔdɔ Bi Ntse Sɛ Wo",             type:"staff", path:null },
+    { title:"Wasore Afiri Awufo Mu",          type:"tonic", path:"scores/easter/wasore-afiri-awufu-mu-tonic.pdf" },
+    { title:"Wasore Afiri Awufo Mu",          type:"staff", path:"scores/easter/wasore-afiri-awufo-mu-staff.pdf" },
+  ],
+  highlife: [
+    { title:"Aseda Sɛ No",                    type:"tonic", path:"scores/highlife/aseda-sɛ-no-tonic.pdf" },
+    { title:"Aseda Sɛ No",                    type:"staff", path:null },
+    { title:"Bra Onua Bra",                   type:"tonic", path:"scores/highlife/bra-onua-bra-tonic.pdf" },
+    { title:"Bra Onua Bra",                   type:"staff", path:null },
+    { title:"Daa Mosom Wo",                   type:"tonic", path:"scores/highlife/daa-mosom-wo-tonic.pdf" },
+    { title:"Daa Mosom Wo",                   type:"staff", path:"scores/highlife/daa-mosom-wo-staff.pdf" },
+    { title:"Efata Wo",                       type:"tonic", path:"scores/highlife/efata-wo-tonic.pdf" },
+    { title:"Efata Wo",                       type:"staff", path:"scores/highlife/efata-wo-staff.pdf" },
+    { title:"Elagbela",                       type:"tonic", path:null },
+    { title:"Elagbela",                       type:"staff", path:"scores/highlife/elagbela-staff.pdf" },
+    { title:"Gye Me Taataa",                  type:"tonic", path:null },
+    { title:"Gye Me Taataa",                  type:"staff", path:"scores/highlife/gye-me-taataa-staff.pdf" },
+    { title:"Homma Yembo Ose",                type:"tonic", path:"scores/highlife/homma-yembo-ose-tonic.pdf" },
+    { title:"Homma Yembo Ose",                type:"staff", path:"scores/highlife/homma-yembo-ose-staff.pdf" },
+    { title:"It Is Well With My Soul",        type:"tonic", path:"scores/highlife/it-is-well-with-my-soul-tonic.pdf" },
+    { title:"It Is Well With My Soul",        type:"staff", path:"scores/highlife/it-is-well-with-my-soul-staff.pdf" },
+    { title:"Joy Like a River",               type:"tonic", path:"scores/highlife/joy-like-a-river-tonic.pdf" },
+    { title:"Joy Like a River",               type:"staff", path:"scores/highlife/joy-like-a-river-staff.pdf" },
+    { title:"Ka Ma Obiara Nte",               type:"tonic", path:"scores/highlife/ka-ma-obiara-nte-tonic.pdf" },
+    { title:"Ka Ma Obiara Nte",               type:"staff", path:"scores/highlife/ka-ma-obiara-nte-staff.pdf" },
+    { title:"Kokroko Nyame",                  type:"tonic", path:"scores/highlife/kokroko-nyame-tonic.pdf" },
+    { title:"Kokroko Nyame",                  type:"staff", path:null },
+    { title:"Let's Sing",                     type:"tonic", path:null },
+    { title:"Let's Sing",                     type:"staff", path:"scores/highlife/let-sing-tonic.pdf" },
+    { title:"Maseda Dwom",                    type:"tonic", path:"scores/highlife/Maseda-dwom-tonic.pdf" },
+    { title:"Maseda Dwom",                    type:"staff", path:"scores/highlife/Maseda-dwom-staff.pdf" },
+    { title:"Menim Nea Manya",                type:"tonic", path:"scores/highlife/menim-nea-manya-tonic.pdf" },
+    { title:"Menim Nea Manya",                type:"staff", path:"scores/highlife/menim-nea-manya-staff.pdf" },
+    { title:"Menso Me Ne Hwan",               type:"tonic", path:"scores/highlife/menso-me-ne-hwan-tonic.pdf" },
+    { title:"Menso Me Ne Hwan",               type:"staff", path:"scores/highlife/menso-me-ne-hwan-staff.pdf" },
+    { title:"Meyi Akyea",                     type:"tonic", path:"scores/highlife/mayi-akyea-tonic.pdf" },
+    { title:"Meyi Akyea",                     type:"staff", path:"scores/highlife/mayi-akyea-staff.pdf" },
+    { title:"Mida Akpe Na Mawu",              type:"tonic", path:"scores/highlife/mida-akpe-tonic.pdf" },
+    { title:"Mida Akpe Na Mawu",              type:"staff", path:"scores/highlife/mida-akpe-staff.pdf" },
+    { title:"Mitso Aseye",                    type:"tonic", path:null },
+    { title:"Mitso Aseye",                    type:"staff", path:"scores/highlife/mitso-aseye-tonic.pdf" },
+    { title:"Mo Nyae Me",                     type:"tonic", path:"scores/highlife/mo-nyae-me-tonic.pdf" },
+    { title:"Mo Nyae Me",                     type:"staff", path:"scores/highlife/mo-nyae-me-staff.pdf" },
+    { title:"Nea Wo De Me Abedu Nie",         type:"tonic", path:null },
+    { title:"Nea Wo De Me Abedu Nie",         type:"staff", path:"scores/highlife/nea-wo-de-mabɛduru-nie-staff.pdf" },
+    { title:"Nkunimdie",                      type:"tonic", path:"scores/highlife/nkunimdie-tonic.pdf" },
+    { title:"Nkunimdie",                      type:"staff", path:null },
+    { title:"Nyame Kokroko (T. Arthur)",      type:"tonic", path:null },
+    { title:"Nyame Kokroko (T. Arthur)",      type:"staff", path:"scores/highlife/myame-kokroko-staff.pdf" },
+    { title:"Nyame Kokroko (J.D. Brown)",     type:"tonic", path:null },
+    { title:"Nyame Kokroko (J.D. Brown)",     type:"staff", path:"scores/highlife/nyame-kokroko-ato-brown-staff.pdf" },
+    { title:"Okyɛso Nyame",                   type:"tonic", path:null },
+    { title:"Okyɛso Nyame",                   type:"staff", path:"scores/highlife/okyɛso-nyame-tonic.pdf" },
+    { title:"Onyame Akasa",                   type:"tonic", path:"scores/highlife/onyame-akasa-tonic.pdf" },
+    { title:"Onyame Akasa",                   type:"staff", path:null },
+    { title:"Onyame Ba",                      type:"tonic", path:"scores/highlife/onyame-ba-tonic.pdf" },
+    { title:"Onyame Ba",                      type:"staff", path:null },
+    { title:"Oye",                            type:"tonic", path:"scores/highlife/oye-tonic.pdf" },
+    { title:"Oye",                            type:"staff", path:"scores/highlife/oye-staff.pdf" },
+    { title:"Prekese",                        type:"tonic", path:"scores/highlife/prekese-tonic.pdf" },
+    { title:"Prekese",                        type:"staff", path:"scores/highlife/prekese-staff.pdf" },
+    { title:"Sɛ Mebɔ Jesus Dzin Ara",         type:"tonic", path:"scores/highlife/sɛ-mebɔ-jesus-dzin-ara-tonic.pdf" },
+    { title:"Sɛ Mebɔ Jesus Dzin Ara",         type:"staff", path:"scores/highlife/sɛ-mebɔ-jesus-dzin-ara-staff.pdf" },
+    { title:"Siyahamba",                      type:"tonic", path:null },
+    { title:"Siyahamba",                      type:"staff", path:"scores/highlife/siyahamba-we-are-marching-staff.pdf" },
+    { title:"Susu Ho Hwɛ",                    type:"tonic", path:"scores/highlife/susu-ho-hwɛ-tonic.pdf" },
+    { title:"Susu Ho Hwɛ",                    type:"staff", path:"scores/highlife/susu-ho-hwɛ-staff.pdf" },
+    { title:"Tambola",                        type:"tonic", path:"scores/highlife/tambola-tonic.pdf" },
+    { title:"Tambola",                        type:"staff", path:"scores/highlife/tambola-staff.pdf" },
+    { title:"Tɔ Wo Nhyira Gu Me So",          type:"tonic", path:null },
+    { title:"Tɔ Wo Nhyira Gu Me So",          type:"staff", path:"scores/highlife/tɔ-wo-nhyira-gu-me-so-staff.pdf" },
+    { title:"We Will Celebrate",              type:"tonic", path:null },
+    { title:"We Will Celebrate",              type:"staff", path:"scores/highlife/we-will-celebrate-tonic.pdf" },
+    { title:"Wo Gyidie Agye Wo Nkwa",         type:"tonic", path:"scores/highlife/wo-gyidie-agye-wo-nkwa-tonic.pdf" },
+    { title:"Wo Gyidie Agye Wo Nkwa",         type:"staff", path:"scores/highlife/wo-gyedie-agye-wo-nkwa-staff.pdf" },
+    { title:"Wo Nko Me Nko Anaa",             type:"tonic", path:"scores/highlife/wonko-me-nko-tonic.pdf" },
+    { title:"Wo Nko Me Nko Anaa",             type:"staff", path:null },
+    { title:"Woana Na Ɔnye Wo Sɛ",            type:"tonic", path:"scores/highlife/woana-na-ɔnye-wo-sɛ-tonic.pdf" },
+    { title:"Woana Na Ɔnye Wo Sɛ",            type:"staff", path:"scores/highlife/woana-na-ɔnye-wo-sɛ-staff.pdf" },
+    { title:"Wonkoara",                       type:"tonic", path:"scores/highlife/wonkoara-tonic.pdf" },
+    { title:"Wonkoara",                       type:"staff", path:"scores/highlife/wonkoara-staff.pdf" },
+    { title:"Yɛ Nnaase Dwom",                 type:"tonic", path:null },
+    { title:"Yɛ Nnaase Dwom",                 type:"staff", path:"scores/highlife/Yɛ-nnaase-dwom-tonic.pdf" },
+    { title:"Yendze Etur",                    type:"tonic", path:"scores/highlife/yendze-etur-tonic.pdf" },
+    { title:"Yendze Etur",                    type:"staff", path:"scores/highlife/yendze-etur-staff.pdf" },
+  ],
+  patriotic: [
+    { title:"Ma Oman Yi Mu Nsem",             type:"tonic", path:"scores/patriotic/ma-oman-yi-mu-nsem-tonic.pdf" },
+    { title:"Ma Oman Yi Mu Nsem",             type:"staff", path:"scores/patriotic/ma-oman-yi-mu-nsem-staff.pdf" },
+    { title:"Oman Ghana Beye Yie",            type:"tonic", path:"scores/patriotic/oman-ghana-beye-yie-tonic.pdf" },
+    { title:"Oman Ghana Beye Yie",            type:"staff", path:"scores/patriotic/oman-ghana-beye-yie-staff.pdf" },
+    { title:"When Peace Like a River",        type:"tonic", path:"scores/patriotic/it-is-well-with-my-soul-tonic.pdf" },
+    { title:"When Peace Like a River",        type:"staff", path:"scores/patriotic/it-is-well-with-my-soul-staff.pdf" },
+    { title:"Wonsom",                         type:"tonic", path:"scores/patriotic/wonsom-patriotic-tonic.pdf" },
+    { title:"Wonsom",                         type:"staff", path:null },
+  ],
+  classical: [
+    { title:"And I Saw a New Heaven",     type:"tonic", path:"scores/and-i-saw-a-new-heaven-tonic.pdf" },
+    { title:"And I Saw a New Heaven",     type:"staff", path:"scores/and-i-saw-a-new-heaven-staff.pdf" },
+  ],
+  christmas: [
+    { title:"And Lo, a Child Is Lying in a Manger", type:"tonic", path:"scores/christmas/and-lo-a-child-is-lying-in-a-manger-tonic.pdf" },
+    { title:"And Lo, a Child Is Lying in a Manger", type:"staff", path:"scores/christmas/and-lo-a-child-is-lying-in-a-manger-staff.pdf" },
+    { title:"Anwanwasem Bi A Matse",          type:"tonic", path:"scores/anthems/anwanwasem-bi-a-matse-tonic.pdf" },
+    { title:"Anwanwasem Bi A Matse",          type:"staff", path:"scores/anthems/anwanwasem-bi-a-matse-staff.pdf" },
+    { title:"Christmas Day",                  type:"tonic", path:"scores/christmas/christmas-day-tonic.pdf" },
+    { title:"Christmas Day",                  type:"staff", path:"scores/christmas/christmas-day-staff.pdf" },
+    { title:"Christmas Is With Us",           type:"tonic", path:"scores/christmas/christmas-is-with-us-tonic.pdf" },
+    { title:"Christmas Is With Us",           type:"staff", path:null },
+    { title:"I Saw a Maiden",                 type:"tonic", path:"scores/christmas/i-saw-a-maiden-tonic.pdf" },
+    { title:"I Saw a Maiden",                 type:"staff", path:null },
+    { title:"Lift Up Your Heads",             type:"tonic", path:"scores/christmas/lift-up-your-heads-staff.pdf" },
+    { title:"Lift Up Your Heads",             type:"staff", path:"scores/christmas/lift-up-your-heads-staff.pdf" },
+    { title:"Merry Christmas",                type:"tonic", path:"scores/christmas/merry-christmas-tonic.pdf" },
+    { title:"Merry Christmas",                type:"staff", path:null },
+    { title:"O Come All Ye Faithful",         type:"tonic", path:"scores/christmas/o-come-all-ye-faithful-tonic.pdf" },
+    { title:"O Come All Ye Faithful",         type:"staff", path:null },
+    { title:"Rejoice",                        type:"tonic", path:"scores/christmas/rejoice-tonic.pdf" },
+    { title:"Rejoice",                        type:"staff", path:"scores/christmas/rejoice-staff.pdf" },
+    { title:"Sweet Chiming Bells",            type:"tonic", path:"scores/christmas/sweet-chiming-bells-tonic.pdf" },
+    { title:"Sweet Chiming Bells",            type:"staff", path:"scores/christmas/sweet-chiming-bells-staff.pdf" },
+  ],
+  collections: [
+    { title:"Varick Classics Vol. 1",         type:"tonic", varrick:true, drive:"110JcTAItun_jS8OVeKyPMC3Iuy6-23yJ" },
+    { title:"Varick Classics Vol. 1",         type:"staff", varrick:true, drive:"110JcTAItun_jS8OVeKyPMC3Iuy6-23yJ" },
+  ],
+  general: [],
+  rehearsal: []
+};
+
+const CATS = {
+  anthems:     { label:"Anthems",     emoji:"\uD83C\uDFBC" },
+  hymns:       { label:"Hymns",       emoji:"\uD83C\uDFB5" },
+  easter:      { label:"Easter",      emoji:"\u271D\uFE0F" },
+  highlife:    { label:"Highlife",    emoji:"\uD83E\uDD41" },
+  patriotic:   { label:"Patriotic",   emoji:"\uD83C\uDF1F" },
+  classical:   { label:"Classical",   emoji:"\uD83C\uDFBB" },
+  christmas:   { label:"Christmas",   emoji:"\u2B50" },
+  collections: { label:"Collections", emoji:"\uD83D\uDCDA" },
+  general:     { label:"Documents",   emoji:"\uD83D\uDCC2" },
+  rehearsal:   { label:"Rehearsal Picks", emoji:"\uD83C\uDFAF" }
+};
+
+const QUICK = [
+  { title:"Methodist Praise Songs",  cat:"hymns",     type:"tonic" },
+  { title:"Momma Yen Nkodi Adanse",  cat:"anthems",   type:"tonic" },
+  { title:"Our Sacrifice of Praise", cat:"anthems",   type:"tonic" },
+  { title:"Bra Onua Bra",            cat:"highlife",  type:"tonic" },
+  { title:"Kae Me",                  cat:"easter",    type:"tonic" },
+  { title:"Ma Oman Yi Mu Nsem",      cat:"patriotic", type:"tonic" },
+];
+
+const VARICK_STAFF = [
+  {n:1,name:"M\u025b B\u0254 Wo Din",pg:7},{n:2,name:"\u0254d\u0254 B\u025bn Ni",pg:10},{n:3,name:"Minsi D\u025bn Nna W'ase",pg:12},
+  {n:4,name:"Hosanna",pg:18},{n:5,name:"Come, Thou Fount of Every Blessing",pg:20},{n:6,name:"De B\u0254n Y\u025b Ni Te S\u025b Me",pg:28},
+  {n:7,name:"Mo Mma Y\u025bn Nkodi Adanse",pg:30},{n:8,name:"D\u0254fo B\u025bn",pg:34},{n:9,name:"\u025by\u025b Wo De",pg:36},
+  {n:10,name:"Ahote\u025b Aba",pg:38},{n:11,name:"Way",pg:41},{n:12,name:"M'as\u025bm",pg:45},{n:13,name:"Tie H\u025bn",pg:48},
+  {n:14,name:"\u0254d\u0254 Bi Nte S\u025b No",pg:50},{n:15,name:"Bribi Papa Bi W\u0254 Aseda kyi",pg:52},{n:16,name:"Menim Nea Menya",pg:58},
+  {n:17,name:"Nyame Eguamaa",pg:61},{n:18,name:"Aseda Ndwom",pg:64},{n:19,name:"Mogya Dehye No",pg:68},{n:20,name:"Dr. Jesus",pg:70},
+];
+const VARICK_TONIC = [
+  {n:1,name:"M\u025b B\u0254 Wo Din",pg:73},{n:2,name:"\u0254d\u0254 B\u025bn Ni",pg:75},{n:3,name:"Minsi D\u025bn Nna W'ase",pg:76},
+  {n:4,name:"Hosanna",pg:78},{n:5,name:"Come, Thou Fount of Every Blessing",pg:79},{n:6,name:"De B\u0254n Y\u025b Ni Te S\u025b Me",pg:81},
+  {n:7,name:"Mo Mma Y\u025bn Nkodi Adanse",pg:82},{n:8,name:"D\u0254fo B\u025bn",pg:85},{n:9,name:"\u025by\u025b Wo De",pg:86},
+  {n:10,name:"Ahote\u025b Aba",pg:87},{n:11,name:"Way",pg:88},{n:12,name:"M'as\u025bm",pg:91},{n:13,name:"Tie H\u025bn",pg:93},
+  {n:14,name:"\u0254d\u0254 Bi Nte S\u025b No",pg:94},{n:15,name:"Bribi Papa Bi W\u0254 Aseda kyi",pg:95},{n:16,name:"Menim Nea Menya",pg:98},
+  {n:17,name:"Nyame Eguamaa",pg:100},{n:18,name:"Aseda Ndwom",pg:102},{n:19,name:"Mogya Dehye No",pg:104},{n:20,name:"Dr. Jesus",pg:106},
+];
+
+const EXECUTIVES = [
+  {
+    role:"Choirmaster", emoji:"\uD83C\uDFBC", count:1,
+    desc:"The Choirmaster is the overall head of the choir. Per the GMF Chaplaincy constitution, the Choirmaster is elected by the choristers and is responsible for the musical and spiritual direction of the choir, the conduct of all rehearsals, the maintenance of choral standards, and for representing the choir before the Chaplaincy Management Committee.",
+    persons:[{ name:"John Ntow", post:"Choirmaster", slug:"choirmaster" }]
+  },
+  {
+    role:"Music Directors", emoji:"\uD83C\uDFB6", count:2,
+    desc:"Music Directors direct the choir in rehearsal and in worship. They are responsible for arranging and interpreting music, coaching individual voice parts, and ensuring the highest standard of musical presentation. They work under the authority of the Choirmaster.",
+    persons:[
+      { name:"Thomas Bilson", post:"Music Director", slug:"director_1" },
+      { name:"Kofi Konadu",   post:"Music Director", slug:"director_2" }
+    ]
+  },
+  {
+    role:"Music Director Emeritus", emoji:"\uD83C\uDFB7", count:1,
+    desc:"The title of Music Director Emeritus is conferred as a mark of the highest honour upon a distinguished Music Director who has given exceptional and sustained service to the GMF Chaplaincy Choir. Emeritus status recognises a lifetime of musical leadership, artistry, and dedication. While retired from the day-to-day responsibilities of active direction, the Music Director Emeritus remains a revered member of the choir's musical family — a source of wisdom, inspiration, and continuity. Their counsel is valued, their legacy celebrated, and their standing within the choir is one of deep respect and enduring gratitude.",
+    persons:[{ name:"James Ato Brown", post:"Music Director Emeritus", slug:"associate_director" }]
+  },
+  {
+    role:"Ex-Officio Member", emoji:"\uD83C\uDF96\uFE0F", count:1,
+    desc:"The Ex-Officio member serves on the choir executive by virtue of a prior office held or by special appointment. They participate in executive deliberations and offer counsel drawn from experience, in accordance with the GMF Chaplaincy constitution.",
+    persons:[{ name:"Kofi Amo-Aidoo", post:"Ex-Officio Member", slug:"ex-officio" }]
+  },
+  {
+    role:"Precentor", emoji:"\uD83C\uDF99\uFE0F", count:1,
+    desc:"The Precentor leads the choir and congregation in worship song. They set the pitch, announce hymns and anthems, and guide participatory singing during services — upholding the Methodist tradition of communal worship in which the whole congregation joins in praise.",
+    persons:[{ name:"Justina Bilson", post:"Precentor", slug:"precentor" }]
+  },
+  {
+    role:"Secretaries", emoji:"\uD83D\uDCDD", count:2,
+    desc:"The Secretaries record the minutes of all choir meetings, handle official correspondence on behalf of the choir, maintain membership records, and ensure that all administrative business is conducted in an orderly manner as required by the GMF Chaplaincy constitution.",
+    persons:[
+      { name:"Ernestina Viv Commodore", post:"Secretary",      slug:"secretary_1" },
+      { name:"Theresa Asenso",          post:"Asst. Secretary", slug:"secretary_2" }
+    ]
+  },
+  {
+    role:"Treasurer", emoji:"\uD83D\uDCB0", count:1,
+    desc:"The Treasurer is responsible for the safe custody and management of the choir's financial resources. They disburse funds according to approved budgets, maintain accurate accounts, present financial statements to the executive, and ensure full accountability in accordance with the constitution.",
+    persons:[{ name:"Hagar Donkor", post:"Treasurer", slug:"treasurer" }]
+  },
+  {
+    role:"Financial Secretary", emoji:"\uD83D\uDCCA", count:1,
+    desc:"The Financial Secretary works alongside the Treasurer to record all income and expenditure, collect dues and levies from members, issue receipts, and maintain the choir's financial register. They ensure every transaction is properly documented and reported.",
+    persons:[{ name:"Agnes Frempong-Manso", post:"Financial Secretary", slug:"financial_secretary" }]
+  },
+  {
+    role:"Curators", emoji:"\uD83D\uDCDA", count:4,
+    desc:"The Curators manage the choir's music library. They catalogue, distribute and collect all scores and music sheets before and after rehearsals, maintain the digital music library, and ensure the safe keeping of all musical materials belonging to the choir.",
+    persons:[
+      { name:"Melchizedek Abudu",   post:"Curator", slug:"curator_1" },
+      { name:"Kate Addotey-Benson", post:"Curator", slug:"curator_2" },
+      { name:"Peter Owusu",         post:"Curator", slug:"curator_3" },
+      { name:"Felicia William",     post:"Curator", slug:"curator_4" }
+    ]
+  },
+  {
+    role:"Welfare Officers", emoji:"\uD83E\uDD1D", count:3,
+    desc:"The Welfare Officers look after the general wellbeing of all choir members. They visit the sick, celebrate milestones such as births, marriages and bereavements, offer pastoral support, and ensure that every chorister feels valued and cared for as part of the choir family.",
+    persons:[
+      { name:"Harriet Appiah-Anderson", post:"Welfare Officer", slug:"welfare_1" },
+      { name:"Georgina Young",          post:"Welfare Officer", slug:"welfare_2" },
+      { name:"Kwame Asanco",            post:"Welfare Officer", slug:"welfare_3" }
+    ]
+  },
+  {
+    role:"Part Leaders", emoji:"\uD83C\uDFB5", count:4,
+    desc:"The Part Leaders head the four choral voice sections — Soprano, Alto, Tenor and Bass. They ensure their section members are well-rehearsed, assist in sectional practice, and help maintain voice discipline and part accuracy during rehearsals and performances.",
+    persons:[
+      { name:"Faustina Marfo",         post:"Soprano", slug:"part_leader_1" },
+      { name:"Beatrice Paintsil",       post:"Alto",    slug:"part_leader_2" },
+      { name:"Albert Oppong",           post:"Tenor",   slug:"part_leader_3" },
+      { name:"Sam Newlove Agbonlahor", post:"Bass",    slug:"part_leader_4" }
+    ]
+  },
+  {
+    role:"CMC Representative", emoji:"\uD83C\uDFDB\uFE0F", count:1,
+    desc:"The CMC Representative attends meetings of the Chaplaincy Management Committee on behalf of the choir. They communicate the choir's concerns and activities to the CMC, and relay relevant decisions and directives from the CMC back to the choir executive.",
+    persons:[{ name:"Mawuli Dedor", post:"CMC Representative", slug:"CMC_rep" }]
+  },
+  {
+    role:"Patron Liaison", emoji:"\uD83E\uDD1D", count:2,
+    desc:"The Patron Liaison officers serve as the formal link between the choir and its Patron. They coordinate communications, facilitate meetings, convey requests and goodwill, and ensure a healthy and productive relationship between the choir and its Patron in line with the fellowship's constitution.",
+    persons:[
+      { name:"Victoria Sunkwa Yamoah-Pedanou", post:"Patron Liaison", slug:"patron_1" },
+      { name:"Theresa Asenso",                  post:"Patron Liaison", slug:"patron_2" }
+    ]
+  },
+];
+
+function mkPhotoSingle(slug, name) {
+  const jpg  = 'executive_profile/' + slug + '.jpg';
+  const jpeg = 'executive_profile/' + slug + '.jpeg';
+  const img  = document.createElement('img');
+  img.className = 'exec-multi-photo';
+  img.alt       = name;
+  img.src       = jpg;
+  img.onerror   = function () {
+    if (this.src.indexOf('.jpg') !== -1 && this.src.indexOf('.jpeg') === -1) {
+      this.onerror = function () { this.outerHTML = _multiPlaceholder(); };
+      this.src = jpeg;
+    } else { this.outerHTML = _multiPlaceholder(); }
+  };
+  return img;
+}
+function mkPhotoMulti(slug, name) {
+  const jpg  = 'executive_profile/' + slug + '.jpg';
+  const jpeg = 'executive_profile/' + slug + '.jpeg';
+  const img  = document.createElement('img');
+  img.className = 'exec-multi-photo';
+  img.alt       = name;
+  img.src       = jpg;
+  img.onerror   = function () {
+    if (this.src.indexOf('.jpg') !== -1 && this.src.indexOf('.jpeg') === -1) {
+      this.onerror = function () { this.outerHTML = _multiPlaceholder(); };
+      this.src = jpeg;
+    } else { this.outerHTML = _multiPlaceholder(); }
+  };
+  return img;
+}
+function _singlePlaceholder(){return '<div class="exec-photo-placeholder"><span class="epp-icon">&#128100;</span><span class="epp-txt">Photo coming soon</span></div>';}
+function _multiPlaceholder(){return '<div class="exec-multi-placeholder"><span class="epp-icon">&#128100;</span><span class="epp-txt">Photo coming soon</span></div>';}
+</script>
+
+<!-- HOME -->
+<div class="screen active" id="s-home">
+  <div class="home-hdr" id="homeHdr">
+    <img class="hdr-img" id="hdrImg" src="choir-image.jpeg" alt="GMF Chaplaincy Choir">
+    <div class="hdr-ov">
+      <div class="hdr-badge">Music Library</div>
+      <div class="logo-row">
+        <div class="logo-ring">
+          <svg width="34" height="34" viewBox="0 0 62 62" fill="none">
+            <rect x="26" y="7" width="10" height="48" rx="5" fill="#f0c060"/>
+            <rect x="9" y="19" width="44" height="10" rx="5" fill="#f0c060"/>
+            <circle cx="16" cy="46" r="5" fill="rgba(240,192,96,.42)"/>
+            <circle cx="46" cy="46" r="5" fill="rgba(240,192,96,.42)"/>
+          </svg>
+        </div>
+        <div>
+          <div class="choir-title">GMF Chaplaincy Choir</div>
+          <div class="choir-sub">Ghanaian Methodist Fellowship &middot; UK &amp; Ireland</div>
+        </div>
+      </div>
+      <div class="hdr-div"></div>
+      <div class="hdr-tag">Scores &amp; Resources &middot; All in One Place</div>
+    </div>
+  </div>
+  <div class="home-body" id="homeBody">
+    <div class="srch-wrap">
+      <div class="srch-box">
+        <span style="font-size:16px;color:var(--teal);">&#128269;</span>
+        <input type="text" id="searchInput" placeholder="Search any score..." oninput="doSearch(this.value)">
+      </div>
+    </div>
+    <div class="sec-lbl">Music Categories</div>
+    <div class="cat-grid" id="catGrid"></div>
+    <div class="sec-lbl" id="quickLabel">Quick Access</div>
+    <div class="quick-list" id="quickList"></div>
+  </div>
+</div>
+
+<!-- CATEGORY -->
+<div class="screen" id="s-cat">
+  <div class="cat-hdr">
+    <div class="back-row">
+      <button class="back-btn" onclick="goHome()">&#8592;</button>
+      <div>
+        <div class="cat-name" id="catTitle">Anthems</div>
+        <div class="cat-hint">Tap a score to open it</div>
+      </div>
+    </div>
+  </div>
+  <div class="notab-wrap">
+    <div class="notab active" id="tab-tonic" onclick="switchNot('tonic')">&#127897; Tonic Sol-fa</div>
+    <div class="notab" id="tab-staff" onclick="switchNot('staff')">&#127964; Staff Notation</div>
+  </div>
+  <div class="sa"><div class="scores-wrap" id="scoresList"></div></div>
+</div>
+
+<!-- GENERAL DOCUMENTS -->
+<div class="screen" id="s-gen">
+  <div class="gen-hdr">
+    <div class="back-row">
+      <button class="back-btn" onclick="goHome()">&#8592;</button>
+      <div>
+        <div class="cat-name">Documents</div>
+        <div class="cat-hint">Choir records, bylaws &amp; official resources</div>
+      </div>
+    </div>
+  </div>
+  <div class="gen-intro-card">
+    <div class="gen-intro-inner">
+      <div class="gen-intro-icon">&#128218;</div>
+      <div class="gen-intro-text">
+        <h4>Choir Official Documents</h4>
+        <p>This section holds the choir&rsquo;s administrative library &mdash; including the <strong>constitution, bylaws, welfare scheme</strong> and annual reports. All documents are available to choir members.</p>
+      </div>
+    </div>
+    <div class="gen-intro-footer">&#128274;&nbsp; Available to all GMF Chaplaincy Choir members</div>
+  </div>
+  <div class="sa"><div class="scores-wrap" id="docList"></div></div>
+</div>
+
+<!-- ALL SCORES -->
+<div class="screen" id="s-all">
+  <div class="allsc-hdr">
+    <div class="allsc-title">All Scores</div>
+    <div class="allsc-sub">Complete music library &mdash; all categories</div>
+  </div>
+  <div class="allsc-notab">
+    <div class="notab active" id="atab-tonic" onclick="switchAllNot('tonic')">&#127897; Tonic Sol-fa</div>
+    <div class="notab" id="atab-staff" onclick="switchAllNot('staff')">&#127964; Staff Notation</div>
+  </div>
+  <div class="allsc-cat-strip" id="catStrip"></div>
+  <div class="sa"><div class="scores-wrap" id="allScoresList"></div></div>
+</div>
+
+<!-- UNAVAILABLE -->
+<div class="screen" id="s-unavail">
+  <div class="unavail-hdr">
+    <div class="back-row">
+      <button class="back-btn" onclick="goBack()">&#8592;</button>
+      <div>
+        <div class="cat-name" id="unavailTitle">Score</div>
+        <div class="cat-hint" id="unavailNotation">Not available</div>
+      </div>
+    </div>
+  </div>
+  <div class="unavail-body">
+    <div class="unavail-icon">&#127926;</div>
+    <div class="unavail-title" id="unavailSongName">Score</div>
+    <div class="unavail-msg" id="unavailMsg">This score is not available at the moment.</div>
+    <button class="unavail-back" onclick="goBack()">&#8592;&nbsp;&nbsp;Go Back</button>
+  </div>
+</div>
+
+<!-- VARICK INFO -->
+<div class="screen" id="s-varick">
+  <div class="vinfo-hdr">
+    <div class="back-row">
+      <button class="back-btn" onclick="goBack()">&#8592;</button>
+      <div>
+        <div class="cat-name">Varick Classics Vol. 1</div>
+        <div class="cat-hint">About the composer &amp; song index</div>
+      </div>
+    </div>
+  </div>
+  <div class="sa">
+    <div class="vinfo-body">
+      <div class="vinfo-author-card">
+        <div class="vinfo-author-top">
+          <div class="vinfo-avatar">&#127908;</div>
+          <div>
+            <div class="vinfo-author-name">Dr. James Varrick Armaah</div>
+            <div class="vinfo-author-role">Composer &middot; Conductor &middot; PhD Music, Univ. of Ghana (Feb 2026)</div>
+          </div>
+        </div>
+        <div class="vinfo-author-text">
+          Born in Winneba, Ghana (27 April 1984), Dr. Armaah began composing at age seven and founded <strong style="color:var(--gl);">Harmonious Chorale Ghana</strong> in 2005, now one of Africa&rsquo;s foremost interdenominational choirs. He has composed over 63 gospel songs across five collections &mdash; the <em style="color:var(--gl);">Varick Classics</em> series. His signature piece <em style="color:var(--gl);">&ldquo;Oye&rdquo;</em> gained global fame, performed by the Chinese police band during a Ghanaian presidential state visit in 2018. He also leads <strong style="color:var(--gl);">Varick Chorus UK</strong>, his London-based choir.
+        </div>
+        <div>
+          <span class="vinfo-tag">&#127881; Varick Classics Vol. 5 launched 18 Apr 2026</span>
+          <span class="vinfo-tag">&#128205; Upper Tooting Methodist Church, London</span>
+        </div>
+      </div>
+      <div class="vinfo-book-card">
+        <h3>About This Book</h3>
+        <p><strong>Varick Classics Vol. 1</strong> is a collection of 20 songs arranged for SATB choral groups with piano accompaniment &mdash; spanning passion &amp; resurrection anthems, general songs, highlife pieces, and one English anthem.</p>
+        <p style="font-style:italic;color:var(--tu);font-size:11px;border-left:3px solid var(--gold);padding-left:10px;margin-top:8px;">&ldquo;Bless the Lord, O my soul and all that is within me bless his holy name.&rdquo; &mdash; Psalm 103:1 &nbsp;&middot;&nbsp; James Varrick Armaah</p>
+        <p style="margin-top:10px;font-size:11px;color:var(--tu);">ISMN: 979-0-9008022-1-7 &middot; First Printing: March 2014 &middot; &copy; 2014 James Varrick Armaah</p>
+      </div>
+      <div class="vinfo-contents-card">
+        <h3>Song Index</h3>
+        <div class="vinfo-contents-sub">Type the PDF page number in the reader to jump straight to any song.</div>
+        <div class="vinfo-section-lbl">&#127964; Staff Notation</div>
+        <div id="varickStaffList"></div>
+        <div class="vinfo-section-lbl" style="margin-top:18px;">&#127897; Tonic Sol-fa</div>
+        <div id="varickTonicList"></div>
+        <button class="vinfo-open-btn" onclick="openVarickScore()">&#9654;&nbsp; Open Score in Reader</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- PDF READER -->
+<div class="screen pdf-screen" id="s-pdf">
+  <div class="pdf-topbar">
+    <button class="icon-btn" onclick="closePdf()">&#8592;</button>
+    <div class="pdf-title-txt" id="pdfTitle">Score</div>
+    <button class="icon-btn" onclick="enterPdfFS()" title="Full screen">&#x26F6;</button>
+  </div>
+  <div class="pdf-scroll-area" id="pdfScrollArea">
+    <div class="pdf-loading" id="pdfLoad"><div class="spin"></div><div style="margin-top:6px;">Loading score...</div></div>
+  </div>
+  <div class="pdf-controls">
+    <button class="pg-btn" id="btnPrev" onclick="scrollToPage(curPage-1)" disabled>&#8249;</button>
+    <div class="pg-counter">
+      <input class="pg-input" id="pgIn" type="number" min="1" value="1" onchange="scrollToPage(parseInt(this.value))">
+      <span style="opacity:.45">/</span>
+      <span id="pgTotal" style="color:var(--gl)">&#8212;</span>
+    </div>
+    <button class="pg-btn" id="btnNext" onclick="scrollToPage(curPage+1)" disabled>&#8250;</button>
+  </div>
+  <div class="pdf-canvas-area" id="pdfArea">
+    <canvas id="pdfCanvasA"></canvas>
+    <canvas id="pdfCanvasB"></canvas>
+    <button class="exit-imm" onclick="exitPdfFS()">&#10005;</button>
+    <div class="imm-counter" id="immCounter">1 / 1</div>
+  </div>
+</div>
+
+<!-- DRIVE VIEWER -->
+<div class="screen drv-screen" id="s-drv">
+  <div class="drv-topbar">
+    <button class="icon-btn" onclick="closeDrv()">&#8592;</button>
+    <div class="drv-title" id="drvTitle">Score</div>
+  </div>
+  <div class="drv-frame-wrap">
+    <div class="drv-loading" id="drvLoad"><div class="spin"></div><div style="margin-top:6px;">Opening score...</div></div>
+    <button class="drv-exit" onclick="exitDrvFS()">&#10005;</button>
+    <iframe id="drvFrame" src="about:blank" allowfullscreen onload="hideDrvLoading()"></iframe>
+  </div>
+  <div class="drv-hint-bar">
+    <span class="drv-hint-txt">Scroll to read &middot; Pinch to zoom &middot; Rotate for landscape</span>
+    <button class="drv-fs-btn" onclick="toggleDrvFS()">&#x26F6; Full screen</button>
+  </div>
+</div>
+
+<!-- ABOUT -->
+<div class="screen" id="s-about">
+  <div class="about-hdr">
+    <img class="about-img" src="choir-image.jpeg" alt="GMF Chaplaincy Choir">
+    <div class="about-ov">
+      <svg style="display:block;margin:0 auto 10px;" width="54" height="54" viewBox="0 0 62 62" fill="none">
+        <circle cx="31" cy="31" r="30" fill="rgba(240,192,96,.14)" stroke="#f0c060" stroke-width="1.5"/>
+        <rect x="26" y="10" width="10" height="42" rx="5" fill="#f0c060"/>
+        <rect x="10" y="22" width="42" height="10" rx="5" fill="#f0c060"/>
+      </svg>
+      <div class="about-name">GMF Chaplaincy Choir</div>
+      <div class="about-sub">Ghanaian Methodist Fellowship &middot; UK &amp; Ireland</div>
+    </div>
+  </div>
+  <div class="about-tabs" id="aboutTabBar">
+    <div class="about-tab active" id="abt-info" onclick="switchAboutTab('info')">&#8505; Information</div>
+    <div class="about-tab"        id="abt-exec" onclick="switchAboutTab('exec')">&#127931; Know Your Executives</div>
+  </div>
+  <div class="sa">
+    <div class="about-panel active" id="apanel-info">
+      <div class="about-body">
+        <div class="info-card"><h3>About the Choir</h3><p>The GMF Chaplaincy Choir is the music ministry of the Ghanaian Methodist Fellowship UK &amp; Ireland. We minister through hymns, anthems, highlife, patriotic and classical choral music to the glory of God. This is a Ghanaian Methodist Church Choir based in London.</p></div>
+        <div class="info-card"><h3>Choir Rehearsals</h3>
+          <div class="info-row"><span class="info-icon">&#128205;</span><span class="info-text">Upper Tooting Methodist Church, SW17 7AL, London</span></div>
+          <div class="info-row"><span class="info-icon">&#128197;</span><span class="info-text">2nd and 4th Saturdays of every month</span></div>
+          <div class="info-row"><span class="info-icon">&#128336;</span><span class="info-text">6:00 PM start</span></div>
+        </div>
+        <div class="info-card"><h3>Sunday Services</h3>
+          <div class="info-row"><span class="info-icon">&#9962;</span><span class="info-text">Methodist Central Hall, Westminster, London</span></div>
+          <div class="info-row"><span class="info-icon">&#128197;</span><span class="info-text">2nd Sunday of every month</span></div>
+          <div class="info-row"><span class="info-icon">&#127468;&#127469;</span><span class="info-text">Ghanaian Methodist Fellowship UK &amp; Ireland</span></div>
+        </div>
+        <div class="info-card"><h3>How to Use</h3>
+          <div class="info-row"><span class="info-icon">1&#65039;&#8419;</span><span class="info-text">Tap a category, choose Tonic Sol-fa or Staff Notation</span></div>
+          <div class="info-row"><span class="info-icon">2&#65039;&#8419;</span><span class="info-text">Normal view: scroll down through all pages</span></div>
+          <div class="info-row"><span class="info-icon">3&#65039;&#8419;</span><span class="info-text">Tap &#x26F6; for full screen &mdash; one page at a time</span></div>
+          <div class="info-row"><span class="info-icon">4&#65039;&#8419;</span><span class="info-text">Swipe, tap sides, use arrow keys or mouse wheel to flip pages</span></div>
+          <div class="info-row"><span class="info-icon">5&#65039;&#8419;</span><span class="info-text">Tap &#10005; top-left to exit full screen</span></div>
+          <div class="info-row"><span class="info-icon">6&#65039;&#8419;</span><span class="info-text">iPhone/iPad: tap Share then &ldquo;Add to Home Screen&rdquo; for true fullscreen</span></div>
+        </div>
+        <div class="info-card"><h3>Contact the Music Team</h3>
+          <p style="margin-bottom:10px;">For score requests, questions or issues:</p>
+          <a class="contact-btn" href="mailto:gmfchaplainchoiruk@gmail.com">&#9993;&nbsp;&nbsp;gmfchaplainchoiruk@gmail.com</a>
+        </div>
+      </div>
+    </div>
+    <div class="about-panel" id="apanel-exec">
+      <div class="exec-body">
+        <p style="font-size:12px;color:var(--tu);margin-bottom:16px;line-height:1.7;">Meet the leadership team of the GMF Chaplaincy Choir. Tap any role to learn more about its responsibilities and the person who serves in it.</p>
+        <div class="exec-hierarchy" id="execHierarchy"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- EXECUTIVE DETAIL -->
+<div class="screen" id="s-execd">
+  <div class="execd-hdr">
+    <div class="back-row">
+      <button class="back-btn" onclick="closeExecDetail()">&#8592;</button>
+      <div>
+        <div class="cat-name" id="execdTitle">Role</div>
+        <div class="cat-hint">GMF Chaplaincy Choir Executive</div>
+      </div>
+    </div>
+  </div>
+  <div class="sa">
+    <div class="execd-body">
+      <div class="execd-role-desc" id="execdDesc"></div>
+      <div id="execdPersons"></div>
+    </div>
+  </div>
+</div>
+
+<!-- HYMN MODAL -->
+<div class="modal-overlay" id="hymnModal" onclick="closeHymnModalOverlay(event)">
+  <div class="modal-sheet">
+    <div class="modal-title">Methodist Hymnbook</div>
+    <div class="modal-sub" id="hymnModalSub">This is a large file. Choose how you&rsquo;d like to access it.</div>
+    <div class="modal-btn" onclick="hymnDownload()">
+      <div class="modal-btn-icon dl">&#11015;&#65039;</div>
+      <div class="modal-btn-text">
+        <strong>Download to device</strong>
+        <span>Saves the PDF so you can open it later<br>from your Files app without re-downloading.</span>
+      </div>
+    </div>
+    <div class="modal-btn" onclick="hymnViewDrive()">
+      <div class="modal-btn-icon drv">&#9729;</div>
+      <div class="modal-btn-text">
+        <strong>View in Google Drive</strong>
+        <span>Opens Google Drive in your browser<br>where you can read it directly.</span>
+      </div>
+    </div>
+    <button class="modal-cancel" onclick="closeHymnModal()">Cancel</button>
+  </div>
+</div>
+
+<!-- REHEARSAL PICKS -->
+<div class="screen" id="s-rehearsal">
+  <div class="reh-hdr">
+    <div class="back-row">
+      <button class="back-btn" onclick="goHome()">&#8592;</button>
+      <div>
+        <div class="cat-name" style="color:#7defa0;">&#127919; Rehearsal Picks</div>
+        <div class="cat-hint">Songs selected for rehearsal or performance</div>
+      </div>
+    </div>
+  </div>
+  <div class="reh-intro">
+    <div class="reh-intro-inner">
+      <div class="reh-intro-icon">&#127919;</div>
+      <div class="reh-intro-text">
+        <h4>Curated Song Selection</h4>
+        <p>Songs pinned here by the Choirmaster, Directors or Curators for upcoming rehearsals or performances. Tap any score to open it directly.</p>
+      </div>
+    </div>
+    <div class="reh-intro-footer">
+      <span>&#128204; Selections saved on this device</span>
+      <span class="reh-manage-btn" onclick="openRehModal()">&#9998; Manage picks</span>
+    </div>
+  </div>
+  <div class="sa"><div class="scores-wrap" id="rehList"></div></div>
+</div>
+
+<!-- REHEARSAL MANAGE MODAL -->
+<div class="reh-modal" id="rehModal" onclick="closeRehModalOverlay(event)">
+  <div class="reh-modal-sheet">
+    <div class="reh-modal-title">&#127919; Manage Rehearsal Picks</div>
+    <div class="reh-modal-sub">Tick any score to add it to Rehearsal Picks. Untick to remove. Changes are saved instantly on this device.</div>
+    <div id="rehPicksList"></div>
+    <button class="reh-modal-close" onclick="closeRehModal()">Done</button>
+  </div>
+</div>
+
+<!-- BOTTOM NAV -->
+<div class="bottom-nav" id="bottomNav">
+  <button class="nav-btn active" id="nav-home"      onclick="goNav('home')"><span class="nav-icon">&#127968;</span><span class="nav-lbl">Home</span><div class="nav-dot"></div></button>
+  <button class="nav-btn"        id="nav-all"        onclick="goNav('all')"><span class="nav-icon">&#127925;</span><span class="nav-lbl">All Scores</span><div class="nav-dot"></div></button>
+  <button class="nav-btn"        id="nav-rehearsal"  onclick="goNav('rehearsal')"><span class="nav-icon">&#127919;</span><span class="nav-lbl">Picks</span><div class="nav-dot"></div></button>
+  <button class="nav-btn"        id="nav-about"      onclick="goNav('about')"><span class="nav-icon">&#8505;&#65039;</span><span class="nav-lbl">About</span><div class="nav-dot"></div></button>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+<script>
+pdfjsLib.GlobalWorkerOptions.workerSrc='https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+let pdfDoc=null,curPage=1,totPages=0,pdfRendering=false,pdfPendPage=null;
+let pageCanvases=[],pdfFS=false,drvFS=false;
+let prevScr='home',curCat='anthems',curNot='tonic',allNot='tonic',allCat='all';
+let counterTimer=null,touchX0=0,touchY0=0,frontCanvas='A';
+let hymnCurrentId=null,varickDriveId=null;
+let aboutTab='info';
+
+window.addEventListener('DOMContentLoaded',()=>{
+  buildCatGrid();buildQuickList();buildVarickLists();buildExecHierarchy();
+  initParallax();initPdfTouch();initPdfWheel();initKeyboard();initFSListener();initPwaPrompt();
+});
+
+function switchAboutTab(tab){
+  aboutTab=tab;
+  document.getElementById('abt-info').className='about-tab'+(tab==='info'?' active':'');
+  document.getElementById('abt-exec').className='about-tab'+(tab==='exec'?' active':'');
+  document.getElementById('apanel-info').className='about-panel'+(tab==='info'?' active':'');
+  document.getElementById('apanel-exec').className='about-panel'+(tab==='exec'?' active':'');
+  document.querySelector('#s-about .sa').scrollTop=0;
+}
+
+function buildExecHierarchy(){
+  const c=document.getElementById('execHierarchy');
+  EXECUTIVES.forEach((ex,i)=>{
+    const btn=document.createElement('div');btn.className='exec-role-btn';
+    btn.innerHTML='<div class="exec-role-icon">'+ex.emoji+'</div><div class="exec-role-info"><div class="exec-role-title">'+ex.role+'</div><div class="exec-role-count">'+(ex.count===1?'1 person':ex.count+' persons')+'</div></div><span class="exec-role-arrow">&rsaquo;</span>';
+    btn.onclick=()=>openExecDetail(i);c.appendChild(btn);
+  });
+}
+
+function openExecDetail(idx){
+  const ex=EXECUTIVES[idx];
+  document.getElementById('execdTitle').textContent=ex.role;
+  document.getElementById('execdDesc').innerHTML='<strong>'+ex.emoji+' '+ex.role+'</strong>'+ex.desc;
+  const pEl=document.getElementById('execdPersons');pEl.innerHTML='';
+  if(ex.persons.length===1){
+    const p=ex.persons[0];
+    const row=document.createElement('div');row.className='exec-single-wrap';
+    const card=document.createElement('div');card.className='exec-single';
+    const wrap=document.createElement('div');wrap.className='exec-photo-wrap';
+    wrap.appendChild(mkPhotoSingle(p.slug,p.name));
+    const info=document.createElement('div');info.className='exec-info';
+    info.innerHTML='<div class="exec-name">'+p.name+'</div><div class="exec-post">'+p.post+'</div><div class="exec-bio">Serving the GMF Chaplaincy Choir with dedication and commitment to the glory of God.</div>';
+    card.appendChild(wrap);card.appendChild(info);row.appendChild(card);pEl.appendChild(row);
+  } else {
+    const row=document.createElement('div');row.className='exec-multi';
+    ex.persons.forEach(p=>{
+      const card=document.createElement('div');card.className='exec-multi-card';
+      card.appendChild(mkPhotoMulti(p.slug,p.name));
+      const infoDiv=document.createElement('div');infoDiv.className='exec-multi-info';
+      infoDiv.innerHTML='<div class="exec-multi-name">'+p.name+'</div><div class="exec-multi-post">'+p.post+'</div>';
+      card.appendChild(infoDiv);row.appendChild(card);
+    });
+    pEl.appendChild(row);
+  }
+  showScreen('s-execd');
+}
+function closeExecDetail(){showScreen('s-about');switchAboutTab('exec');}
+
+function buildVarickLists(){
+  const s=document.getElementById('varickStaffList');const t=document.getElementById('varickTonicList');
+  VARICK_STAFF.forEach(r=>{s.innerHTML+=vRow(r);});VARICK_TONIC.forEach(r=>{t.innerHTML+=vRow(r);});
+}
+function vRow(r){return '<div class="vinfo-song-row"><span class="vinfo-song-num">'+r.n+'</span><span class="vinfo-song-name">'+r.name+'</span><span class="vinfo-pg-badge">p.'+r.pg+'</span></div>';}
+function openVarickScore(){if(varickDriveId)openDrv('Varick Classics Vol. 1',varickDriveId);}
+
+function initParallax(){
+  const body=document.getElementById('homeBody'),img=document.getElementById('hdrImg');
+  const speed=()=>{const w=window.innerWidth;return w<600?.28:w<900?.32:.38;};
+  const maxS=()=>document.getElementById('homeHdr').offsetHeight*.14;
+  let cY=0,tY=0,rid=null;
+  const lerp=(a,b,t)=>a+(b-a)*t;
+  function tick(){const d=tY-cY;if(Math.abs(d)<.15){cY=tY;img.style.transform='translateY('+(-cY)+'px)';rid=null;return;}cY=lerp(cY,tY,.10);img.style.transform='translateY('+(-cY)+'px)';rid=requestAnimationFrame(tick);}
+  body.addEventListener('scroll',()=>{tY=Math.min(body.scrollTop*speed(),maxS());if(!rid)rid=requestAnimationFrame(tick);},{passive:true});
+}
+
+function buildCatGrid(){
+  const g=document.getElementById('catGrid');g.innerHTML='';
+  Object.entries(CATS).forEach(([key,info])=>{
+    const arr=SCORES[key]||[];
+    const n=arr.filter(s=>s.path||s.drive||s.driveDown||s.type==='hymnModal'||s.varrick).length;
+    const d=document.createElement('div');d.className='cat-card';
+    d.innerHTML='<span class="cat-emoji">'+info.emoji+'</span><div class="cat-lbl">'+info.label+'</div><div class="cat-count">'+(n>0?n+' item'+(n!==1?'s':''):'Coming soon')+'</div>';
+    d.onclick=()=>{if(key==='general')openGeneral();else openCat(key);};g.appendChild(d);
+  });
+}
+
+function buildQuickList(filter){
+  const list=document.getElementById('quickList'),lbl=document.getElementById('quickLabel');let items;
+  if(filter){items=Object.entries(SCORES).flatMap(([cat,arr])=>arr.filter(s=>s.title.toLowerCase().includes(filter.toLowerCase())).map(s=>({...s,cat})));lbl.textContent='Search Results';}
+  else{items=QUICK.map(q=>{const m=(SCORES[q.cat]||[]).find(s=>s.title===q.title&&(s.type===q.type||s.type==='hymnModal'));return m?{...m,cat:q.cat}:{...q};});lbl.textContent='Quick Access';}
+  list.innerHTML='';
+  if(!items.length){list.innerHTML='<div style="text-align:center;padding:32px;color:var(--tu);font-size:13px;">No scores found for \u201c'+filter+'\u201d</div>';return;}
+  items.forEach(it=>{
+    const d=document.createElement('div');d.className='quick-item';
+    const cl=CATS[it.cat]?CATS[it.cat].label:'';const tl=it.type==='tonic'?'Tonic Sol-fa':it.type==='staff'?'Staff Notation':'Document';
+    d.innerHTML='<div class="qi-thumb">&#127926;</div><div style="flex:1"><div class="qi-name">'+it.title+'</div><div class="qi-meta">'+cl+' &middot; '+tl+'</div></div><span class="qi-arrow">&rsaquo;</span>';
+    d.onclick=()=>openScore(it,'home');list.appendChild(d);
+  });
+}
+function doSearch(v){buildQuickList(v.trim()||undefined);}
+
+function openCat(key){curCat=key;curNot='tonic';document.getElementById('catTitle').textContent=CATS[key].label;updTabs();renderScores();showScreen('s-cat');setNav('');}
+function switchNot(t){curNot=t;updTabs();renderScores();}
+function updTabs(){document.getElementById('tab-tonic').className='notab'+(curNot==='tonic'?' active':'');document.getElementById('tab-staff').className='notab'+(curNot==='staff'?' active':'');}
+function renderScores(){
+  const wrap=document.getElementById('scoresList');
+  const scores=(SCORES[curCat]||[]).filter(s=>s.type==='hymnModal'?s.notation===curNot:s.type===curNot);
+  wrap.innerHTML='';
+  if(!scores.length){wrap.innerHTML='<div class="empty-state"><div class="empty-icon">&#127964;</div><div class="empty-txt">No '+(curNot==='tonic'?'Tonic Sol-fa':'Staff Notation')+' scores yet for '+CATS[curCat].label+'.<br><br>Check back after the next update!</div></div>';return;}
+  scores.forEach(s=>wrap.appendChild(makeScoreCard(s,curCat,'cat')));
+}
+
+function openGeneral(){renderDocs();showScreen('s-gen');setNav('');}
+function renderDocs(){
+  const wrap=document.getElementById('docList');const docs=SCORES.general||[];wrap.innerHTML='';
+  if(!docs.length){wrap.innerHTML='<div class="gen-empty"><div class="ge-icon">&#128196;</div><div class="ge-title">No documents yet</div><div class="ge-txt">The choir\'s constitution, bylaws and welfare documents will appear here when uploaded.</div></div>';return;}
+  docs.forEach(s=>{const c=document.createElement('div');c.className='doc-card';c.innerHTML='<div class="doc-inner"><div class="doc-icon">&#128196;</div><div class="doc-info"><div class="doc-name">'+s.title+'</div><span class="doc-tag">&#128196; PDF</span></div><div class="doc-open">&#9654;</div></div>';c.onclick=()=>openScore(s,'gen');wrap.appendChild(c);});
+}
+
+function openAllScores(){allNot='tonic';allCat='all';buildCatStrip();renderAllScores();showScreen('s-all');setNav('all');}
+function buildCatStrip(){
+  const strip=document.getElementById('catStrip');strip.innerHTML='';
+  const all=document.createElement('div');all.className='ac-chip active';all.textContent='All';all.onclick=()=>filterAllCat('all');strip.appendChild(all);
+  Object.entries(CATS).forEach(([key,info])=>{if(!(SCORES[key]||[]).length)return;const chip=document.createElement('div');chip.className='ac-chip';chip.textContent=info.emoji+' '+info.label;chip.onclick=()=>filterAllCat(key);strip.appendChild(chip);});
+}
+function filterAllCat(key){
+  allCat=key;document.querySelectorAll('.ac-chip').forEach(c=>c.classList.remove('active'));
+  const chips=document.querySelectorAll('.ac-chip');const idx=key==='all'?0:[...Object.keys(CATS)].indexOf(key)+1;if(chips[idx])chips[idx].classList.add('active');renderAllScores();
+}
+function switchAllNot(t){allNot=t;document.getElementById('atab-tonic').className='notab'+(t==='tonic'?' active':'');document.getElementById('atab-staff').className='notab'+(t==='staff'?' active':'');renderAllScores();}
+function renderAllScores(){
+  const wrap=document.getElementById('allScoresList');wrap.innerHTML='';let found=false;
+  Object.entries(SCORES).forEach(([cat,arr])=>{
+    if(cat==='general')return;if(allCat!=='all'&&cat!==allCat)return;
+    const scores=arr.filter(s=>s.type==='hymnModal'?s.notation===allNot:s.type===allNot);
+    if(!scores.length)return;found=true;
+    const lbl=document.createElement('div');lbl.className='sec-lbl';lbl.style.padding='16px 16px 8px';lbl.innerHTML=CATS[cat].emoji+' '+CATS[cat].label;wrap.appendChild(lbl);
+    scores.forEach(s=>wrap.appendChild(makeScoreCard(s,cat,'all')));
+  });
+  if(!found)wrap.innerHTML='<div class="empty-state"><div class="empty-icon">&#127964;</div><div class="empty-txt">No '+(allNot==='tonic'?'Tonic Sol-fa':'Staff Notation')+' scores yet'+(allCat!=='all'?' for '+(CATS[allCat]?.label||''):'')+'. Check back after the next update!</div></div>';
+}
+
+function makeScoreCard(s,cat,from){
+  const isU=!s.path&&!s.drive&&!s.driveDown&&s.type!=='hymnModal'&&!s.varrick;
+  const c=document.createElement('div');c.className='score-card'+(isU?' unavailable':'');
+  const tag=(s.type==='tonic'||s.notation==='tonic')?'Tonic Sol-fa':'Staff Notation';
+  let badge='';
+  if(s.drive&&!s.varrick)badge='<span class="score-cloud">&#9729; Google Drive</span>';
+  else if(s.type==='hymnModal')badge='<span class="score-cloud">&#9729; Large file</span>';
+  else if(s.varrick)badge='<span class="score-cloud">&#9729; Collection</span>';
+  else if(isU)badge='<span class="score-na">&#9888; Not available yet</span>';
+  c.innerHTML='<div class="score-inner"><div class="score-icon">&#128196;</div><div class="score-info"><div class="score-name">'+s.title+'</div><span class="score-tag">'+tag+'</span>'+badge+'</div><div class="score-play">'+(isU?'&#8212;':s.varrick?'&#8505;':'&#9654;')+'</div></div>';
+  c.onclick=()=>openScore(s,from);return c;
+}
+
+function openScore(score,from){
+  prevScr=from;
+  if(!score.path&&!score.drive&&!score.driveDown&&score.type!=='hymnModal'&&!score.varrick){
+    const nt=(score.type==='tonic'||score.notation==='tonic')?'Tonic Sol-fa':'Staff Notation';
+    document.getElementById('unavailTitle').textContent=score.title;
+    document.getElementById('unavailNotation').textContent=nt+' \u00b7 Not available';
+    document.getElementById('unavailSongName').textContent=score.title;
+    document.getElementById('unavailMsg').textContent=nt+' notation for \u201c'+score.title+'\u201d is not available at the moment. Check back after the next update or contact the music team.';
+    showScreen('s-unavail');return;
+  }
+  if(score.type==='hymnModal'){
+    hymnCurrentId=score.notation==='tonic'?score.tonicId:score.staffId;
+    document.getElementById('hymnModalSub').textContent='Methodist Hymnbook ('+(score.notation==='tonic'?'Tonic Sol-fa':'Staff Notation')+') is a large file. Choose how you\u2019d like to access it.';
+    document.getElementById('hymnModal').classList.add('open');return;
+  }
+  if(score.varrick){varickDriveId=score.drive;showScreen('s-varick');return;}
+  if(score.drive)openDrv(score.title,score.drive);
+  else if(score.path)openPdf(score.title,score.path);
+}
+
+function hymnDownload(){if(!hymnCurrentId)return;window.open('https://drive.google.com/uc?export=download&id='+hymnCurrentId,'_blank');closeHymnModal();}
+function hymnViewDrive(){if(!hymnCurrentId)return;window.open('https://drive.google.com/file/d/'+hymnCurrentId+'/view','_blank');closeHymnModal();}
+function closeHymnModal(){document.getElementById('hymnModal').classList.remove('open');}
+function closeHymnModalOverlay(e){if(e.target===document.getElementById('hymnModal'))closeHymnModal();}
+
+function openPdf(title,path){
+  exitPdfFS();
+  document.getElementById('pdfTitle').textContent=title;
+  const sa=document.getElementById('pdfScrollArea');sa.innerHTML='';
+  const lo=document.createElement('div');lo.className='pdf-loading';lo.id='pdfLoad';
+  lo.innerHTML='<div class="spin"></div><div style="margin-top:6px;">Loading score...</div>';
+  sa.appendChild(lo);
+  pdfDoc=null;curPage=1;totPages=0;pdfRendering=false;pageCanvases=[];frontCanvas='A';
+  document.getElementById('pgTotal').textContent='\u2014';
+  document.getElementById('pgIn').value=1;
+  document.getElementById('btnPrev').disabled=true;document.getElementById('btnNext').disabled=true;
+  showScreen('s-pdf');
+  pdfjsLib.getDocument({url:path,withCredentials:false}).promise.then(pdf=>{
+    pdfDoc=pdf;totPages=pdf.numPages;
+    document.getElementById('pgTotal').textContent=totPages;
+    document.getElementById('pgIn').max=totPages;
+    document.getElementById('btnNext').disabled=totPages<=1;
+    const le=document.getElementById('pdfLoad');if(le)le.remove();
+    renderAllPages();initScrollPageDetect();
+  }).catch(()=>{const le=document.getElementById('pdfLoad');if(le)le.innerHTML='<div style="color:rgba(255,160,100,.9);font-size:13px;text-align:center;padding:28px;line-height:1.9;">&#9888; Could not load score.<br><br>Check your internet connection<br>or contact the music team.</div>';});
+}
+function renderAllPages(){
+  const sa=document.getElementById('pdfScrollArea');const dpr=window.devicePixelRatio||1;const W=sa.clientWidth-16;pageCanvases=[];
+  for(let n=1;n<=totPages;n++){((pn)=>{pdfDoc.getPage(pn).then(pg=>{const v0=pg.getViewport({scale:1});const sc=W/v0.width;const vp=pg.getViewport({scale:sc});const cv=document.createElement('canvas');cv.className='pdf-page-canvas';cv.width=vp.width*dpr;cv.height=vp.height*dpr;cv.style.width=vp.width+'px';cv.style.height=vp.height+'px';cv.dataset.page=pn;sa.appendChild(cv);pageCanvases[pn-1]=cv;const ctx=cv.getContext('2d');ctx.scale(dpr,dpr);pg.render({canvasContext:ctx,viewport:vp});});})(n);}
+}
+function initScrollPageDetect(){
+  const sa=document.getElementById('pdfScrollArea');
+  sa.addEventListener('scroll',()=>{const mid=sa.scrollTop+sa.clientHeight/2;let best=1;pageCanvases.forEach((cv,i)=>{if(!cv)return;if(cv.offsetTop<=mid)best=i+1;});if(best!==curPage){curPage=best;document.getElementById('pgIn').value=curPage;document.getElementById('btnPrev').disabled=curPage<=1;document.getElementById('btnNext').disabled=curPage>=totPages;}},{passive:true});
+}
+function scrollToPage(n){
+  if(!pdfDoc)return;n=Math.max(1,Math.min(totPages,n));curPage=n;
+  document.getElementById('pgIn').value=n;document.getElementById('btnPrev').disabled=n<=1;document.getElementById('btnNext').disabled=n>=totPages;
+  const cv=pageCanvases[n-1];if(cv)document.getElementById('pdfScrollArea').scrollTo({top:cv.offsetTop-8,behavior:'smooth'});
+}
+
+function enterPdfFS(){
+  if(!pdfDoc)return;pdfFS=true;document.getElementById('s-pdf').classList.add('immersive');document.body.classList.add('hide-nav');
+  const el=document.getElementById('s-pdf');const req=el.requestFullscreen||el.webkitRequestFullscreen||el.mozRequestFullScreen;if(req)req.call(el).catch(()=>{});renderFSPage(curPage);
+}
+function exitPdfFS(){
+  if(!pdfFS)return;pdfFS=false;document.getElementById('s-pdf').classList.remove('immersive');document.body.classList.remove('hide-nav');
+  const inFS=!!(document.fullscreenElement||document.webkitFullscreenElement||document.mozFullScreenElement);if(inFS){const ex=document.exitFullscreen||document.webkitExitFullscreen||document.mozCancelFullScreen;if(ex)ex.call(document).catch(()=>{});}
+}
+function renderFSPage(n){
+  if(!pdfDoc)return;n=Math.max(1,Math.min(totPages,n));
+  if(pdfRendering){pdfPendPage=n;return;}
+  pdfRendering=true;curPage=n;showImmCounter(n);
+  document.getElementById('pgIn').value=n;document.getElementById('btnPrev').disabled=n<=1;document.getElementById('btnNext').disabled=n>=totPages;
+  pdfDoc.getPage(n).then(pg=>{
+    const area=document.getElementById('pdfArea');const v0=pg.getViewport({scale:1});const dpr=window.devicePixelRatio||1;
+    const sc=Math.min(area.clientWidth/v0.width,area.clientHeight/v0.height);const vp=pg.getViewport({scale:sc});
+    const bid=frontCanvas==='A'?'B':'A';const back=document.getElementById('pdfCanvas'+bid);
+    back.width=vp.width*dpr;back.height=vp.height*dpr;back.style.width=vp.width+'px';back.style.height=vp.height+'px';
+    const ctx=back.getContext('2d');ctx.scale(dpr,dpr);
+    pg.render({canvasContext:ctx,viewport:vp}).promise.then(()=>{
+      document.getElementById('pdfCanvas'+frontCanvas).style.zIndex='1';back.style.zIndex='2';frontCanvas=bid;
+      pdfRendering=false;if(pdfPendPage!==null){const p=pdfPendPage;pdfPendPage=null;renderFSPage(p);}
+    });
+  }).catch(()=>{pdfRendering=false;});
+}
+function showImmCounter(n){const el=document.getElementById('immCounter');el.textContent=n+' / '+totPages;el.classList.remove('fade');clearTimeout(counterTimer);counterTimer=setTimeout(()=>el.classList.add('fade'),1500);}
+function nextFSPage(){if(pdfDoc&&curPage<totPages)renderFSPage(curPage+1);}
+function prevFSPage(){if(pdfDoc&&curPage>1)renderFSPage(curPage-1);}
+function initPdfTouch(){
+  const area=document.getElementById('pdfArea');
+  area.addEventListener('touchstart',e=>{touchX0=e.changedTouches[0].screenX;touchY0=e.changedTouches[0].screenY;},{passive:true});
+  area.addEventListener('touchend',e=>{const dx=e.changedTouches[0].screenX-touchX0,dy=e.changedTouches[0].screenY-touchY0;if(Math.abs(dx)>=Math.abs(dy)){if(Math.abs(dx)>40){dx<0?nextFSPage():prevFSPage();}}else{if(Math.abs(dy)>40){dy>0?nextFSPage():prevFSPage();}}},{passive:true});
+  area.addEventListener('click',e=>{if(!pdfFS)return;const x=e.clientX,w=area.clientWidth;if(x<w*.35)prevFSPage();else if(x>w*.65)nextFSPage();});
+}
+function initPdfWheel(){const area=document.getElementById('pdfArea');area.addEventListener('wheel',e=>{if(!pdfFS)return;e.preventDefault();if(e.deltaY>0)nextFSPage();else prevFSPage();},{passive:false});}
+function initKeyboard(){
+  document.addEventListener('keydown',e=>{
+    const pA=document.getElementById('s-pdf').classList.contains('active');const dA=document.getElementById('s-drv').classList.contains('active');
+    if(pA&&pdfFS){if(e.key==='ArrowRight'||e.key==='ArrowDown'||e.key==='PageDown')nextFSPage();else if(e.key==='ArrowLeft'||e.key==='ArrowUp'||e.key==='PageUp')prevFSPage();else if(e.key==='Escape')exitPdfFS();}
+    else if(pA&&!pdfFS&&(e.key==='f'||e.key==='F'))enterPdfFS();
+    if(dA&&e.key==='Escape')exitDrvFS();
+  });
+}
+function initFSListener(){
+  ['fullscreenchange','webkitfullscreenchange','mozfullscreenchange'].forEach(ev=>document.addEventListener(ev,()=>{const inFS=!!(document.fullscreenElement||document.webkitFullscreenElement||document.mozFullScreenElement);if(!inFS){if(pdfFS)exitPdfFS();if(drvFS)exitDrvFS();}}));
+}
+function closePdf(){exitPdfFS();pdfDoc=null;pageCanvases=[];document.getElementById('pdfScrollArea').innerHTML='';goBack();}
+function openDrv(title,id){
+  exitDrvFS();document.getElementById('drvTitle').textContent=title;document.getElementById('drvLoad').classList.remove('hidden');
+  showScreen('s-drv');setNav('');setTimeout(()=>{document.getElementById('drvFrame').src='https://drive.google.com/file/d/'+id+'/preview';},80);
+}
+function hideDrvLoading(){setTimeout(()=>document.getElementById('drvLoad').classList.add('hidden'),800);}
+function toggleDrvFS(){if(drvFS)exitDrvFS();else enterDrvFS();}
+function enterDrvFS(){drvFS=true;document.getElementById('s-drv').classList.add('immersive');document.body.classList.add('hide-nav');const el=document.getElementById('s-drv');const req=el.requestFullscreen||el.webkitRequestFullscreen||el.mozRequestFullScreen;if(req)req.call(el).catch(()=>{});}
+function exitDrvFS(){if(!drvFS)return;drvFS=false;document.getElementById('s-drv').classList.remove('immersive');document.body.classList.remove('hide-nav');const inFS=!!(document.fullscreenElement||document.webkitFullscreenElement||document.mozFullScreenElement);if(inFS){const ex=document.exitFullscreen||document.webkitExitFullscreen||document.mozCancelFullScreen;if(ex)ex.call(document).catch(()=>{});};}
+function closeDrv(){exitDrvFS();document.getElementById('drvFrame').src='about:blank';goBack();}
+function initPwaPrompt(){
+  const isS=window.matchMedia('(display-mode: standalone)').matches||window.navigator.standalone===true;if(isS)return;
+  if(sessionStorage.getItem('pwa-dismissed'))return;
+  const isIOS=/iPad|iPhone|iPod/.test(navigator.userAgent)&&!window.MSStream;
+  if(isIOS){setTimeout(()=>{const b=document.createElement('div');b.className='pwa-banner';b.id='pwaBanner';b.innerHTML='<p>&#128242; For <strong>true fullscreen</strong>: tap Share then <strong>&ldquo;Add to Home Screen&rdquo;</strong></p><button class="pwa-banner-close" onclick="dismissPwa()">&#10005;</button>';document.body.appendChild(b);},4000);}
+}
+function dismissPwa(){sessionStorage.setItem('pwa-dismissed','1');const b=document.getElementById('pwaBanner');if(b)b.remove();}
+function goBack(){if(prevScr==='cat')showScreen('s-cat');else if(prevScr==='all')showScreen('s-all');else if(prevScr==='gen')showScreen('s-gen');else goHome();}
+function goHome(){showScreen('s-home');setNav('home');}
+function goNav(t){if(t==='home')goHome();else if(t==='all')openAllScores();else if(t==='rehearsal')openRehearsal();else if(t==='about'){showScreen('s-about');setNav('about');}}
+function showScreen(id){document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));document.getElementById(id).classList.add('active');}
+function setNav(t){document.querySelectorAll('.nav-btn').forEach(b=>b.classList.remove('active'));if(t){const b=document.getElementById('nav-'+t);if(b)b.classList.add('active');}}
+
+/* ── REHEARSAL PICKS ── */
+function getRehPins(){try{return JSON.parse(localStorage.getItem('reh-pins')||'[]');}catch(e){return[];}}
+function saveRehPins(arr){try{localStorage.setItem('reh-pins',JSON.stringify(arr));}catch(e){}}
+function isPinned(cat,title,type){return getRehPins().some(p=>p.cat===cat&&p.title===title&&p.type===type);}
+
+function openRehearsal(){
+  renderRehList();
+  showScreen('s-rehearsal');
+  setNav('rehearsal');
+}
+
+function renderRehList(){
+  const wrap=document.getElementById('rehList');
+  const pins=getRehPins();
+  wrap.innerHTML='';
+  if(!pins.length){
+    wrap.innerHTML='<div class="reh-empty"><div class="reh-empty-icon">&#127919;</div><div class="reh-empty-txt">No songs picked yet.</div><div class="reh-empty-hint">Tap <strong>Manage picks</strong> above to select songs for rehearsal or performance.<br><br>Picks are saved on this device — the Choirmaster, Directors or Curators can set these up.</div></div>';
+    return;
+  }
+  pins.forEach(p=>{
+    const scores=SCORES[p.cat]||[];
+    const s=scores.find(sc=>sc.title===p.title&&sc.type===p.type);
+    if(!s)return;
+    const card=makeScoreCard(s,p.cat,'rehearsal');
+    wrap.appendChild(card);
+  });
+}
+
+function openRehModal(){
+  const list=document.getElementById('rehPicksList');
+  list.innerHTML='';
+  const pins=getRehPins();
+  Object.entries(SCORES).forEach(([cat,arr])=>{
+    if(cat==='general'||cat==='rehearsal')return;
+    const avail=arr.filter(s=>s.path||s.drive||s.varrick||s.type==='hymnModal');
+    if(!avail.length)return;
+    const lbl=document.createElement('div');
+    lbl.style.cssText='font-size:10px;font-weight:800;color:var(--teal);letter-spacing:.8px;text-transform:uppercase;margin:16px 0 6px;padding-bottom:4px;border-bottom:1px solid rgba(10,37,64,.08);';
+    lbl.textContent=(CATS[cat]?CATS[cat].emoji+' '+CATS[cat].label:'');
+    list.appendChild(lbl);
+    avail.forEach(s=>{
+      const pinned=pins.some(p=>p.cat===cat&&p.title===s.title&&p.type===s.type);
+      const row=document.createElement('div');row.className='reh-pin-row';
+      const check=document.createElement('div');check.className='reh-pin-check'+(pinned?' on':'');
+      check.innerHTML=pinned?'&#10003;':'';
+      const nameDiv=document.createElement('div');
+      nameDiv.innerHTML='<div class="reh-pin-name">'+s.title+'</div><div class="reh-pin-cat">'+(s.type==='tonic'?'Tonic Sol-fa':'Staff Notation')+'</div>';
+      check.onclick=()=>{
+        let cur=getRehPins();
+        const idx=cur.findIndex(p=>p.cat===cat&&p.title===s.title&&p.type===s.type);
+        if(idx>=0){cur.splice(idx,1);check.className='reh-pin-check';check.innerHTML='';}
+        else{cur.push({cat,title:s.title,type:s.type});check.className='reh-pin-check on';check.innerHTML='&#10003;';}
+        saveRehPins(cur);
+      };
+      row.appendChild(check);row.appendChild(nameDiv);list.appendChild(row);
+    });
+  });
+  document.getElementById('rehModal').classList.add('open');
+}
+function closeRehModal(){document.getElementById('rehModal').classList.remove('open');renderRehList();}
+function closeRehModalOverlay(e){if(e.target===document.getElementById('rehModal'))closeRehModal();}
+</script>
+</body>
+</html>
