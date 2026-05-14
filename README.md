@@ -2,7 +2,8 @@
 
 ---------
 
-<img width="1600" height="1066" alt="GMF" src="https://github.com/user-attachments/assets/d7aab9f5-78f5-4255-a6f1-b67e47b396af" />
+<img width="1600" height="900" alt="GMF" src="https://github.com/user-attachments/assets/7b552cce-3d4b-47c8-9253-3c9ab3584510" />
+
 
 ---------
 
