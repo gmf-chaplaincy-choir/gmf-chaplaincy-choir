@@ -1,67 +1,68 @@
 /**
- * GMF Chaplaincy Choir — Auto Score Generator
+ * GMF Chaplaincy Choir — Auto Score Generator v2
  * Scans the scores/ folder and builds the SCORES data block in index.html
  * Run automatically by Netlify on every deploy.
+ *
+ * FIXES in v2:
+ * - Strict end-of-filename suffix detection (prevents "Prekese Toni" bug)
+ * - mergeDuplicateTitles() merges pairs with spelling differences in filenames
+ * - Warns about skipped/duplicate files in build log
  */
 
 const fs   = require('fs');
 const path = require('path');
 
-// ── Akan/special character map for display titles ──
-const CHAR_MAP = {
-  'ɛ':'ɛ','ɔ':'ɔ','Ɛ':'Ɛ','Ɔ':'Ɔ','ɣ':'ɣ','ŋ':'ŋ'
-};
+const LOWER_WORDS = new Set([
+  'a','an','the','and','or','of','in','on','at','to','for',
+  'with','from','by','as','is','it','na','bi','wo','me','ne',
+  'ma','mu','ye','se','no','ni','bo','ko','so','wa','ba','ka'
+]);
 
-// Words that should stay lowercase in titles
-const LOWER_WORDS = new Set(['a','an','the','and','or','of','in','on','at','to','for','with','from','by','as','is','it']);
-
-// ── Convert filename to display title ──
-function toTitle(filename) {
-  // Remove -tonic / -staff / -solfa suffix and .pdf
-  let name = filename
-    .replace(/\.(pdf)$/i, '')
-    .replace(/[-_](tonic|staff|solfa|jva)$/i, '')
-    .replace(/[-_]/g, ' ')
-    .trim();
-
-  // Capitalise words (respect Akan characters and small words)
-  return name.split(' ').map((word, i) => {
+function toTitle(base) {
+  return base.split(' ').map((word, i) => {
     if (!word) return word;
     if (i !== 0 && LOWER_WORDS.has(word.toLowerCase())) return word.toLowerCase();
-    // Capitalise first character (handles ɛ, ɔ etc.)
     return word.charAt(0).toUpperCase() + word.slice(1);
   }).join(' ');
 }
 
-// ── Detect notation type from filename ──
+// STRICT suffix detection — only matches at END of filename
 function getType(filename) {
-  if (/tonic|solfa/i.test(filename)) return 'tonic';
-  if (/staff/i.test(filename))       return 'staff';
+  const lower = filename.toLowerCase().replace(/\.pdf$/i, '');
+  if (/[_-](tonic|solfa)$/.test(lower)) return 'tonic';
+  if (/[_-](staff)$/.test(lower))       return 'staff';
   return null;
 }
 
-// ── Scan one category folder ──
+function getBaseKey(filename) {
+  return filename
+    .toLowerCase()
+    .replace(/\.pdf$/i, '')
+    .replace(/[_-](tonic|staff|solfa|jva)$/i, '')
+    .replace(/[-_]+/g, ' ')
+    .trim();
+}
+
 function scanFolder(folderPath, category) {
   if (!fs.existsSync(folderPath)) return [];
-
   const files = fs.readdirSync(folderPath)
     .filter(f => f.toLowerCase().endsWith('.pdf'))
     .sort();
-
-  // Group by base title (strip suffix)
   const grouped = {};
   files.forEach(file => {
     const type = getType(file);
-    if (!type) return;
-    const base = file
-      .replace(/\.(pdf)$/i, '')
-      .replace(/[-_](tonic|staff|solfa|jva)$/i, '')
-      .toLowerCase();
-    if (!grouped[base]) grouped[base] = { title: toTitle(file), tonic: null, staff: null };
-    grouped[base][type] = `scores/${category}/${file}`;
+    if (!type) {
+      console.warn('  skipping (no valid suffix): ' + category + '/' + file);
+      return;
+    }
+    const baseKey = getBaseKey(file);
+    if (!grouped[baseKey]) grouped[baseKey] = { title: toTitle(baseKey), tonic: null, staff: null };
+    if (!grouped[baseKey][type]) {
+      grouped[baseKey][type] = 'scores/' + category + '/' + file;
+    } else {
+      console.warn('  duplicate ' + type + ' for "' + baseKey + '" — skipping: ' + file);
+    }
   });
-
-  // Build entries — always tonic first, then staff
   const entries = [];
   Object.values(grouped).forEach(g => {
     entries.push({ title: g.title, type: 'tonic', path: g.tonic });
@@ -70,22 +71,37 @@ function scanFolder(folderPath, category) {
   return entries;
 }
 
-// ── Categories to auto-scan ──
-const AUTO_CATS = ['anthems','hymns','easter','highlife','patriotic','classical','christmas'];
+// Merge entries that have same title but different base keys
+// (caused by spelling differences between tonic and staff filenames)
+function mergeDuplicateTitles(entries) {
+  const byTitle = {};
+  entries.forEach(e => {
+    const key = e.title.toLowerCase().trim();
+    if (!byTitle[key]) byTitle[key] = { title: e.title, tonic: null, staff: null };
+    if (e.type === 'tonic' && e.path && !byTitle[key].tonic) byTitle[key].tonic = e.path;
+    if (e.type === 'staff' && e.path && !byTitle[key].staff) byTitle[key].staff = e.path;
+  });
+  const merged = [];
+  Object.values(byTitle).forEach(g => {
+    merged.push({ title: g.title, type: 'tonic', path: g.tonic });
+    merged.push({ title: g.title, type: 'staff', path: g.staff });
+  });
+  return merged;
+}
 
-// ── Build SCORES object ──
+const AUTO_CATS = ['anthems','hymns','easter','highlife','patriotic','classical','christmas'];
 const SCORES = {};
 AUTO_CATS.forEach(cat => {
-  SCORES[cat] = scanFolder(path.join(__dirname, 'scores', cat), cat);
+  const raw = scanFolder(path.join(__dirname, 'scores', cat), cat);
+  SCORES[cat] = mergeDuplicateTitles(raw);
 });
 
-// Keep manual entries for special items (Drive, Hymnbook, Collections)
 const MANUAL = {
   hymns: [
     { title:"Methodist Praise Songs", type:"tonic", drive:"1cP-mta_6uEPcOnguC3xSgPsoemJyHbBG" },
     { title:"Methodist Praise Songs", type:"staff", drive:"1cP-mta_6uEPcOnguC3xSgPsoemJyHbBG" },
-    { title:"Methodist Hymnbook",     type:"hymnModal", notation:"tonic", tonicId:"1as_6XVRDlv-HjNiZGAilv7_UfGlPSJbc", staffId:"15kS4RaO1tQ6d26V_Bz95ei-akzI-LYGj" },
-    { title:"Methodist Hymnbook",     type:"hymnModal", notation:"staff", tonicId:"1as_6XVRDlv-HjNiZGAilv7_UfGlPSJbc", staffId:"15kS4RaO1tQ6d26V_Bz95ei-akzI-LYGj" },
+    { title:"Methodist Hymnbook", type:"hymnModal", notation:"tonic", tonicId:"1as_6XVRDlv-HjNiZGAilv7_UfGlPSJbc", staffId:"15kS4RaO1tQ6d26V_Bz95ei-akzI-LYGj" },
+    { title:"Methodist Hymnbook", type:"hymnModal", notation:"staff", tonicId:"1as_6XVRDlv-HjNiZGAilv7_UfGlPSJbc", staffId:"15kS4RaO1tQ6d26V_Bz95ei-akzI-LYGj" },
   ],
   collections: [
     { title:"Varick Classics Vol. 1", type:"tonic", varrick:true, drive:"110JcTAItun_jS8OVeKyPMC3Iuy6-23yJ" },
@@ -95,32 +111,24 @@ const MANUAL = {
   rehearsal: []
 };
 
-// Merge manual into auto (manual items appended)
 Object.entries(MANUAL).forEach(([cat, items]) => {
   if (!SCORES[cat]) SCORES[cat] = [];
   SCORES[cat] = [...SCORES[cat], ...items];
 });
 
-// ── Inject into index.html ──
 const htmlPath = path.join(__dirname, 'index.html');
 let html = fs.readFileSync(htmlPath, 'utf8');
-
-const generated = `const SCORES = ${JSON.stringify(SCORES, null, 2)};`;
-
-// Replace the existing SCORES block
+const generated = 'const SCORES = ' + JSON.stringify(SCORES, null, 2) + ';';
 const start = html.indexOf('const SCORES = {');
 const end   = html.indexOf('};', start) + 2;
-
-if (start === -1) {
-  console.error('ERROR: Could not find SCORES block in index.html');
-  process.exit(1);
-}
-
+if (start === -1) { console.error('ERROR: SCORES block not found'); process.exit(1); }
 html = html.slice(0, start) + generated + html.slice(end);
 fs.writeFileSync(htmlPath, html, 'utf8');
 
-console.log('✅ Scores generated successfully:');
+console.log('\n✅ Scores generated successfully:');
 AUTO_CATS.forEach(cat => {
-  const count = (SCORES[cat]||[]).filter(s=>s.path).length;
-  console.log(`   ${cat}: ${count} scores`);
+  const avail = (SCORES[cat]||[]).filter(s => s.path).length;
+  const total = (SCORES[cat]||[]).length;
+  console.log('   ' + cat.padEnd(12) + ': ' + avail + ' available / ' + total + ' total');
 });
+console.log('');
