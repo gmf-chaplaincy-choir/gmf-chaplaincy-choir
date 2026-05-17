@@ -111,9 +111,31 @@ const MANUAL = {
   rehearsal: []
 };
 
+// ── Drive overrides — replace local path with Google Drive for large files ──
+const DRIVE_OVERRIDES = {
+  highlife: [
+    { title:"Wo Gyidie Agye Wo Nkwa", type:"tonic", drive:"1livk6Ij_8-OSWnUaDKy3VBu3_ERIxK25" },
+  ]
+};
+
 Object.entries(MANUAL).forEach(([cat, items]) => {
   if (!SCORES[cat]) SCORES[cat] = [];
   SCORES[cat] = [...SCORES[cat], ...items];
+});
+
+// Apply Drive overrides — swap path→drive for specific large files
+Object.entries(DRIVE_OVERRIDES).forEach(([cat, overrides]) => {
+  if (!SCORES[cat]) return;
+  overrides.forEach(ov => {
+    const entry = SCORES[cat].find(s =>
+      s.title.toLowerCase() === ov.title.toLowerCase() && s.type === ov.type
+    );
+    if (entry) {
+      entry.path  = null;
+      entry.drive = ov.drive;
+      console.log('  Drive override applied: ' + ov.title + ' (' + ov.type + ')');
+    }
+  });
 });
 
 const htmlPath = path.join(__dirname, 'index.html');

@@ -196,7 +196,7 @@ body{font-family:'Nunito',sans-serif;color:var(--td);display:flex;flex-direction
 .icon-btn{width:38px;height:38px;border-radius:50%;background:rgba(255,255,255,.14);border:1px solid rgba(255,255,255,.22);display:flex;align-items:center;justify-content:center;font-size:17px;color:white;cursor:pointer;flex-shrink:0;transition:background .2s;-webkit-appearance:none;}
 .icon-btn:hover{background:rgba(255,255,255,.26);}
 @media(min-width:600px) and (max-width:899px){.icon-btn{width:44px;height:44px;font-size:19px;}}
-.pdf-scroll-area{flex:1;overflow-y:auto;overflow-x:hidden;-webkit-overflow-scrolling:touch;background:#0d1b2a;display:flex;flex-direction:column;align-items:center;padding:12px 0;gap:8px;}
+.pdf-scroll-area{flex:1;overflow-y:auto;overflow-x:hidden;-webkit-overflow-scrolling:touch;background:#0d1b2a;display:flex;flex-direction:column;align-items:center;padding:12px 0;gap:8px;touch-action:pan-y pinch-zoom;}
 .pdf-page-canvas{display:block;max-width:calc(100% - 16px);box-shadow:0 2px 20px rgba(0,0,0,.55);background:#fff;}
 .pdf-controls{background:rgba(4,17,30,.97);border-top:1px solid rgba(201,151,58,.13);padding:8px 16px;padding-bottom:calc(var(--nh)+8px);display:flex;align-items:center;justify-content:center;gap:14px;flex-shrink:0;}
 .pg-btn{width:42px;height:42px;border-radius:50%;background:rgba(14,116,144,.28);border:1px solid rgba(14,116,144,.42);display:flex;align-items:center;justify-content:center;font-size:20px;color:#7dd3e8;cursor:pointer;transition:background .2s,transform .12s;user-select:none;}
@@ -624,7 +624,7 @@ const EXECUTIVES = [
   },
   {
     role:"Music Director Emeritus", emoji:"\uD83C\uDFB7", count:1,
-    desc:"The title of Music Director Emeritus is conferred as a mark of the highest honour upon a distinguished Music Director who has given exceptional and sustained service to the GMF Chaplaincy Choir. Emeritus status recognises a lifetime of musical leadership, artistry, and dedication. While retired from the day-to-day responsibilities of active direction, the Music Director Emeritus remains a revered member of the choir's musical family — a source of wisdom, inspiration, and continuity. Their counsel is valued, their legacy celebrated, and their standing within the choir is one of deep respect and enduring gratitude.",
+    desc:"The Music Director Emeritus is an honorary title conferred upon a former Music Director in recognition of distinguished and devoted service to the GMF Chaplaincy Choir. Retired from active direction, the holder of this title remains a valued and respected member of the choir's leadership, offering experience, counsel and musical wisdom to the benefit of the choir.",
     persons:[{ name:"James Ato Brown", post:"Music Director Emeritus", slug:"associate_director" }]
   },
   {
@@ -1369,9 +1369,16 @@ function showScreen(id){document.querySelectorAll('.screen').forEach(s=>s.classL
 function setNav(t){document.querySelectorAll('.nav-btn').forEach(b=>b.classList.remove('active'));if(t){const b=document.getElementById('nav-'+t);if(b)b.classList.add('active');}}
 
 /* ── REHEARSAL PICKS ── */
+/* ── REHEARSAL PICKS — Google Sheet shared version ──
+   Sheet URL is set once below. The choirmaster/directors edit the sheet;
+   all members see the same picks automatically when they open the tab.
+   Sheet must be published: File → Share → Publish to web → CSV format.
+   SHEET_CSV_URL: paste your published CSV link here when ready.        */
+const SHEET_CSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vSiCcjnvrEmKlNaxKPrfkqrbHK4T0_Mtz-8i9DkC312mVNqxvPOzdKOK4hrCWNHYb9B0GpzwMSOn6j_/pub?gid=0&single=true&output=csv';
+
+/* Local fallback pins (device-only, used when no sheet URL set) */
 function getRehPins(){try{return JSON.parse(localStorage.getItem('reh-pins')||'[]');}catch(e){return[];}}
 function saveRehPins(arr){try{localStorage.setItem('reh-pins',JSON.stringify(arr));}catch(e){}}
-function isPinned(cat,title,type){return getRehPins().some(p=>p.cat===cat&&p.title===title&&p.type===type);}
 
 function openRehearsal(){
   renderRehList();
@@ -1379,26 +1386,69 @@ function openRehearsal(){
   setNav('rehearsal');
 }
 
+/* Parse CSV rows from Google Sheet into pin objects
+   Sheet columns: Category | Title | Type (tonic/staff)
+   Example row:  highlife | Oye | tonic                */
+function parseSheetCSV(csv){
+  const lines=csv.trim().split('\n').slice(1); // skip header row
+  const pins=[];
+  lines.forEach(line=>{
+    const parts=line.split(',').map(s=>s.replace(/^"|"$/g,'').trim());
+    if(parts.length>=3&&parts[0]&&parts[1]&&parts[2]){
+      pins.push({cat:parts[0].toLowerCase(),title:parts[1],type:parts[2].toLowerCase()});
+    }
+  });
+  return pins;
+}
+
 function renderRehList(){
   const wrap=document.getElementById('rehList');
-  const pins=getRehPins();
-  wrap.innerHTML='';
-  if(!pins.length){
-    wrap.innerHTML='<div class="reh-empty"><div class="reh-empty-icon">&#127919;</div><div class="reh-empty-txt">No songs picked yet.</div><div class="reh-empty-hint">Tap <strong>Manage picks</strong> above to select songs for rehearsal or performance.<br><br>Picks are saved on this device — the Choirmaster, Directors or Curators can set these up.</div></div>';
-    return;
+  wrap.innerHTML='<div class="reh-empty"><div class="reh-empty-icon" style="font-size:28px;">&#8987;</div><div class="reh-empty-txt" style="font-size:12px;">Loading picks...</div></div>';
+
+  function showPins(pins){
+    wrap.innerHTML='';
+    if(!pins.length){
+      wrap.innerHTML='<div class="reh-empty"><div class="reh-empty-icon">&#127919;</div><div class="reh-empty-txt">No songs picked yet.</div><div class="reh-empty-hint">'+
+        (SHEET_CSV_URL?'The Choirmaster or Directors will add songs here before rehearsal or performance.':
+        'Tap <strong>Manage picks</strong> above to select songs. Or ask your administrator to set up the shared Google Sheet.')+
+        '</div></div>';
+      return;
+    }
+    pins.forEach(p=>{
+      const scores=SCORES[p.cat]||[];
+      const s=scores.find(sc=>sc.title.toLowerCase()===p.title.toLowerCase()&&sc.type===p.type);
+      if(!s)return;
+      wrap.appendChild(makeScoreCard(s,p.cat,'rehearsal'));
+    });
   }
-  pins.forEach(p=>{
-    const scores=SCORES[p.cat]||[];
-    const s=scores.find(sc=>sc.title===p.title&&sc.type===p.type);
-    if(!s)return;
-    const card=makeScoreCard(s,p.cat,'rehearsal');
-    wrap.appendChild(card);
-  });
+
+  if(SHEET_CSV_URL){
+    // Fetch from Google Sheet — shared across all devices
+    fetch(SHEET_CSV_URL)
+      .then(r=>r.text())
+      .then(csv=>showPins(parseSheetCSV(csv)))
+      .catch(()=>{
+        // Offline fallback — show local pins
+        showPins(getRehPins());
+      });
+  } else {
+    // No sheet set — use local device picks
+    showPins(getRehPins());
+  }
 }
 
 function openRehModal(){
   const list=document.getElementById('rehPicksList');
   list.innerHTML='';
+  if(SHEET_CSV_URL){
+    list.innerHTML='<div style="padding:20px 0;font-size:13px;color:var(--tm);line-height:1.8;">'+
+      '&#9729; This choir uses a <strong>shared Google Sheet</strong> for Rehearsal Picks.<br><br>'+
+      'To add or remove songs, open the sheet and edit it there.<br><br>'+
+      '<strong>Choirmaster / Directors / Curators only.</strong></div>';
+    document.getElementById('rehModal').classList.add('open');
+    return;
+  }
+  // Local mode — show checklist
   const pins=getRehPins();
   Object.entries(SCORES).forEach(([cat,arr])=>{
     if(cat==='general'||cat==='rehearsal')return;
