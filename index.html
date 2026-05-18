@@ -1403,8 +1403,7 @@ function setNav(t){document.querySelectorAll('.nav-btn').forEach(b=>b.classList.
 
 /* ── REHEARSAL PICKS ── */
 /* ── REHEARSAL PICKS CATEGORY — Google Sheet (read by all members) ── */
-/* SHEET_CSV_URL — uses the direct /pub CSV export from the sheet ID */
-const SHEET_CSV_URL = 'https://docs.google.com/spreadsheets/d/1rmhcLLKJxKDjRMk-4PDdVKXXyNdzE3p_wUsNadlkRfU/pub?gid=0&single=true&output=csv';
+const SHEET_CSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vSiCcjnvrEmKlNaxKPrfkqrbHK4T0_Mtz-8i9DkC312mVNqxvPOzdKOK4hrCWNHYb9B0GpzwMSOn6j_/pub?gid=0&single=true&output=csv';
 
 function normalizeTitle(t){return (t||'').toLowerCase().replace(/[\u0251-\u0254\u025b\u0254\u0259]/g,'').replace(/[^a-z0-9 ]/g,'').replace(/\s+/g,' ').trim();}
 
@@ -1451,7 +1450,7 @@ function openRehCategory(){
     .then(r=>{ if(!r.ok)throw new Error('HTTP '+r.status); return r.text(); })
     .then(csv=>show(parseSheetCSV(csv)))
     .catch(()=>{
-      wrap.innerHTML='<div class="reh-empty"><div class="reh-empty-icon">&#9888;&#65039;</div><div class="reh-empty-txt">Could not load schedule.</div><div class="reh-empty-hint">Check your internet connection. The Google Sheet must be published: File &rarr; Share &rarr; Publish to web &rarr; CSV.</div></div>';
+      wrap.innerHTML='<div class="reh-empty"><div class="reh-empty-icon">&#127756;</div><div class="reh-empty-txt">Schedule unavailable right now.</div><div class="reh-empty-hint">Please check your internet connection and try again. If the problem persists, contact the Music Team.</div></div>';
     });
 }
 
