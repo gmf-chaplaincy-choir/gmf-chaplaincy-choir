@@ -1403,23 +1403,56 @@ function setNav(t){document.querySelectorAll('.nav-btn').forEach(b=>b.classList.
 
 /* ── REHEARSAL PICKS ── */
 /* ── REHEARSAL PICKS CATEGORY — Google Sheet (read by all members) ── */
-const SHEET_CSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vSiCcjnvrEmKlNaxKPrfkqrbHK4T0_Mtz-8i9DkC312mVNqxvPOzdKOK4hrCWNHYb9B0GpzwMSOn6j_/pub?gid=0&single=true&output=csv';
+/* SHEET_CSV_URL — uses the direct /pub CSV export from the sheet ID */
+const SHEET_CSV_URL = 'https://docs.google.com/spreadsheets/d/1rmhcLLKJxKDjRMk-4PDdVKXXyNdzE3p_wUsNadlkRfU/pub?gid=0&single=true&output=csv';
+
+function normalizeTitle(t){return (t||'').toLowerCase().replace(/[\u0251-\u0254\u025b\u0254\u0259]/g,'').replace(/[^a-z0-9 ]/g,'').replace(/\s+/g,' ').trim();}
+
+function findScore(cat,title,type){
+  const arr=SCORES[cat]||[];
+  /* 1. Exact case-insensitive match */
+  let s=arr.find(sc=>sc.title.toLowerCase()===title.toLowerCase()&&sc.type===type);
+  if(s)return s;
+  /* 2. Normalized fuzzy match (strips diacritics/special chars) */
+  const nt=normalizeTitle(title);
+  s=arr.find(sc=>normalizeTitle(sc.title)===nt&&sc.type===type);
+  if(s)return s;
+  /* 3. Cross-category fallback — search all cats */
+  for(const [c,a] of Object.entries(SCORES)){
+    const m=a.find(sc=>normalizeTitle(sc.title)===nt&&sc.type===type);
+    if(m)return {score:m,cat:c};
+  }
+  return null;
+}
 
 function openRehCategory(){
   showScreen('s-reh-cat');setNav('');
   const wrap=document.getElementById('rehCatList');
-  wrap.innerHTML='<div class="reh-empty"><div class="reh-empty-icon" style="font-size:26px;">&#8987;</div><div class="reh-empty-txt" style="font-size:12px;">Loading...</div></div>';
+  wrap.innerHTML='<div class="reh-empty"><div class="reh-empty-icon" style="font-size:26px;">&#8987;</div><div class="reh-empty-txt" style="font-size:12px;">Loading from schedule...</div></div>';
   function show(pins){
     wrap.innerHTML='';
-    if(!pins.length){wrap.innerHTML='<div class="reh-empty"><div class="reh-empty-icon">&#127929;</div><div class="reh-empty-txt">No songs selected yet.</div><div class="reh-empty-hint">The Choirmaster or Directors will add songs here before rehearsal or performance.</div></div>';return;}
+    if(!pins.length){
+      wrap.innerHTML='<div class="reh-empty"><div class="reh-empty-icon">&#127929;</div><div class="reh-empty-txt">No songs selected yet.</div><div class="reh-empty-hint">The Choirmaster or Directors will add songs here before rehearsal or performance.</div></div>';
+      return;
+    }
+    let found=0;
     pins.forEach(p=>{
-      const s=(SCORES[p.cat]||[]).find(sc=>sc.title.toLowerCase()===p.title.toLowerCase()&&sc.type===p.type);
-      if(s)wrap.appendChild(makeScoreCard(s,p.cat,'reh-cat'));
+      const res=findScore(p.cat,p.title,p.type);
+      if(!res)return;
+      const isCross=res.score; /* cross-cat result has .score and .cat */
+      const sc=isCross?res.score:res;
+      const useCat=isCross?res.cat:p.cat;
+      wrap.appendChild(makeScoreCard(sc,useCat,'reh-cat'));
+      found++;
     });
+    if(!found)wrap.innerHTML='<div class="reh-empty"><div class="reh-empty-icon">&#127929;</div><div class="reh-empty-txt">Songs listed in the schedule were not found in the library.<br><br>Check that the Category, Title and Type spelling in the Google Sheet matches the score library exactly.</div></div>';
   }
-  if(SHEET_CSV_URL){
-    fetch(SHEET_CSV_URL).then(r=>r.text()).then(csv=>show(parseSheetCSV(csv))).catch(()=>show([]));
-  } else { show([]); }
+  fetch(SHEET_CSV_URL)
+    .then(r=>{ if(!r.ok)throw new Error('HTTP '+r.status); return r.text(); })
+    .then(csv=>show(parseSheetCSV(csv)))
+    .catch(()=>{
+      wrap.innerHTML='<div class="reh-empty"><div class="reh-empty-icon">&#9888;&#65039;</div><div class="reh-empty-txt">Could not load schedule.</div><div class="reh-empty-hint">Check your internet connection. The Google Sheet must be published: File &rarr; Share &rarr; Publish to web &rarr; CSV.</div></div>';
+    });
 }
 
 function parseSheetCSV(csv){
