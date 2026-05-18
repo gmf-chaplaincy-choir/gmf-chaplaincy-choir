@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=no">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="GMF Choir">
@@ -12,6 +12,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
 <style>
 *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+html,body{touch-action:pan-x pan-y;}
 :root{
   --navy:#0a2540;--teal:#0e7490;--gold:#c9973a;--gl:#f0c060;--gp:#fdf6e3;
   --cream:#f7f9fc;--white:#fff;
@@ -20,7 +21,7 @@
   --rm:16px;--rs:12px;
   --aw:480px;--nh:64px;--hh:200px;
 }
-@media(min-width:600px) and (max-width:899px){:root{--aw:700px;--hh:280px;--nh:68px;}}
+@media(min-width:600px) and (max-width:899px){:root{--aw:700px;--hh:340px;--nh:68px;}}
 @media(min-width:900px){:root{--aw:960px;--hh:290px;--nh:70px;}}
 @media(min-width:1200px){:root{--aw:1140px;--hh:330px;}}
 html,body{height:100%;overflow:hidden;background:#04111e;}
@@ -579,7 +580,7 @@ const CATS = {
   christmas:   { label:"Christmas",   emoji:"\u2B50" },
   collections: { label:"Collections", emoji:"\uD83D\uDCDA" },
   general:     { label:"Documents",   emoji:"\uD83D\uDCC2" },
-  rehearsal:   { label:"Rehearsal Picks", emoji:"\uD83C\uDFAF" }
+  rehearsal:   { label:"Rehearsal Picks", emoji:"\uD83C\uDFB9" }
 };
 
 const QUICK = [
@@ -1035,38 +1036,68 @@ function _multiPlaceholder(){return '<div class="exec-multi-placeholder"><span c
   </div>
 </div>
 
-<!-- REHEARSAL PICKS -->
-<div class="screen" id="s-rehearsal">
+<!-- REHEARSAL PICKS CATEGORY — Google Sheet (choirmaster/directors update) -->
+<div class="screen" id="s-reh-cat">
   <div class="reh-hdr">
     <div class="back-row">
       <button class="back-btn" onclick="goHome()">&#8592;</button>
       <div>
-        <div class="cat-name" style="color:#7defa0;">&#127919; Rehearsal Picks</div>
-        <div class="cat-hint">Songs selected for rehearsal or performance</div>
+        <div class="cat-name" style="color:#7defa0;">&#127929; Rehearsal Picks</div>
+        <div class="cat-hint">Updated by Choirmaster &amp; Directors</div>
       </div>
     </div>
   </div>
   <div class="reh-intro">
     <div class="reh-intro-inner">
-      <div class="reh-intro-icon">&#127919;</div>
+      <div class="reh-intro-icon">&#127929;</div>
       <div class="reh-intro-text">
-        <h4>Curated Song Selection</h4>
-        <p>Songs pinned here by the Choirmaster, Directors or Curators for upcoming rehearsals or performances. Tap any score to open it directly.</p>
+        <h4>Selected for Rehearsal / Performance</h4>
+        <p>Songs selected by the Choirmaster, Directors or Curators for upcoming rehearsals or performances. Updated via the shared schedule.</p>
+      </div>
+    </div>
+    <div class="reh-intro-footer"><span>&#9729; Live from shared schedule</span></div>
+  </div>
+  <div class="sa"><div class="scores-wrap" id="rehCatList"></div></div>
+</div>
+
+<!-- MY PICKS — Personal device picks (bottom tab) -->
+<div class="screen" id="s-rehearsal">
+  <div class="reh-hdr">
+    <div class="back-row">
+      <button class="back-btn" onclick="goHome()">&#8592;</button>
+      <div>
+        <div class="cat-name" style="color:#7defa0;">&#128204; My Picks</div>
+        <div class="cat-hint">Your personal song selection</div>
+      </div>
+    </div>
+  </div>
+  <div class="reh-intro">
+    <div class="reh-intro-inner">
+      <div class="reh-intro-icon">&#128204;</div>
+      <div class="reh-intro-text">
+        <h4>Your Personal Selection</h4>
+        <p>Pick songs you want to practise or focus on. Saved on your device only. Tap <strong>Manage</strong> to add or remove songs.</p>
       </div>
     </div>
     <div class="reh-intro-footer">
-      <span>&#128204; Selections saved on this device</span>
-      <span class="reh-manage-btn" onclick="openRehModal()">&#9998; Manage picks</span>
+      <span>&#128241; Saved on this device only</span>
+      <span class="reh-manage-btn" onclick="openRehModal()">&#9998; Manage</span>
     </div>
   </div>
   <div class="sa"><div class="scores-wrap" id="rehList"></div></div>
 </div>
 
-<!-- REHEARSAL MANAGE MODAL -->
+<!-- MY PICKS MANAGE MODAL -->
 <div class="reh-modal" id="rehModal" onclick="closeRehModalOverlay(event)">
   <div class="reh-modal-sheet">
-    <div class="reh-modal-title">&#127919; Manage Rehearsal Picks</div>
-    <div class="reh-modal-sub">Tick any score to add it to Rehearsal Picks. Untick to remove. Changes are saved instantly on this device.</div>
+    <div class="reh-modal-title">&#128204; Manage My Picks</div>
+    <div class="reh-modal-sub">Tap a song to add or remove it from your picks. Use <strong>Clear All</strong> to start fresh.</div>
+    <!-- Selected pills strip -->
+    <div id="rehSelectedStrip" style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:14px;min-height:28px;"></div>
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;">
+      <span style="font-size:11px;color:var(--tu);">All available scores</span>
+      <span onclick="clearAllPins()" style="font-size:11px;font-weight:700;color:#994040;cursor:pointer;padding:4px 10px;border:1px solid rgba(160,60,60,.2);border-radius:20px;">&#10005; Clear all</span>
+    </div>
     <div id="rehPicksList"></div>
     <button class="reh-modal-close" onclick="closeRehModal()">Done</button>
   </div>
@@ -1076,7 +1107,7 @@ function _multiPlaceholder(){return '<div class="exec-multi-placeholder"><span c
 <div class="bottom-nav" id="bottomNav">
   <button class="nav-btn active" id="nav-home"      onclick="goNav('home')"><span class="nav-icon">&#127968;</span><span class="nav-lbl">Home</span><div class="nav-dot"></div></button>
   <button class="nav-btn"        id="nav-all"        onclick="goNav('all')"><span class="nav-icon">&#127925;</span><span class="nav-lbl">All Scores</span><div class="nav-dot"></div></button>
-  <button class="nav-btn"        id="nav-rehearsal"  onclick="goNav('rehearsal')"><span class="nav-icon">&#127919;</span><span class="nav-lbl">Picks</span><div class="nav-dot"></div></button>
+  <button class="nav-btn"        id="nav-rehearsal"  onclick="goNav('rehearsal')"><span class="nav-icon">&#128204;</span><span class="nav-lbl">My Picks</span><div class="nav-dot"></div></button>
   <button class="nav-btn"        id="nav-about"      onclick="goNav('about')"><span class="nav-icon">&#8505;&#65039;</span><span class="nav-lbl">About</span><div class="nav-dot"></div></button>
 </div>
 
@@ -1166,7 +1197,7 @@ function buildCatGrid(){
     const n=arr.filter(s=>s.path||s.drive||s.driveDown||s.type==='hymnModal'||s.varrick).length;
     const d=document.createElement('div');d.className='cat-card';
     d.innerHTML='<span class="cat-emoji">'+info.emoji+'</span><div class="cat-lbl">'+info.label+'</div><div class="cat-count">'+(n>0?n+' item'+(n!==1?'s':''):'Coming soon')+'</div>';
-    d.onclick=()=>{if(key==='general')openGeneral();else openCat(key);};g.appendChild(d);
+    d.onclick=()=>{if(key==='general')openGeneral();else if(key==='rehearsal')openRehCategory();else openCat(key);};g.appendChild(d);
   });
 }
 
@@ -1364,91 +1395,114 @@ function initPwaPrompt(){
 function dismissPwa(){sessionStorage.setItem('pwa-dismissed','1');const b=document.getElementById('pwaBanner');if(b)b.remove();}
 function goBack(){if(prevScr==='cat')showScreen('s-cat');else if(prevScr==='all')showScreen('s-all');else if(prevScr==='gen')showScreen('s-gen');else goHome();}
 function goHome(){showScreen('s-home');setNav('home');}
-function goNav(t){if(t==='home')goHome();else if(t==='all')openAllScores();else if(t==='rehearsal')openRehearsal();else if(t==='about'){showScreen('s-about');setNav('about');}}
+function goNav(t){if(t==='home')goHome();else if(t==='all')openAllScores();else if(t==='rehearsal')openMyPicks();else if(t==='about'){showScreen('s-about');setNav('about');}}
 function showScreen(id){document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));document.getElementById(id).classList.add('active');}
 function setNav(t){document.querySelectorAll('.nav-btn').forEach(b=>b.classList.remove('active'));if(t){const b=document.getElementById('nav-'+t);if(b)b.classList.add('active');}}
 
 /* ── REHEARSAL PICKS ── */
-/* ── REHEARSAL PICKS — Google Sheet shared version ──
-   Sheet URL is set once below. The choirmaster/directors edit the sheet;
-   all members see the same picks automatically when they open the tab.
-   Sheet must be published: File → Share → Publish to web → CSV format.
-   SHEET_CSV_URL: paste your published CSV link here when ready.        */
+/* ── REHEARSAL PICKS CATEGORY — Google Sheet (read by all members) ── */
 const SHEET_CSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vSiCcjnvrEmKlNaxKPrfkqrbHK4T0_Mtz-8i9DkC312mVNqxvPOzdKOK4hrCWNHYb9B0GpzwMSOn6j_/pub?gid=0&single=true&output=csv';
 
-/* Local fallback pins (device-only, used when no sheet URL set) */
-function getRehPins(){try{return JSON.parse(localStorage.getItem('reh-pins')||'[]');}catch(e){return[];}}
-function saveRehPins(arr){try{localStorage.setItem('reh-pins',JSON.stringify(arr));}catch(e){}}
-
-function openRehearsal(){
-  renderRehList();
-  showScreen('s-rehearsal');
-  setNav('rehearsal');
+function openRehCategory(){
+  showScreen('s-reh-cat');setNav('');
+  const wrap=document.getElementById('rehCatList');
+  wrap.innerHTML='<div class="reh-empty"><div class="reh-empty-icon" style="font-size:26px;">&#8987;</div><div class="reh-empty-txt" style="font-size:12px;">Loading...</div></div>';
+  function show(pins){
+    wrap.innerHTML='';
+    if(!pins.length){wrap.innerHTML='<div class="reh-empty"><div class="reh-empty-icon">&#127929;</div><div class="reh-empty-txt">No songs selected yet.</div><div class="reh-empty-hint">The Choirmaster or Directors will add songs here before rehearsal or performance.</div></div>';return;}
+    pins.forEach(p=>{
+      const s=(SCORES[p.cat]||[]).find(sc=>sc.title.toLowerCase()===p.title.toLowerCase()&&sc.type===p.type);
+      if(s)wrap.appendChild(makeScoreCard(s,p.cat,'reh-cat'));
+    });
+  }
+  if(SHEET_CSV_URL){
+    fetch(SHEET_CSV_URL).then(r=>r.text()).then(csv=>show(parseSheetCSV(csv))).catch(()=>show([]));
+  } else { show([]); }
 }
 
-/* Parse CSV rows from Google Sheet into pin objects
-   Sheet columns: Category | Title | Type (tonic/staff)
-   Example row:  highlife | Oye | tonic                */
 function parseSheetCSV(csv){
-  const lines=csv.trim().split('\n').slice(1); // skip header row
+  const lines=csv.trim().split('\n').slice(1);
   const pins=[];
   lines.forEach(line=>{
     const parts=line.split(',').map(s=>s.replace(/^"|"$/g,'').trim());
-    if(parts.length>=3&&parts[0]&&parts[1]&&parts[2]){
+    if(parts.length>=3&&parts[0]&&parts[1]&&parts[2])
       pins.push({cat:parts[0].toLowerCase(),title:parts[1],type:parts[2].toLowerCase()});
-    }
   });
   return pins;
 }
 
-function renderRehList(){
+/* ── MY PICKS — Personal device picks (bottom tab) ── */
+function getRehPins(){try{return JSON.parse(localStorage.getItem('reh-pins')||'[]');}catch(e){return[];}}
+function saveRehPins(arr){try{localStorage.setItem('reh-pins',JSON.stringify(arr));}catch(e){}}
+
+function openMyPicks(){
+  renderMyPicksList();
+  showScreen('s-rehearsal');
+  setNav('rehearsal');
+}
+
+function renderMyPicksList(){
   const wrap=document.getElementById('rehList');
-  wrap.innerHTML='<div class="reh-empty"><div class="reh-empty-icon" style="font-size:28px;">&#8987;</div><div class="reh-empty-txt" style="font-size:12px;">Loading picks...</div></div>';
-
-  function showPins(pins){
-    wrap.innerHTML='';
-    if(!pins.length){
-      wrap.innerHTML='<div class="reh-empty"><div class="reh-empty-icon">&#127919;</div><div class="reh-empty-txt">No songs picked yet.</div><div class="reh-empty-hint">'+
-        (SHEET_CSV_URL?'The Choirmaster or Directors will add songs here before rehearsal or performance.':
-        'Tap <strong>Manage picks</strong> above to select songs. Or ask your administrator to set up the shared Google Sheet.')+
-        '</div></div>';
-      return;
-    }
-    pins.forEach(p=>{
-      const scores=SCORES[p.cat]||[];
-      const s=scores.find(sc=>sc.title.toLowerCase()===p.title.toLowerCase()&&sc.type===p.type);
-      if(!s)return;
-      wrap.appendChild(makeScoreCard(s,p.cat,'rehearsal'));
-    });
+  const pins=getRehPins();
+  wrap.innerHTML='';
+  if(!pins.length){
+    wrap.innerHTML='<div class="reh-empty"><div class="reh-empty-icon">&#128204;</div><div class="reh-empty-txt">No songs picked yet.</div><div class="reh-empty-hint">Tap <strong>Manage</strong> above to pick songs you want to practise or focus on.</div></div>';
+    return;
   }
+  pins.forEach(p=>{
+    const s=(SCORES[p.cat]||[]).find(sc=>sc.title===p.title&&sc.type===p.type);
+    if(!s)return;
+    const card=makeScoreCard(s,p.cat,'rehearsal');
+    /* Add remove button on each card */
+    const removeBtn=document.createElement('div');
+    removeBtn.style.cssText='position:absolute;top:8px;right:8px;width:22px;height:22px;border-radius:50%;background:rgba(160,60,60,.15);display:flex;align-items:center;justify-content:center;font-size:11px;cursor:pointer;color:#994040;border:1px solid rgba(160,60,60,.25);';
+    removeBtn.innerHTML='&#10005;';
+    removeBtn.onclick=(e)=>{e.stopPropagation();removePick(p.cat,p.title,p.type);};
+    card.style.position='relative';
+    card.appendChild(removeBtn);
+    wrap.appendChild(card);
+  });
+}
 
-  if(SHEET_CSV_URL){
-    // Fetch from Google Sheet — shared across all devices
-    fetch(SHEET_CSV_URL)
-      .then(r=>r.text())
-      .then(csv=>showPins(parseSheetCSV(csv)))
-      .catch(()=>{
-        // Offline fallback — show local pins
-        showPins(getRehPins());
-      });
-  } else {
-    // No sheet set — use local device picks
-    showPins(getRehPins());
-  }
+function removePick(cat,title,type){
+  let pins=getRehPins();
+  pins=pins.filter(p=>!(p.cat===cat&&p.title===title&&p.type===type));
+  saveRehPins(pins);
+  renderMyPicksList();
+  refreshSelectedStrip();
+}
+
+function clearAllPins(){
+  saveRehPins([]);
+  renderMyPicksList();
+  refreshSelectedStrip();
+  closeRehModal();
 }
 
 function openRehModal(){
+  buildRehPicksList();
+  refreshSelectedStrip();
+  document.getElementById('rehModal').classList.add('open');
+}
+
+function refreshSelectedStrip(){
+  const strip=document.getElementById('rehSelectedStrip');
+  if(!strip)return;
+  const pins=getRehPins();
+  strip.innerHTML='';
+  if(!pins.length){strip.innerHTML='<span style="font-size:11px;color:var(--tu);font-style:italic;">Nothing selected yet</span>';return;}
+  pins.forEach(p=>{
+    const pill=document.createElement('span');
+    pill.style.cssText='display:inline-flex;align-items:center;gap:5px;background:rgba(14,116,144,.12);border:1px solid rgba(14,116,144,.28);border-radius:20px;padding:3px 10px;font-size:11px;font-weight:700;color:var(--teal);cursor:pointer;';
+    pill.innerHTML=p.title+' <span style="color:#994040;font-size:12px;">&#10005;</span>';
+    pill.onclick=()=>{removePick(p.cat,p.title,p.type);buildRehPicksList();};
+    strip.appendChild(pill);
+  });
+}
+
+function buildRehPicksList(){
   const list=document.getElementById('rehPicksList');
   list.innerHTML='';
-  if(SHEET_CSV_URL){
-    list.innerHTML='<div style="padding:20px 0;font-size:13px;color:var(--tm);line-height:1.8;">'+
-      '&#9729; This choir uses a <strong>shared Google Sheet</strong> for Rehearsal Picks.<br><br>'+
-      'To add or remove songs, open the sheet and edit it there.<br><br>'+
-      '<strong>Choirmaster / Directors / Curators only.</strong></div>';
-    document.getElementById('rehModal').classList.add('open');
-    return;
-  }
-  // Local mode — show checklist
   const pins=getRehPins();
   Object.entries(SCORES).forEach(([cat,arr])=>{
     if(cat==='general'||cat==='rehearsal')return;
@@ -1471,13 +1525,14 @@ function openRehModal(){
         if(idx>=0){cur.splice(idx,1);check.className='reh-pin-check';check.innerHTML='';}
         else{cur.push({cat,title:s.title,type:s.type});check.className='reh-pin-check on';check.innerHTML='&#10003;';}
         saveRehPins(cur);
+        refreshSelectedStrip();
       };
       row.appendChild(check);row.appendChild(nameDiv);list.appendChild(row);
     });
   });
-  document.getElementById('rehModal').classList.add('open');
 }
-function closeRehModal(){document.getElementById('rehModal').classList.remove('open');renderRehList();}
+
+function closeRehModal(){document.getElementById('rehModal').classList.remove('open');renderMyPicksList();}
 function closeRehModalOverlay(e){if(e.target===document.getElementById('rehModal'))closeRehModal();}
 </script>
 <script>if('serviceWorker' in navigator){navigator.serviceWorker.register('/sw.js');}</script>
