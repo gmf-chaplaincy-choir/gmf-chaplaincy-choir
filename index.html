@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=no">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=5.0, user-scalable=yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="GMF Choir">
@@ -21,7 +21,7 @@ html,body{touch-action:pan-x pan-y;}
   --rm:16px;--rs:12px;
   --aw:480px;--nh:64px;--hh:200px;
 }
-@media(min-width:600px) and (max-width:899px){:root{--aw:700px;--hh:340px;--nh:68px;}}
+@media(min-width:600px) and (max-width:899px){:root{--aw:700px;--hh:420px;--nh:68px;}}
 @media(min-width:900px){:root{--aw:960px;--hh:290px;--nh:70px;}}
 @media(min-width:1200px){:root{--aw:1140px;--hh:330px;}}
 html,body{height:100%;overflow:hidden;background:#04111e;}
@@ -580,7 +580,7 @@ const CATS = {
   christmas:   { label:"Christmas",   emoji:"\u2B50" },
   collections: { label:"Collections", emoji:"\uD83D\uDCDA" },
   general:     { label:"Documents",   emoji:"\uD83D\uDCC2" },
-  rehearsal:   { label:"Rehearsal Picks", emoji:"\uD83C\uDFB9" }
+  rehearsal:   { label:"Choir Picks", emoji:"\uD83C\uDFB9" }
 };
 
 const QUICK = [
@@ -1042,7 +1042,7 @@ function _multiPlaceholder(){return '<div class="exec-multi-placeholder"><span c
     <div class="back-row">
       <button class="back-btn" onclick="goHome()">&#8592;</button>
       <div>
-        <div class="cat-name" style="color:#7defa0;">&#127929; Rehearsal Picks</div>
+        <div class="cat-name" style="color:#7defa0;">&#127929; Choir Picks</div>
         <div class="cat-hint">Updated by Choirmaster &amp; Directors</div>
       </div>
     </div>
@@ -1194,9 +1194,11 @@ function buildCatGrid(){
   const g=document.getElementById('catGrid');g.innerHTML='';
   Object.entries(CATS).forEach(([key,info])=>{
     const arr=SCORES[key]||[];
-    const n=arr.filter(s=>s.path||s.drive||s.driveDown||s.type==='hymnModal'||s.varrick).length;
+    let countLabel;
+    if(key==='rehearsal'){countLabel='Choir Picks';}
+    else{const n=arr.filter(s=>s.path||s.drive||s.driveDown||s.type==='hymnModal'||s.varrick).length;countLabel=n>0?n+' item'+(n!==1?'s':''):'Coming soon';}
     const d=document.createElement('div');d.className='cat-card';
-    d.innerHTML='<span class="cat-emoji">'+info.emoji+'</span><div class="cat-lbl">'+info.label+'</div><div class="cat-count">'+(n>0?n+' item'+(n!==1?'s':''):'Coming soon')+'</div>';
+    d.innerHTML='<span class="cat-emoji">'+info.emoji+'</span><div class="cat-lbl">'+info.label+'</div><div class="cat-count">'+countLabel+'</div>';
     d.onclick=()=>{if(key==='general')openGeneral();else if(key==='rehearsal')openRehCategory();else openCat(key);};g.appendChild(d);
   });
 }
