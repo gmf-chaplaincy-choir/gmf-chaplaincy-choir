@@ -5,6 +5,9 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="GMF Choir">
 <meta name="theme-color" content="#0a2540">
 <link rel="manifest" href="/manifest.json">
@@ -419,8 +422,8 @@ const SCORES = {
   hymns: [
     { title:"Soul of My Saviour",             type:"tonic", path:"scores/hymns/soul-of-my-saviour-tonic.pdf" },
     { title:"Soul of My Saviour",             type:"staff", path:"scores/hymns/soul-of-my-saviour-staff.pdf" },
-    { title:"Methodist Praise Songs",         type:"tonic", drive:"1cP-mta_6uEPcOnguC3xSgPsoemJyHbBG" },
-    { title:"Methodist Praise Songs",         type:"staff", drive:"1cP-mta_6uEPcOnguC3xSgPsoemJyHbBG" },
+    { title:"Methodist Praise Vol. 1",        type:"tonicModal", notation:"tonic", localPath:"scores/hymns/methodist-praise-songs-tonic.pdf", driveId:"1wKDRkLXp_wxCFeafORTdDxBP6wvWaISA" },
+    { title:"Methodist Praise Vol. 1",        type:"praiseModal", notation:"staff", driveId:"1cP-mta_6uEPcOnguC3xSgPsoemJyHbBG" },
     { title:"Methodist Hymnbook",             type:"hymnModal", notation:"tonic", tonicId:"1as_6XVRDlv-HjNiZGAilv7_UfGlPSJbc", staffId:"15kS4RaO1tQ6d26V_Bz95ei-akzI-LYGj" },
     { title:"Methodist Hymnbook",             type:"hymnModal", notation:"staff", tonicId:"1as_6XVRDlv-HjNiZGAilv7_UfGlPSJbc", staffId:"15kS4RaO1tQ6d26V_Bz95ei-akzI-LYGj" },
   ],
@@ -584,12 +587,16 @@ const CATS = {
 };
 
 const QUICK = [
-  { title:"Methodist Praise Songs",  cat:"hymns",     type:"tonic" },
-  { title:"Momma Yen Nkodi Adanse",  cat:"anthems",   type:"tonic" },
+  { title:"Methodist Praise Vol. 1", cat:"hymns",     type:"tonicModal" },
   { title:"Our Sacrifice of Praise", cat:"anthems",   type:"tonic" },
   { title:"Bra Onua Bra",            cat:"highlife",  type:"tonic" },
-  { title:"Kae Me",                  cat:"easter",    type:"tonic" },
-  { title:"Ma Oman Yi Mu Nsem",      cat:"patriotic", type:"tonic" },
+  { title:"Mo Nyae Me",              cat:"highlife",  type:"tonic" },
+  { title:"And Lo, a Child Is Lying in a Manger", cat:"christmas", type:"tonic" },
+  { title:"Heaven Came Down",        cat:"easter",    type:"tonic" },
+  { title:"Mitso Aseye",             cat:"highlife",  type:"staff" },
+  { title:"Gyatabruwa",              cat:"anthems",   type:"tonic" },
+  { title:"Choose You This Day",     cat:"anthems",   type:"tonic" },
+  { title:"Behold I Am the Lord",    cat:"anthems",   type:"tonic" },
 ];
 
 const VARICK_STAFF = [
@@ -1096,10 +1103,58 @@ function _multiPlaceholder(){return '<div class="exec-multi-placeholder"><span c
     <div id="rehSelectedStrip" style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:14px;min-height:28px;"></div>
     <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;">
       <span style="font-size:11px;color:var(--tu);">All available scores</span>
-      <span onclick="clearAllPins()" style="font-size:11px;font-weight:700;color:#994040;cursor:pointer;padding:4px 10px;border:1px solid rgba(160,60,60,.2);border-radius:20px;">&#10005; Clear all</span>
+      <div style="display:flex;gap:8px;align-items:center;">
+        <span onclick="closeRehModal()" style="font-size:11px;font-weight:700;color:#fff;cursor:pointer;padding:5px 14px;background:linear-gradient(135deg,#1a7fd4,#0f5fa8);border-radius:20px;box-shadow:0 2px 8px rgba(26,127,212,.35);">&#10003; Done</span>
+        <span onclick="clearAllPins()" style="font-size:11px;font-weight:700;color:#994040;cursor:pointer;padding:5px 12px;border:1px solid rgba(160,60,60,.25);border-radius:20px;">&#10005; Clear all</span>
+      </div>
     </div>
     <div id="rehPicksList"></div>
-    <button class="reh-modal-close" onclick="closeRehModal()">Done</button>
+  </div>
+</div>
+
+<!-- TONIC PRAISE MODAL -->
+<div class="modal-overlay" id="tonicModal" onclick="closeTonicModalOverlay(event)">
+  <div class="modal-sheet">
+    <div class="modal-title">Methodist Praise Vol. 1</div>
+    <div class="modal-sub">Tonic Sol-fa &middot; Choose how you&rsquo;d like to open it.</div>
+    <div class="modal-btn" onclick="tonicViewDirect()">
+      <div class="modal-btn-icon dl">&#128196;</div>
+      <div class="modal-btn-text">
+        <strong>Open directly</strong>
+        <span>View the score right here in the app.</span>
+      </div>
+    </div>
+    <div class="modal-btn" onclick="tonicViewDrive()">
+      <div class="modal-btn-icon drv">&#9729;</div>
+      <div class="modal-btn-text">
+        <strong>View in Google Drive</strong>
+        <span>Opens in your browser if the app viewer struggles.</span>
+      </div>
+    </div>
+    <button class="modal-cancel" onclick="closeTonicModal()">Cancel</button>
+  </div>
+</div>
+
+<!-- PRAISE MODAL -->
+<div class="modal-overlay" id="praiseModal" onclick="closePraiseModalOverlay(event)">
+  <div class="modal-sheet">
+    <div class="modal-title">Methodist Praise Vol. 1</div>
+    <div class="modal-sub">Staff Notation &middot; This is a large file. Choose how you&rsquo;d like to access it.</div>
+    <div class="modal-btn" onclick="praiseViewDrive()">
+      <div class="modal-btn-icon drv">&#9729;</div>
+      <div class="modal-btn-text">
+        <strong>View in Google Drive</strong>
+        <span>Opens Google Drive in your browser<br>where you can read it directly.</span>
+      </div>
+    </div>
+    <div class="modal-btn" onclick="praiseDownload()">
+      <div class="modal-btn-icon dl">&#11015;&#65039;</div>
+      <div class="modal-btn-text">
+        <strong>Download to device</strong>
+        <span>Saves the PDF so you can open it later<br>from your Files app without re-downloading.</span>
+      </div>
+    </div>
+    <button class="modal-cancel" onclick="closePraiseModal()">Cancel</button>
   </div>
 </div>
 
@@ -1195,8 +1250,8 @@ function buildCatGrid(){
   Object.entries(CATS).forEach(([key,info])=>{
     const arr=SCORES[key]||[];
     let countLabel;
-    if(key==='rehearsal'){countLabel='Choir Picks';}
-    else{const n=arr.filter(s=>s.path||s.drive||s.driveDown||s.type==='hymnModal'||s.varrick).length;countLabel=n>0?n+' item'+(n!==1?'s':''):'Coming soon';}
+    if(key==='rehearsal'){countLabel='&#127897; Live schedule';}
+    else{const n=arr.filter(s=>s.path||s.drive||s.driveDown||s.type==='hymnModal'||s.type==='praiseModal'||s.type==='tonicModal'||s.varrick).length;countLabel=n>0?n+' item'+(n!==1?'s':''):'Coming soon';}
     const d=document.createElement('div');d.className='cat-card';
     d.innerHTML='<span class="cat-emoji">'+info.emoji+'</span><div class="cat-lbl">'+info.label+'</div><div class="cat-count">'+countLabel+'</div>';
     d.onclick=()=>{if(key==='general')openGeneral();else if(key==='rehearsal')openRehCategory();else openCat(key);};g.appendChild(d);
@@ -1206,7 +1261,7 @@ function buildCatGrid(){
 function buildQuickList(filter){
   const list=document.getElementById('quickList'),lbl=document.getElementById('quickLabel');let items;
   if(filter){items=Object.entries(SCORES).flatMap(([cat,arr])=>arr.filter(s=>s.title.toLowerCase().includes(filter.toLowerCase())).map(s=>({...s,cat})));lbl.textContent='Search Results';}
-  else{items=QUICK.map(q=>{const m=(SCORES[q.cat]||[]).find(s=>s.title===q.title&&(s.type===q.type||s.type==='hymnModal'));return m?{...m,cat:q.cat}:{...q};});lbl.textContent='Quick Access';}
+  else{items=QUICK.map(q=>{const m=(SCORES[q.cat]||[]).find(s=>s.title===q.title&&(s.type===q.type||s.type==='hymnModal'||s.type==='praiseModal'||s.type==='tonicModal'));return m?{...m,cat:q.cat}:{...q};});lbl.textContent='Quick Access';}
   list.innerHTML='';
   if(!items.length){list.innerHTML='<div style="text-align:center;padding:32px;color:var(--tu);font-size:13px;">No scores found for \u201c'+filter+'\u201d</div>';return;}
   items.forEach(it=>{
@@ -1223,7 +1278,7 @@ function switchNot(t){curNot=t;updTabs();renderScores();}
 function updTabs(){document.getElementById('tab-tonic').className='notab'+(curNot==='tonic'?' active':'');document.getElementById('tab-staff').className='notab'+(curNot==='staff'?' active':'');}
 function renderScores(){
   const wrap=document.getElementById('scoresList');
-  const scores=(SCORES[curCat]||[]).filter(s=>s.type==='hymnModal'?s.notation===curNot:s.type===curNot);
+  const scores=(SCORES[curCat]||[]).filter(s=>s.type==='hymnModal'?s.notation===curNot:s.type==='praiseModal'?s.notation===curNot:s.type==='tonicModal'?s.notation===curNot:s.type===curNot);
   wrap.innerHTML='';
   if(!scores.length){wrap.innerHTML='<div class="empty-state"><div class="empty-icon">&#127964;</div><div class="empty-txt">No '+(curNot==='tonic'?'Tonic Sol-fa':'Staff Notation')+' scores yet for '+CATS[curCat].label+'.<br><br>Check back after the next update!</div></div>';return;}
   scores.forEach(s=>wrap.appendChild(makeScoreCard(s,curCat,'cat')));
@@ -1251,7 +1306,7 @@ function renderAllScores(){
   const wrap=document.getElementById('allScoresList');wrap.innerHTML='';let found=false;
   Object.entries(SCORES).forEach(([cat,arr])=>{
     if(cat==='general')return;if(allCat!=='all'&&cat!==allCat)return;
-    const scores=arr.filter(s=>s.type==='hymnModal'?s.notation===allNot:s.type===allNot);
+    const scores=arr.filter(s=>s.type==='hymnModal'?s.notation===allNot:s.type==='praiseModal'?s.notation===allNot:s.type==='tonicModal'?s.notation===allNot:s.type===allNot);
     if(!scores.length)return;found=true;
     const lbl=document.createElement('div');lbl.className='sec-lbl';lbl.style.padding='16px 16px 8px';lbl.innerHTML=CATS[cat].emoji+' '+CATS[cat].label;wrap.appendChild(lbl);
     scores.forEach(s=>wrap.appendChild(makeScoreCard(s,cat,'all')));
@@ -1260,11 +1315,14 @@ function renderAllScores(){
 }
 
 function makeScoreCard(s,cat,from){
-  const isU=!s.path&&!s.drive&&!s.driveDown&&s.type!=='hymnModal'&&!s.varrick;
+  const isU=!s.path&&!s.drive&&!s.driveDown&&s.type!=='hymnModal'&&s.type!=='praiseModal'&&s.type!=='tonicModal'&&!s.varrick;
   const c=document.createElement('div');c.className='score-card'+(isU?' unavailable':'');
   const tag=(s.type==='tonic'||s.notation==='tonic')?'Tonic Sol-fa':'Staff Notation';
   let badge='';
-  if(s.drive&&!s.varrick)badge='<span class="score-cloud">&#9729; Google Drive</span>';
+  if(s.type==='praiseModal')badge='<span class="score-cloud">&#9729; Large file</span>';
+  else if(s.type==='tonicModal')badge='<span class="score-cloud">&#9729; Large file</span>';
+  else if(s.path&&s.drive)badge='<span class="score-cloud">&#9729; Drive fallback</span>';
+  else if(s.drive&&!s.varrick)badge='<span class="score-cloud">&#9729; Google Drive</span>';
   else if(s.type==='hymnModal')badge='<span class="score-cloud">&#9729; Large file</span>';
   else if(s.varrick)badge='<span class="score-cloud">&#9729; Collection</span>';
   else if(isU)badge='<span class="score-na">&#9888; Not available yet</span>';
@@ -1274,7 +1332,7 @@ function makeScoreCard(s,cat,from){
 
 function openScore(score,from){
   prevScr=from;
-  if(!score.path&&!score.drive&&!score.driveDown&&score.type!=='hymnModal'&&!score.varrick){
+  if(!score.path&&!score.drive&&!score.driveDown&&score.type!=='hymnModal'&&score.type!=='praiseModal'&&score.type!=='tonicModal'&&!score.varrick){
     const nt=(score.type==='tonic'||score.notation==='tonic')?'Tonic Sol-fa':'Staff Notation';
     document.getElementById('unavailTitle').textContent=score.title;
     document.getElementById('unavailNotation').textContent=nt+' \u00b7 Not available';
@@ -1282,18 +1340,45 @@ function openScore(score,from){
     document.getElementById('unavailMsg').textContent=nt+' notation for \u201c'+score.title+'\u201d is not available at the moment. Check back after the next update or contact the music team.';
     showScreen('s-unavail');return;
   }
+  if(score.type==='tonicModal'){
+    tonicPraiseScore=score;
+    document.getElementById('tonicModal').classList.add('open');return;
+  }
+  if(score.type==='praiseModal'){
+    praiseCurrentId=score.driveId;
+    document.getElementById('praiseModal').classList.add('open');return;
+  }
   if(score.type==='hymnModal'){
     hymnCurrentId=score.notation==='tonic'?score.tonicId:score.staffId;
     document.getElementById('hymnModalSub').textContent='Methodist Hymnbook ('+(score.notation==='tonic'?'Tonic Sol-fa':'Staff Notation')+') is a large file. Choose how you\u2019d like to access it.';
     document.getElementById('hymnModal').classList.add('open');return;
   }
   if(score.varrick){varickDriveId=score.drive;showScreen('s-varick');return;}
+  /* tonic with drive fallback — try local path first, open drive on error */
+  if(score.path&&score.drive){openPdfWithFallback(score.title,score.path,score.drive);return;}
   if(score.drive)openDrv(score.title,score.drive);
   else if(score.path)openPdf(score.title,score.path);
 }
 
 function hymnDownload(){if(!hymnCurrentId)return;window.open('https://drive.google.com/uc?export=download&id='+hymnCurrentId,'_blank');closeHymnModal();}
 function hymnViewDrive(){if(!hymnCurrentId)return;window.open('https://drive.google.com/file/d/'+hymnCurrentId+'/view','_blank');closeHymnModal();}
+
+let praiseCurrentId=null;
+function praiseViewDrive(){if(!praiseCurrentId)return;window.open('https://drive.google.com/file/d/'+praiseCurrentId+'/view','_blank');closePraiseModal();}
+function praiseDownload(){if(!praiseCurrentId)return;window.open('https://drive.google.com/uc?export=download&id='+praiseCurrentId,'_blank');closePraiseModal();}
+function closePraiseModal(){document.getElementById('praiseModal').classList.remove('open');}
+function closePraiseModalOverlay(e){if(e.target===document.getElementById('praiseModal'))closePraiseModal();}
+
+let tonicPraiseScore=null;
+function tonicViewDirect(){if(!tonicPraiseScore)return;closeTonicModal();openPdf(tonicPraiseScore.title,tonicPraiseScore.localPath);}
+function tonicViewDrive(){if(!tonicPraiseScore)return;window.open('https://drive.google.com/file/d/'+tonicPraiseScore.driveId+'/view','_blank');closeTonicModal();}
+function closeTonicModal(){document.getElementById('tonicModal').classList.remove('open');}
+function closeTonicModalOverlay(e){if(e.target===document.getElementById('tonicModal'))closeTonicModal();}
+
+function openPdfWithFallback(title,path,driveId){
+  /* Try local first; if it fails (e.g. file too large/crashes) Drive opens instead */
+  openPdf(title,path,driveId);
+}
 function closeHymnModal(){document.getElementById('hymnModal').classList.remove('open');}
 function closeHymnModalOverlay(e){if(e.target===document.getElementById('hymnModal'))closeHymnModal();}
 
@@ -1347,8 +1432,9 @@ function renderFSPage(n){
   document.getElementById('pgIn').value=n;document.getElementById('btnPrev').disabled=n<=1;document.getElementById('btnNext').disabled=n>=totPages;
   pdfDoc.getPage(n).then(pg=>{
     const v0=pg.getViewport({scale:1});const dpr=window.devicePixelRatio||1;
-    /* Use full window size so iOS PWA safe areas don't shrink the canvas */
-    const aW=window.innerWidth;const aH=window.innerHeight;
+    /* Use screen dimensions for the most accurate full-portrait fill */
+    const aW=Math.max(window.innerWidth,window.screen&&window.screen.width?Math.min(window.screen.width,window.innerWidth*1.05):window.innerWidth);
+    const aH=Math.max(window.innerHeight,window.screen&&window.screen.height?Math.min(window.screen.height,window.innerHeight*1.05):window.innerHeight);
     /* Scale to fill width — portrait scores fill portrait phone perfectly */
     const scW=aW/v0.width;const scH=aH/v0.height;
     /* If PDF is portrait and screen is portrait: width-fill. If landscape PDF or landscape screen: contain */
@@ -1376,13 +1462,28 @@ function initPdfTouch(){
 /* JS pinch-zoom for the non-fullscreen scroll area (viewport is locked app-wide) */
 function initScrollPinchZoom(){
   const sa=document.getElementById('pdfScrollArea');
-  let startDist=0,startScale=1,curScale=1;
+  let startDist=0,startScale=1,curScale=1,originX=50,originY=0;
   function getDist(t){const dx=t[0].clientX-t[1].clientX,dy=t[0].clientY-t[1].clientY;return Math.sqrt(dx*dx+dy*dy);}
+  function getMid(t){return {x:(t[0].clientX+t[1].clientX)/2,y:(t[0].clientY+t[1].clientY)/2};}
   sa.addEventListener('touchstart',e=>{
-    if(e.touches.length===2){startDist=getDist(e.touches);startScale=curScale;e.preventDefault();}
+    if(e.touches.length===2){
+      startDist=getDist(e.touches);startScale=curScale;
+      const mid=getMid(e.touches);
+      const r=sa.getBoundingClientRect();
+      originX=((mid.x-r.left)/r.width)*100;
+      originY=sa.scrollTop+(mid.y-r.top);
+      e.preventDefault();
+    }
   },{passive:false});
   sa.addEventListener('touchmove',e=>{
-    if(e.touches.length===2){e.preventDefault();const d=getDist(e.touches);const s=Math.min(Math.max(startScale*(d/startDist),1),4);curScale=s;sa.style.transform='scale('+s+')';sa.style.transformOrigin='top center';}
+    if(e.touches.length===2){
+      e.preventDefault();
+      const d=getDist(e.touches);
+      const s=Math.min(Math.max(startScale*(d/startDist),1),4);
+      curScale=s;
+      sa.style.transformOrigin=originX+'% '+originY+'px';
+      sa.style.transform='scale('+s+')';
+    }
   },{passive:false});
   sa.addEventListener('touchend',e=>{
     if(e.touches.length<2&&curScale<1.05){curScale=1;sa.style.transform='scale(1)';}
