@@ -1,5 +1,5 @@
 /* GMF Chaplaincy Choir — Service Worker v1 */
-const CACHE = 'gmf-choir-v1';
+const CACHE = 'gmf-choir-v3';
 
 /* Files that load instantly offline — the app shell */
 const SHELL = [

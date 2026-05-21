@@ -26,6 +26,16 @@ function toTitle(base) {
   }).join(' ');
 }
 
+// Title overrides — correct titles where LOWER_WORDS produces wrong casing for Twi/special words
+const TITLE_OVERRIDES = {
+  'mo nyae me':                            'Mo Nyae Me',
+  'and lo a child is lying in a manger':   'And Lo, a Child Is Lying in a Manger',
+};
+
+function applyOverride(title) {
+  return TITLE_OVERRIDES[title.toLowerCase()] || title;
+}
+
 // STRICT suffix detection — only matches at END of filename
 function getType(filename) {
   const lower = filename.toLowerCase().replace(/\.pdf$/i, '');
@@ -56,7 +66,7 @@ function scanFolder(folderPath, category) {
       return;
     }
     const baseKey = getBaseKey(file);
-    if (!grouped[baseKey]) grouped[baseKey] = { title: toTitle(baseKey), tonic: null, staff: null };
+    if (!grouped[baseKey]) grouped[baseKey] = { title: applyOverride(toTitle(baseKey)), tonic: null, staff: null };
     if (!grouped[baseKey][type]) {
       grouped[baseKey][type] = 'scores/' + category + '/' + file;
     } else {
