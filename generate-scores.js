@@ -75,7 +75,9 @@ function scanFolder(folderPath, category) {
 // (caused by spelling differences between tonic and staff filenames)
 function mergeDuplicateTitles(entries) {
   const byTitle = {};
+  const specials = []; // hymnModal, tonicModal, praiseModal — pass through untouched
   entries.forEach(e => {
+    if (e.type !== 'tonic' && e.type !== 'staff') { specials.push(e); return; }
     const key = e.title.toLowerCase().trim();
     if (!byTitle[key]) byTitle[key] = { title: e.title, tonic: null, staff: null };
     if (e.type === 'tonic' && e.path && !byTitle[key].tonic) byTitle[key].tonic = e.path;
@@ -86,7 +88,7 @@ function mergeDuplicateTitles(entries) {
     merged.push({ title: g.title, type: 'tonic', path: g.tonic });
     merged.push({ title: g.title, type: 'staff', path: g.staff });
   });
-  return merged;
+  return [...merged, ...specials];
 }
 
 const AUTO_CATS = ['anthems','hymns','easter','highlife','patriotic','classical','christmas'];
@@ -98,8 +100,8 @@ AUTO_CATS.forEach(cat => {
 
 const MANUAL = {
   hymns: [
-    { title:"Methodist Praise Songs", type:"tonic", drive:"1cP-mta_6uEPcOnguC3xSgPsoemJyHbBG" },
-    { title:"Methodist Praise Songs", type:"staff", drive:"1cP-mta_6uEPcOnguC3xSgPsoemJyHbBG" },
+    { title:"Methodist Praise Vol. 1", type:"tonicModal", notation:"tonic", localPath:"scores/hymns/methodist-praise-songs-tonic.pdf", driveId:"1wKDRkLXp_wxCFeafORTdDxBP6wvWaISA" },
+    { title:"Methodist Praise Vol. 1", type:"praiseModal", notation:"staff", driveId:"1cP-mta_6uEPcOnguC3xSgPsoemJyHbBG" },
     { title:"Methodist Hymnbook", type:"hymnModal", notation:"tonic", tonicId:"1as_6XVRDlv-HjNiZGAilv7_UfGlPSJbc", staffId:"15kS4RaO1tQ6d26V_Bz95ei-akzI-LYGj" },
     { title:"Methodist Hymnbook", type:"hymnModal", notation:"staff", tonicId:"1as_6XVRDlv-HjNiZGAilv7_UfGlPSJbc", staffId:"15kS4RaO1tQ6d26V_Bz95ei-akzI-LYGj" },
   ],
