@@ -53,10 +53,17 @@ function getBaseKey(filename) {
     .trim();
 }
 
+// Files handled manually — excluded from auto-scan to prevent duplicates
+const MANUAL_FILES = new Set([
+  'hymns/methodist-praise-tonic.pdf',
+  'hymns/methodist-praise-songs-tonic.pdf',
+]);
+
 function scanFolder(folderPath, category) {
   if (!fs.existsSync(folderPath)) return [];
   const files = fs.readdirSync(folderPath)
     .filter(f => f.toLowerCase().endsWith('.pdf'))
+    .filter(f => !MANUAL_FILES.has(category + '/' + f.toLowerCase()))
     .sort();
   const grouped = {};
   files.forEach(file => {
@@ -110,7 +117,7 @@ AUTO_CATS.forEach(cat => {
 
 const MANUAL = {
   hymns: [
-    { title:"Methodist Praise Vol. 1", type:"tonicModal", notation:"tonic", localPath:"scores/hymns/methodist-praise-songs-tonic.pdf", driveId:"1wKDRkLXp_wxCFeafORTdDxBP6wvWaISA" },
+    { title:"Methodist Praise Vol. 1", type:"tonicModal", notation:"tonic", localPath:"scores/hymns/methodist-praise-tonic.pdf", driveId:"1wKDRkLXp_wxCFeafORTdDxBP6wvWaISA" },
     { title:"Methodist Praise Vol. 1", type:"praiseModal", notation:"staff", driveId:"1cP-mta_6uEPcOnguC3xSgPsoemJyHbBG" },
     { title:"Methodist Hymnbook", type:"hymnModal", notation:"tonic", tonicId:"1as_6XVRDlv-HjNiZGAilv7_UfGlPSJbc", staffId:"15kS4RaO1tQ6d26V_Bz95ei-akzI-LYGj" },
     { title:"Methodist Hymnbook", type:"hymnModal", notation:"staff", tonicId:"1as_6XVRDlv-HjNiZGAilv7_UfGlPSJbc", staffId:"15kS4RaO1tQ6d26V_Bz95ei-akzI-LYGj" },
@@ -132,7 +139,7 @@ const DRIVE_OVERRIDES = {
 
 Object.entries(MANUAL).forEach(([cat, items]) => {
   if (!SCORES[cat]) SCORES[cat] = [];
-  SCORES[cat] = [...SCORES[cat], ...items];
+  SCORES[cat] = [...items, ...SCORES[cat]];
 });
 
 // Apply Drive overrides — swap path→drive for specific large files
