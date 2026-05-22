@@ -1465,37 +1465,66 @@ function initPdfTouch(){
 /* JS pinch-zoom for the non-fullscreen scroll area (viewport is locked app-wide) */
 function initScrollPinchZoom(){
   const sa=document.getElementById('pdfScrollArea');
-  let curScale=1,startDist=0,startScale=1,startMidX=0,startMidY=0;
+  let curScale=1,startDist=0,startScale=1,originX=0,originY=0;
   function getDist(t){const dx=t[0].clientX-t[1].clientX,dy=t[0].clientY-t[1].clientY;return Math.sqrt(dx*dx+dy*dy);}
   function getWrap(){return document.getElementById('pdfZoomWrap');}
   function applyScale(s){
     const wrap=getWrap();if(!wrap)return;
-    curScale=Math.min(Math.max(s,1),5);
-    wrap.style.transformOrigin='top left';
+    curScale=Math.min(Math.max(s,0.5),5);
+    wrap.style.transformOrigin=originX+'px '+originY+'px';
     wrap.style.transform='scale('+curScale+')';
     wrap.style.width=curScale>1?(sa.clientWidth*curScale)+'px':'';
-    wrap.style.height=curScale>1?(wrap.scrollHeight)+'px':'';
+    wrap.style.height=curScale>1?(wrap.offsetHeight*curScale)+'px':'';
   }
   sa.addEventListener('touchstart',e=>{
     if(e.touches.length===2){
       e.preventDefault();
       startDist=getDist(e.touches);startScale=curScale;
       const r=sa.getBoundingClientRect();
-      startMidX=(e.touches[0].clientX+e.touches[1].clientX)/2-r.left+sa.scrollLeft;
-      startMidY=(e.touches[0].clientY+e.touches[1].clientY)/2-r.top+sa.scrollTop;
+      /* Pinch midpoint relative to the zoom wrapper (accounts for scroll) */
+      originX=(e.touches[0].clientX+e.touches[1].clientX)/2 - r.left + sa.scrollLeft;
+      originY=(e.touches[0].clientY+e.touches[1].clientY)/2 - r.top  + sa.scrollTop;
     }
   },{passive:false});
   sa.addEventListener('touchmove',e=>{
     if(e.touches.length!==2)return;
     e.preventDefault();
-    const s=startScale*(getDist(e.touches)/startDist);
-    applyScale(s);
-    const r=sa.getBoundingClientRect();
-    sa.scrollLeft=startMidX*(curScale/startScale)-((e.touches[0].clientX+e.touches[1].clientX)/2-r.left);
-    sa.scrollTop =startMidY*(curScale/startScale)-((e.touches[0].clientY+e.touches[1].clientY)/2-r.top);
+    applyScale(startScale*(getDist(e.touches)/startDist));
   },{passive:false});
   sa.addEventListener('touchend',e=>{
-    if(e.touches.length<2&&curScale<1.05){curScale=1;const w=getWrap();if(w){w.style.transform='scale(1)';w.style.width='';w.style.height='';}sa.scrollLeft=0;}
+    if(e.touches.length<2&&curScale<1.05){
+      curScale=1;const w=getWrap();
+      if(w){w.style.transform='scale(1)';w.style.width='';w.style.height='';}
+      sa.scrollLeft=0;
+    }
+  },{passive:true});
+  /* Double-tap: toggle 2× zoom at tapped point, or reset to 1× if already zoomed */
+  let lastTap=0,lastTapX=0,lastTapY=0;
+  sa.addEventListener('touchend',e=>{
+    if(e.touches.length>0)return;
+    if(e.changedTouches.length===1){
+      const now=Date.now(),t=e.changedTouches[0];
+      if(now-lastTap<320&&Math.abs(t.clientX-lastTapX)<30&&Math.abs(t.clientY-lastTapY)<30){
+        /* Double tap detected */
+        if(curScale>1.05){
+          /* Already zoomed — reset to normal */
+          curScale=1;const w=getWrap();
+          if(w){w.style.transform='scale(1)';w.style.width='';w.style.height='';}
+          sa.scrollLeft=0;sa.scrollTop=0;
+        } else {
+          /* Zoom to 2× at tapped point */
+          const r=sa.getBoundingClientRect();
+          originX=t.clientX-r.left+sa.scrollLeft;
+          originY=t.clientY-r.top+sa.scrollTop;
+          applyScale(2.2);
+          /* Scroll so the tapped point stays centred */
+          sa.scrollLeft=originX*2.2-sa.clientWidth/2;
+          sa.scrollTop =originY*2.2-sa.clientHeight/2;
+        }
+        lastTap=0;return;
+      }
+      lastTap=now;lastTapX=t.clientX;lastTapY=t.clientY;
+    }
   },{passive:true});
   document.addEventListener('pdfLoaded',()=>{curScale=1;sa.scrollLeft=0;sa.scrollTop=0;});
 }
