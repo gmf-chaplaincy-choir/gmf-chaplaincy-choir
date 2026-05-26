@@ -198,8 +198,8 @@ body{font-family:'Nunito',sans-serif;color:var(--td);display:flex;flex-direction
 .icon-btn{width:38px;height:38px;border-radius:50%;background:rgba(255,255,255,.14);border:1px solid rgba(255,255,255,.22);display:flex;align-items:center;justify-content:center;font-size:17px;color:white;cursor:pointer;flex-shrink:0;transition:background .2s;-webkit-appearance:none;}
 .icon-btn:hover{background:rgba(255,255,255,.26);}
 @media(min-width:600px) and (max-width:899px){.icon-btn{width:44px;height:44px;font-size:19px;}}
-.pdf-scroll-area{flex:1;overflow:auto;-webkit-overflow-scrolling:touch;background:#0d1b2a;touch-action:pan-x pan-y pinch-zoom;}
-.pdf-zoom-wrap{display:flex;flex-direction:column;align-items:center;padding:12px 0;gap:8px;transform-origin:top left;will-change:transform;}
+.pdf-scroll-area{flex:1;overflow:auto;-webkit-overflow-scrolling:touch;background:#0d1b2a;touch-action:pan-x pan-y;}
+.pdf-zoom-wrap{display:flex;flex-direction:column;align-items:center;padding:12px 0;gap:8px;will-change:transform;}
 .pdf-page-canvas{display:block;max-width:calc(100% - 16px);box-shadow:0 2px 20px rgba(0,0,0,.55);background:#fff;}
 .pdf-controls{background:rgba(4,17,30,.97);border-top:1px solid rgba(201,151,58,.13);padding:8px 16px;padding-bottom:calc(var(--nh)+8px);display:flex;align-items:center;justify-content:center;gap:14px;flex-shrink:0;}
 .pg-btn{width:42px;height:42px;border-radius:50%;background:rgba(14,116,144,.28);border:1px solid rgba(14,116,144,.42);display:flex;align-items:center;justify-content:center;font-size:20px;color:#7dd3e8;cursor:pointer;transition:background .2s,transform .12s;user-select:none;}
@@ -1462,71 +1462,212 @@ function initPdfTouch(){
   area.addEventListener('touchend',e=>{if(e.changedTouches.length===1){const dx=e.changedTouches[0].screenX-touchX0,dy=e.changedTouches[0].screenY-touchY0;if(Math.abs(dx)>=Math.abs(dy)){if(Math.abs(dx)>40){dx<0?nextFSPage():prevFSPage();}}else{if(Math.abs(dy)>40){dy>0?nextFSPage():prevFSPage();}}}},{passive:true});
   area.addEventListener('click',e=>{if(!pdfFS)return;const x=e.clientX,w=area.clientWidth;if(x<w*.35)prevFSPage();else if(x>w*.65)nextFSPage();});
 }
-/* JS pinch-zoom for the non-fullscreen scroll area (viewport is locked app-wide) */
+/* ═══════════════════════════════════════════════════════════════════
+   PDF PINCH-ZOOM  —  native-quality implementation
+   Core math: translate(tx,ty) scale(s) with transform-origin:0 0.
+   The "pivot" formula keeps the pinch midpoint fixed in the viewport:
+     cx = (pivotVX - oldTx) / oldS          ← content-space point
+     newTx = pivotVX - cx * newS            ← viewport back-projection
+   This is mathematically equivalent to what iOS/Android do natively.
+   ═══════════════════════════════════════════════════════════════════ */
 function initScrollPinchZoom(){
-  const sa=document.getElementById('pdfScrollArea');
-  let curScale=1,startDist=0,startScale=1,originX=0,originY=0;
-  function getDist(t){const dx=t[0].clientX-t[1].clientX,dy=t[0].clientY-t[1].clientY;return Math.sqrt(dx*dx+dy*dy);}
-  function getWrap(){return document.getElementById('pdfZoomWrap');}
-  function applyScale(s){
-    const wrap=getWrap();if(!wrap)return;
-    curScale=Math.min(Math.max(s,0.5),5);
-    wrap.style.transformOrigin=originX+'px '+originY+'px';
-    wrap.style.transform='scale('+curScale+')';
-    wrap.style.width=curScale>1?(sa.clientWidth*curScale)+'px':'';
-    wrap.style.height=curScale>1?(wrap.offsetHeight*curScale)+'px':'';
+  const sa = document.getElementById('pdfScrollArea');
+
+  /* ── tuneable constants ── */
+  const MIN_SCALE   = 0.40;  /* hard floor — can't go smaller than this */
+  const MAX_SCALE   = 5.0;   /* hard ceiling */
+  const FLOOR_SNAP  = 0.52;  /* below this on release → spring to MIN_SCALE centred */
+  const ONE_SNAP    = 0.04;  /* within ±4% of 1.0 on release → spring to 1.0 */
+  const SPRING_MS   = 360;   /* ease-out spring duration (ms) */
+  const SPRING_EASE = 'cubic-bezier(0.25,0.46,0.45,0.94)'; /* iOS-style ease-out */
+
+  /* ── state ── */
+  let scale = 1, tx = 0, ty = 0;          /* current transform */
+  let startDist = 0, startScale = 1;
+  let startTx = 0, startTy = 0;
+  let pinchMidX = 0, pinchMidY = 0;       /* viewport-relative midpoint at start */
+  let isPinching = false;
+  let lastPinchEndTime = 0;               /* guard double-tap from firing after pinch */
+  let springTid = null;                   /* pending spring timeout */
+
+  function getWrap(){ return document.getElementById('pdfZoomWrap'); }
+
+  /* ── helpers ── */
+  function getDist(touches){
+    const dx = touches[0].clientX - touches[1].clientX;
+    const dy = touches[0].clientY - touches[1].clientY;
+    return Math.sqrt(dx*dx + dy*dy);
   }
-  sa.addEventListener('touchstart',e=>{
-    if(e.touches.length===2){
+
+  /* Apply transform instantly (no animation) */
+  function applyNow(wrap, s, x, y){
+    wrap.style.transition = 'none';
+    wrap.style.transformOrigin = '0 0';
+    wrap.style.transform = 'translate('+x+'px,'+y+'px) scale('+s+')';
+  }
+
+  /* Animate to target with spring ease */
+  function springTo(wrap, s, x, y){
+    clearTimeout(springTid);
+    wrap.style.transition = 'transform '+SPRING_MS+'ms '+SPRING_EASE;
+    wrap.style.transformOrigin = '0 0';
+    wrap.style.transform = 'translate('+x+'px,'+y+'px) scale('+s+')';
+    scale = s; tx = x; ty = y;
+    springTid = setTimeout(()=>{ wrap.style.transition = 'none'; }, SPRING_MS + 30);
+  }
+
+  /* Keep the pinch midpoint fixed while scaling:
+     The content point under the pivot must stay at the same viewport position.
+     content-point:  cx = (pivotVX - oldTx) / oldScale
+     new translation: newTx = pivotVX - cx * newScale                         */
+  function pivotScale(pivotVX, pivotVY, oldS, newS, oldTx, oldTy){
+    const cx = (pivotVX - oldTx) / oldS;
+    const cy = (pivotVY - oldTy) / oldS;
+    return { nx: pivotVX - cx * newS, ny: pivotVY - cy * newS };
+  }
+
+  /* Clamp translation so content never floats freely off-screen.
+     When content is SMALLER than the viewport → centre it.
+     When content is LARGER                    → prevent over-scroll gaps.
+     Uses offsetWidth/Height (layout size, unaffected by CSS transform).     */
+  function clamp(wrap, s, x, y){
+    const natW = wrap.offsetWidth;
+    const natH = wrap.offsetHeight;
+    const scaledW = natW * s;
+    const scaledH = natH * s;
+    const vpW = sa.clientWidth;
+    const vpH = sa.clientHeight;
+
+    let minX, maxX, minY, maxY;
+
+    /* Horizontal */
+    if(scaledW <= vpW){
+      /* content narrower than viewport — centre it */
+      const cx = (vpW - scaledW) / 2;
+      minX = maxX = cx;
+    } else {
+      /* content wider — allow panning but stop before empty gaps */
+      maxX = 0;
+      minX = vpW - scaledW;
+    }
+
+    /* Vertical */
+    if(scaledH <= vpH){
+      /* content shorter than viewport — sit it at top-centre */
+      const cy = Math.max(0, (vpH - scaledH) / 2);
+      minY = maxY = cy;
+    } else {
+      /* content taller — allow scrolling but no empty gaps */
+      maxY = 0;
+      minY = vpH - scaledH;
+    }
+
+    return {
+      x: Math.min(maxX, Math.max(minX, x)),
+      y: Math.min(maxY, Math.max(minY, y))
+    };
+  }
+
+  /* ── PINCH START ── */
+  sa.addEventListener('touchstart', e=>{
+    if(e.touches.length === 2){
       e.preventDefault();
-      startDist=getDist(e.touches);startScale=curScale;
-      const r=sa.getBoundingClientRect();
-      /* Pinch midpoint relative to the zoom wrapper (accounts for scroll) */
-      originX=(e.touches[0].clientX+e.touches[1].clientX)/2 - r.left + sa.scrollLeft;
-      originY=(e.touches[0].clientY+e.touches[1].clientY)/2 - r.top  + sa.scrollTop;
+      clearTimeout(springTid);           /* cancel any in-progress spring */
+      isPinching = true;
+      startDist  = getDist(e.touches);
+      startScale = scale;
+      startTx = tx; startTy = ty;
+      const r   = sa.getBoundingClientRect();
+      pinchMidX = (e.touches[0].clientX + e.touches[1].clientX) / 2 - r.left;
+      pinchMidY = (e.touches[0].clientY + e.touches[1].clientY) / 2 - r.top;
+      /* Cancel transition immediately so there's no lag when re-grabbing */
+      const wrap = getWrap();
+      if(wrap) wrap.style.transition = 'none';
     }
   },{passive:false});
-  sa.addEventListener('touchmove',e=>{
-    if(e.touches.length!==2)return;
+
+  /* ── PINCH MOVE ── */
+  sa.addEventListener('touchmove', e=>{
+    if(!isPinching || e.touches.length !== 2) return;
     e.preventDefault();
-    applyScale(startScale*(getDist(e.touches)/startDist));
+    const ratio    = getDist(e.touches) / startDist;
+    const newScale = Math.min(MAX_SCALE, Math.max(MIN_SCALE, startScale * ratio));
+    const {nx, ny} = pivotScale(pinchMidX, pinchMidY, startScale, newScale, startTx, startTy);
+    scale = newScale; tx = nx; ty = ny;
+    const wrap = getWrap(); if(!wrap) return;
+    applyNow(wrap, scale, tx, ty);
   },{passive:false});
-  sa.addEventListener('touchend',e=>{
-    if(e.touches.length<2&&curScale<1.05){
-      curScale=1;const w=getWrap();
-      if(w){w.style.transform='scale(1)';w.style.width='';w.style.height='';}
-      sa.scrollLeft=0;
+
+  /* ── PINCH END ── */
+  sa.addEventListener('touchend', e=>{
+    if(!isPinching) return;
+    if(e.touches.length >= 2) return;   /* still have 2+ fingers down */
+    isPinching = false;
+    lastPinchEndTime = Date.now();
+    const wrap = getWrap(); if(!wrap) return;
+
+    if(scale < FLOOR_SNAP){
+      /* Way too small → spring to minimum, centred */
+      const c = clamp(wrap, MIN_SCALE, tx, ty);
+      springTo(wrap, MIN_SCALE, c.x, c.y);
+    } else if(Math.abs(scale - 1) < ONE_SNAP){
+      /* Very close to 1× → spring cleanly to 1× */
+      const c = clamp(wrap, 1, 0, 0);
+      springTo(wrap, 1, c.x, c.y);
+    } else {
+      /* User chose this scale deliberately → keep it.
+         Always clamp position (handles centering when smaller than viewport
+         AND prevents content floating off-screen when zoomed in). */
+      const c = clamp(wrap, scale, tx, ty);
+      springTo(wrap, scale, c.x, c.y);
     }
   },{passive:true});
-  /* Double-tap: toggle 2× zoom at tapped point, or reset to 1× if already zoomed */
-  let lastTap=0,lastTapX=0,lastTapY=0;
-  sa.addEventListener('touchend',e=>{
-    if(e.touches.length>0)return;
-    if(e.changedTouches.length===1){
-      const now=Date.now(),t=e.changedTouches[0];
-      if(now-lastTap<320&&Math.abs(t.clientX-lastTapX)<30&&Math.abs(t.clientY-lastTapY)<30){
-        /* Double tap detected */
-        if(curScale>1.05){
-          /* Already zoomed — reset to normal */
-          curScale=1;const w=getWrap();
-          if(w){w.style.transform='scale(1)';w.style.width='';w.style.height='';}
-          sa.scrollLeft=0;sa.scrollTop=0;
-        } else {
-          /* Zoom to 2× at tapped point */
-          const r=sa.getBoundingClientRect();
-          originX=t.clientX-r.left+sa.scrollLeft;
-          originY=t.clientY-r.top+sa.scrollTop;
-          applyScale(2.2);
-          /* Scroll so the tapped point stays centred */
-          sa.scrollLeft=originX*2.2-sa.clientWidth/2;
-          sa.scrollTop =originY*2.2-sa.clientHeight/2;
-        }
-        lastTap=0;return;
+
+  /* ── DOUBLE-TAP: zoom to 2.5× at tap point, or spring back to 1× ── */
+  let lastTap = 0, lastTapX = 0, lastTapY = 0;
+  sa.addEventListener('touchend', e=>{
+    /* Skip if just ended a pinch gesture */
+    if(e.touches.length > 0) return;
+    if(Date.now() - lastPinchEndTime < 400) return;
+    if(e.changedTouches.length !== 1) return;
+
+    const now = Date.now();
+    const t   = e.changedTouches[0];
+    const r   = sa.getBoundingClientRect();
+    const tapVX = t.clientX - r.left;
+    const tapVY = t.clientY - r.top;
+
+    const isDoubleTap = (now - lastTap < 300)
+      && Math.abs(t.clientX - lastTapX) < 40
+      && Math.abs(t.clientY - lastTapY) < 40;
+
+    if(isDoubleTap){
+      lastTap = 0;
+      const wrap = getWrap(); if(!wrap) return;
+      if(scale > 1.1){
+        /* Already zoomed in → spring back to 1× */
+        const c = clamp(wrap, 1, 0, 0);
+        springTo(wrap, 1, c.x, c.y);
+      } else {
+        /* Zoom to 2.5× centred on the tap point */
+        const targetS = 2.5;
+        const {nx, ny} = pivotScale(tapVX, tapVY, scale, targetS, tx, ty);
+        const c = clamp(wrap, targetS, nx, ny);
+        springTo(wrap, targetS, c.x, c.y);
       }
-      lastTap=now;lastTapX=t.clientX;lastTapY=t.clientY;
+      return;
     }
+
+    lastTap = now; lastTapX = t.clientX; lastTapY = t.clientY;
   },{passive:true});
-  document.addEventListener('pdfLoaded',()=>{curScale=1;sa.scrollLeft=0;sa.scrollTop=0;});
+
+  /* ── RESET on new PDF load ── */
+  document.addEventListener('pdfLoaded',()=>{
+    scale = 1; tx = 0; ty = 0; isPinching = false;
+    clearTimeout(springTid);
+    const wrap = getWrap();
+    if(wrap){ wrap.style.transition = 'none'; wrap.style.transform = ''; wrap.style.transformOrigin = ''; }
+  });
 }
 function initPdfWheel(){const area=document.getElementById('pdfArea');area.addEventListener('wheel',e=>{if(!pdfFS)return;e.preventDefault();if(e.deltaY>0)nextFSPage();else prevFSPage();},{passive:false});}
 function initKeyboard(){

@@ -115,6 +115,20 @@ AUTO_CATS.forEach(cat => {
   SCORES[cat] = mergeDuplicateTitles(raw);
 });
 
+// Documents — scanned from root documents/ folder; stored as type:'document'
+const DOC_FOLDER = path.join(__dirname, 'documents');
+SCORES.general = [];
+if (fs.existsSync(DOC_FOLDER)) {
+  fs.readdirSync(DOC_FOLDER)
+    .filter(f => f.toLowerCase().endsWith('.pdf'))
+    .sort()
+    .forEach(file => {
+      const base  = file.replace(/\.pdf$/i, '').replace(/[-_]+/g, ' ').trim();
+      const title = applyOverride(toTitle(base));
+      SCORES.general.push({ title, type: 'document', path: 'documents/' + file });
+    });
+}
+
 const MANUAL = {
   hymns: [
     { title:"Methodist Praise Vol. 1", type:"tonicModal", notation:"tonic", localPath:"scores/hymns/methodist-praise-tonic.pdf", driveId:"1wKDRkLXp_wxCFeafORTdDxBP6wvWaISA" },
@@ -172,4 +186,6 @@ AUTO_CATS.forEach(cat => {
   const total = (SCORES[cat]||[]).length;
   console.log('   ' + cat.padEnd(12) + ': ' + avail + ' available / ' + total + ' total');
 });
+const docCount = (SCORES.general||[]).length;
+console.log('   ' + 'documents'.padEnd(12) + ': ' + docCount + ' available / ' + docCount + ' total');
 console.log('');
