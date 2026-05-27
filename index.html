@@ -198,8 +198,8 @@ body{font-family:'Nunito',sans-serif;color:var(--td);display:flex;flex-direction
 .icon-btn{width:38px;height:38px;border-radius:50%;background:rgba(255,255,255,.14);border:1px solid rgba(255,255,255,.22);display:flex;align-items:center;justify-content:center;font-size:17px;color:white;cursor:pointer;flex-shrink:0;transition:background .2s;-webkit-appearance:none;}
 .icon-btn:hover{background:rgba(255,255,255,.26);}
 @media(min-width:600px) and (max-width:899px){.icon-btn{width:44px;height:44px;font-size:19px;}}
-.pdf-scroll-area{flex:1;overflow:auto;-webkit-overflow-scrolling:touch;background:#0d1b2a;touch-action:pan-x pan-y;position:relative;}
-.pdf-zoom-wrap{display:flex;flex-direction:column;align-items:center;padding:12px 0;gap:8px;will-change:transform;}
+.pdf-scroll-area{flex:1;overflow:auto;-webkit-overflow-scrolling:touch;background:#0d1b2a;touch-action:none;position:relative;}
+.pdf-zoom-wrap{display:inline-flex;flex-direction:column;align-items:center;padding:12px 0;gap:8px;transform-origin:top left;will-change:transform;min-width:100%;}
 .pdf-page-canvas{display:block;max-width:calc(100% - 16px);box-shadow:0 2px 20px rgba(0,0,0,.55);background:#fff;}
 .pdf-controls{background:rgba(4,17,30,.97);border-top:1px solid rgba(201,151,58,.13);padding:8px 16px;padding-bottom:calc(var(--nh)+8px);display:flex;align-items:center;justify-content:center;gap:14px;flex-shrink:0;}
 .pg-btn{width:42px;height:42px;border-radius:50%;background:rgba(14,116,144,.28);border:1px solid rgba(14,116,144,.42);display:flex;align-items:center;justify-content:center;font-size:20px;color:#7dd3e8;cursor:pointer;transition:background .2s,transform .12s;user-select:none;}
@@ -1387,7 +1387,7 @@ function openPdf(title,path){
   exitPdfFS();
   document.getElementById('pdfTitle').textContent=title;
   const sa=document.getElementById('pdfScrollArea');
-  sa.innerHTML='<div class="pdf-loading" id="pdfLoad"><div class="spin"></div><div style="margin-top:6px;">Loading score...</div></div><div class="pdf-zoom-wrap" id="pdfZoomWrap"></div>';
+  sa.innerHTML='<div class="pdf-zoom-wrap" id="pdfZoomWrap"><div class="pdf-loading" id="pdfLoad"><div class="spin"></div><div style="margin-top:6px;">Loading score...</div></div></div>';
   sa.scrollLeft=0;sa.scrollTop=0;
   pdfDoc=null;curPage=1;totPages=0;pdfRendering=false;pageCanvases=[];frontCanvas='A';
   document.getElementById('pgTotal').textContent='\u2014';
@@ -1412,12 +1412,17 @@ function renderAllPages(){
 }
 function initScrollPageDetect(){
   const sa=document.getElementById('pdfScrollArea');
-  sa.addEventListener('scroll',()=>{const mid=sa.scrollTop+sa.clientHeight/2;let best=1;pageCanvases.forEach((cv,i)=>{if(!cv)return;if(cv.offsetTop<=mid)best=i+1;});if(best!==curPage){curPage=best;document.getElementById('pgIn').value=curPage;document.getElementById('btnPrev').disabled=curPage<=1;document.getElementById('btnNext').disabled=curPage>=totPages;}},{passive:true});
+  sa.addEventListener('scroll',()=>{
+    const mid=sa.scrollTop/scale+sa.clientHeight/2;
+    let best=1;
+    pageCanvases.forEach((cv,i)=>{if(!cv)return;if(cv.offsetTop<=mid)best=i+1;});
+    if(best!==curPage){curPage=best;document.getElementById('pgIn').value=curPage;document.getElementById('btnPrev').disabled=curPage<=1;document.getElementById('btnNext').disabled=curPage>=totPages;}
+  },{passive:true});
 }
 function scrollToPage(n){
   if(!pdfDoc)return;n=Math.max(1,Math.min(totPages,n));curPage=n;
   document.getElementById('pgIn').value=n;document.getElementById('btnPrev').disabled=n<=1;document.getElementById('btnNext').disabled=n>=totPages;
-  const cv=pageCanvases[n-1];if(cv)document.getElementById('pdfScrollArea').scrollTo({top:cv.offsetTop-8,behavior:'smooth'});
+  const cv=pageCanvases[n-1];if(cv)document.getElementById('pdfScrollArea').scrollTo({top:cv.offsetTop*scale-8,behavior:'smooth'});
 }
 
 function enterPdfFS(){
@@ -1462,63 +1467,58 @@ function initPdfTouch(){
   area.addEventListener('touchend',e=>{if(e.changedTouches.length===1){const dx=e.changedTouches[0].screenX-touchX0,dy=e.changedTouches[0].screenY-touchY0;if(Math.abs(dx)>=Math.abs(dy)){if(Math.abs(dx)>40){dx<0?nextFSPage():prevFSPage();}}else{if(Math.abs(dy)>40){dy>0?nextFSPage():prevFSPage();}}}},{passive:true});
   area.addEventListener('click',e=>{if(!pdfFS)return;const x=e.clientX,w=area.clientWidth;if(x<w*.35)prevFSPage();else if(x>w*.65)nextFSPage();});
 }
-/* ═══════════════════════════════════════════════════════════════════
-   PDF PINCH-ZOOM  —  native-quality implementation
-   Core math: translate(tx,ty) scale(s) with transform-origin:0 0.
-   The "pivot" formula keeps the pinch midpoint fixed in the viewport:
-     cx = (pivotVX - oldTx) / oldS          ← content-space point
-     newTx = pivotVX - cx * newS            ← viewport back-projection
-   This is mathematically equivalent to what iOS/Android do natively.
-   ═══════════════════════════════════════════════════════════════════ */
+/* JS pinch-zoom for the non-fullscreen scroll area (viewport is locked app-wide) */
 function initScrollPinchZoom(){
-  /* ── The correct approach (how PDF.js / Apple Books work) ──────────
-     transform: scale(s) with transform-origin:0 0  on the wrap.
-     ALL panning is done via sa.scrollLeft / sa.scrollTop — native scroll.
-     Native scroll gives momentum, rubber-band, and works in ALL directions
-     including left and top, because scroll coordinates are always >= 0.
-     Pivot math: content point under pinch mid = (scroll + mid) / oldScale
-                 after scaling: newScroll = contentPoint * newScale - mid
-     ─────────────────────────────────────────────────────────────────── */
+  /* ── DEFINITIVE APPROACH ────────────────────────────────────────────
+     The wrap is scaled with transform-origin:top left + scale(s).
+     Its CSS width/height is set to naturalW*s and naturalH*s so the
+     scroll container (overflow:auto) knows the true scrollable size.
+     Native scrollLeft/scrollTop handle ALL panning — this gives iOS
+     momentum, rubber-band, and correct behaviour in every direction.
+     Pivot math (keeps pinch midpoint fixed in viewport):
+       contentX = (scrollLeft + midX) / oldScale
+       newScrollLeft = contentX * newScale - midX
+     ──────────────────────────────────────────────────────────────── */
   const sa = document.getElementById('pdfScrollArea');
+  const MIN = 0.5, MAX = 5.0, SNAP_1 = 0.06, EASE = 'cubic-bezier(.25,.46,.45,.94)';
+  let scale = 1, naturalW = 0, naturalH = 0;
+  let startDist = 0, startScale = 1, startSL = 0, startST = 0, midX = 0, midY = 0;
+  let isPinch = false, lastPinchEnd = 0, springTid = null;
 
-  const MIN_SCALE  = 0.40;
-  const MAX_SCALE  = 5.0;
-  const FLOOR_SNAP = 0.52;   /* spring to MIN_SCALE if released below this */
-  const ONE_SNAP   = 0.04;   /* spring to 1× if released within ±4% of 1 */
-  const SPRING_MS  = 350;
-  const EASE       = 'cubic-bezier(0.25,0.46,0.45,0.94)';
+  function gw(){ return document.getElementById('pdfZoomWrap'); }
+  function dist(t){ const dx=t[0].clientX-t[1].clientX, dy=t[0].clientY-t[1].clientY; return Math.sqrt(dx*dx+dy*dy); }
 
-  let scale = 1;
-  let startDist = 0, startScale = 1;
-  let startScrollL = 0, startScrollT = 0;
-  let midX = 0, midY = 0;
-  let isPinching = false, lastPinchEnd = 0, springTid = null;
-
-  function getWrap(){ return document.getElementById('pdfZoomWrap'); }
-  function dist(t){ const dx=t[0].clientX-t[1].clientX,dy=t[0].clientY-t[1].clientY; return Math.sqrt(dx*dx+dy*dy); }
-
-  /* Set scale only — scroll handles position */
-  function setScale(wrap, s){
-    wrap.style.transformOrigin = '0 0';
-    wrap.style.transform = 'scale('+s+')';
+  function measureNatural(){
+    const w = gw(); if(!w) return;
+    /* Record natural (scale=1) size once pages are rendered */
+    w.style.transform = '';
+    w.style.width = ''; w.style.height = '';
+    naturalW = w.scrollWidth; naturalH = w.scrollHeight;
   }
 
-  /* Smoothly animate scale while keeping the viewport centre fixed */
-  function springToScale(wrap, targetS){
+  function applyScale(s, animate){
+    const w = gw(); if(!w) return;
+    if(!naturalW){ measureNatural(); }
+    scale = Math.min(MAX, Math.max(MIN, s));
+    w.style.transition = animate ? ('transform '+EASE+' .3s') : 'none';
+    w.style.transformOrigin = 'top left';
+    w.style.transform = 'scale('+scale+')';
+    /* Expand the element's layout size so scrollbar range is correct */
+    w.style.width  = (naturalW * scale) + 'px';
+    w.style.height = (naturalH * scale) + 'px';
+    if(animate) springTid = setTimeout(()=>{ const ww=gw(); if(ww) ww.style.transition='none'; }, 350);
+  }
+
+  function springTo(s){
     clearTimeout(springTid);
     const vpW = sa.clientWidth, vpH = sa.clientHeight;
-    /* Content point currently at viewport centre */
     const cx = (sa.scrollLeft + vpW/2) / scale;
     const cy = (sa.scrollTop  + vpH/2) / scale;
-    wrap.style.transition = 'transform '+SPRING_MS+'ms '+EASE;
-    setScale(wrap, targetS);
-    scale = targetS;
-    /* Reposition scroll so same content point stays centred */
+    applyScale(s, true);
     requestAnimationFrame(()=>{
-      sa.scrollLeft = cx * targetS - vpW/2;
-      sa.scrollTop  = cy * targetS - vpH/2;
+      sa.scrollLeft = cx * s - vpW/2;
+      sa.scrollTop  = cy * s - vpH/2;
     });
-    springTid = setTimeout(()=>{ wrap.style.transition='none'; }, SPRING_MS+30);
   }
 
   /* ── PINCH START ── */
@@ -1526,87 +1526,74 @@ function initScrollPinchZoom(){
     if(e.touches.length !== 2) return;
     e.preventDefault();
     clearTimeout(springTid);
-    isPinching   = true;
-    startDist    = dist(e.touches);
-    startScale   = scale;
-    startScrollL = sa.scrollLeft;
-    startScrollT = sa.scrollTop;
-    const r = sa.getBoundingClientRect();
+    isPinch = true;
+    startDist  = dist(e.touches);
+    startScale = scale;
+    startSL    = sa.scrollLeft;
+    startST    = sa.scrollTop;
+    const r    = sa.getBoundingClientRect();
     midX = (e.touches[0].clientX + e.touches[1].clientX)/2 - r.left;
     midY = (e.touches[0].clientY + e.touches[1].clientY)/2 - r.top;
-    const wrap = getWrap();
-    if(wrap) wrap.style.transition = 'none';
+    const w = gw(); if(w) w.style.transition = 'none';
   },{passive:false});
 
   /* ── PINCH MOVE ── */
   sa.addEventListener('touchmove', e=>{
-    if(!isPinching || e.touches.length !== 2) return;
+    if(!isPinch || e.touches.length !== 2) return;
     e.preventDefault();
-    const newScale = Math.min(MAX_SCALE, Math.max(MIN_SCALE, startScale * dist(e.touches)/startDist));
-    const wrap = getWrap(); if(!wrap) return;
-    wrap.style.transition = 'none';
-    setScale(wrap, newScale);
-    scale = newScale;
-    /* Scroll so pinch midpoint stays fixed:
-       contentPoint = (startScroll + mid) / startScale
-       newScroll    = contentPoint * newScale - mid                */
-    const cpX = (startScrollL + midX) / startScale;
-    const cpY = (startScrollT + midY) / startScale;
-    sa.scrollLeft = cpX * newScale - midX;
-    sa.scrollTop  = cpY * newScale - midY;
+    const s = Math.min(MAX, Math.max(MIN*0.75, startScale * dist(e.touches)/startDist));
+    applyScale(s, false);
+    /* Correct scroll so pinch midpoint stays fixed */
+    sa.scrollLeft = (startSL + midX) * (s/startScale) - midX;
+    sa.scrollTop  = (startST + midY) * (s/startScale) - midY;
   },{passive:false});
 
   /* ── PINCH END ── */
   sa.addEventListener('touchend', e=>{
-    if(!isPinching) return;
+    if(!isPinch) return;
     if(e.touches.length >= 2) return;
-    isPinching = false;
-    lastPinchEnd = Date.now();
-    const wrap = getWrap(); if(!wrap) return;
-    if(scale < FLOOR_SNAP){
-      springToScale(wrap, MIN_SCALE);
-    } else if(Math.abs(scale-1) < ONE_SNAP){
-      springToScale(wrap, 1);
-    }
-    /* else: user chose this scale — leave it, native scroll handles position */
+    isPinch = false; lastPinchEnd = Date.now();
+    if(scale < MIN){ springTo(MIN); }
+    else if(Math.abs(scale-1) < SNAP_1){ springTo(1); }
+    /* else: user's chosen scale — leave it */
   },{passive:true});
 
   /* ── DOUBLE-TAP ── */
-  let lastTap=0, lastTapX=0, lastTapY=0;
+  let ltap=0, ltx=0, lty=0;
   sa.addEventListener('touchend', e=>{
-    if(e.touches.length > 0) return;
-    if(Date.now()-lastPinchEnd < 400) return;
+    if(e.touches.length > 0 || Date.now()-lastPinchEnd < 350) return;
     if(e.changedTouches.length !== 1) return;
     const now=Date.now(), t=e.changedTouches[0];
-    const r=sa.getBoundingClientRect();
-    const tvx=t.clientX-r.left, tvy=t.clientY-r.top;
-    if(now-lastTap<300 && Math.abs(t.clientX-lastTapX)<40 && Math.abs(t.clientY-lastTapY)<40){
-      lastTap=0;
-      const wrap=getWrap(); if(!wrap) return;
-      if(scale>1.1){
-        springToScale(wrap, 1);
+    if(now-ltap < 300 && Math.abs(t.clientX-ltx)<40 && Math.abs(t.clientY-lty)<40){
+      ltap = 0;
+      if(scale > 1.1){
+        springTo(1);
       } else {
-        const targetS=2.5;
-        const cpX=(sa.scrollLeft+tvx)/scale;
-        const cpY=(sa.scrollTop +tvy)/scale;
-        springToScale(wrap, targetS);
+        const r  = sa.getBoundingClientRect();
+        const tx = t.clientX - r.left, ty = t.clientY - r.top;
+        const ns = 2.5;
+        const cx = (sa.scrollLeft + tx) / scale;
+        const cy = (sa.scrollTop  + ty) / scale;
+        applyScale(ns, true);
         requestAnimationFrame(()=>{
-          sa.scrollLeft = cpX*targetS - tvx;
-          sa.scrollTop  = cpY*targetS - tvy;
+          sa.scrollLeft = cx * ns - tx;
+          sa.scrollTop  = cy * ns - ty;
         });
       }
       return;
     }
-    lastTap=now; lastTapX=t.clientX; lastTapY=t.clientY;
+    ltap=now; ltx=t.clientX; lty=t.clientY;
   },{passive:true});
 
-  /* ── RESET on new PDF ── */
+  /* ── RESET on new PDF load ── */
   document.addEventListener('pdfLoaded',()=>{
-    scale=1; isPinching=false;
-    clearTimeout(springTid);
-    const wrap=getWrap();
-    if(wrap){wrap.style.transition='none';wrap.style.transform='';wrap.style.transformOrigin='';}
+    scale=1; isPinch=false; clearTimeout(springTid);
+    naturalW=0; naturalH=0;
+    const w=gw();
+    if(w){ w.style.transition='none'; w.style.transform=''; w.style.transformOrigin=''; w.style.width=''; w.style.height=''; }
     sa.scrollLeft=0; sa.scrollTop=0;
+    /* Measure natural size after pages render */
+    setTimeout(measureNatural, 600);
   });
 }
 function initPdfWheel(){const area=document.getElementById('pdfArea');area.addEventListener('wheel',e=>{if(!pdfFS)return;e.preventDefault();if(e.deltaY>0)nextFSPage();else prevFSPage();},{passive:false});}
