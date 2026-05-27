@@ -910,7 +910,7 @@ function _multiPlaceholder(){return '<div class="exec-multi-placeholder"><span c
   </div>
   <div class="pdf-scroll-area" id="pdfScrollArea">
     <div class="pdf-zoom-wrap" id="pdfZoomWrap">
-    <div class="pdf-loading" id="pdfLoad"><div class="spin"></div><div style="margin-top:6px;">Loading score...</div></div>
+    <div class="pdf-loading" id="pdfLoad"><div>Loading score...</div></div>
     </div>
   </div>
   <div class="pdf-controls">
@@ -937,7 +937,7 @@ function _multiPlaceholder(){return '<div class="exec-multi-placeholder"><span c
     <div class="drv-title" id="drvTitle">Score</div>
   </div>
   <div class="drv-frame-wrap">
-    <div class="drv-loading" id="drvLoad"><div class="spin"></div><div style="margin-top:6px;">Opening score...</div></div>
+    <div class="drv-loading" id="drvLoad"><div>Opening score...</div></div>
     <button class="drv-exit" onclick="exitDrvFS()">&#10005;</button>
     <iframe id="drvFrame" src="about:blank" allowfullscreen onload="hideDrvLoading()"></iframe>
   </div>
@@ -1387,7 +1387,7 @@ function openPdf(title,path){
   exitPdfFS();
   document.getElementById('pdfTitle').textContent=title;
   const sa=document.getElementById('pdfScrollArea');
-  sa.innerHTML='<div class="pdf-zoom-wrap" id="pdfZoomWrap"><div class="pdf-loading" id="pdfLoad"><div class="spin"></div><div style="margin-top:6px;">Loading score...</div></div></div>';
+  sa.innerHTML='<div class="pdf-zoom-wrap" id="pdfZoomWrap"><div class="pdf-loading" id="pdfLoad"><div>Loading score...</div></div></div>';
   sa.scrollLeft=0;sa.scrollTop=0;
   pdfDoc=null;curPage=1;totPages=0;pdfRendering=false;pageCanvases=[];frontCanvas='A';
   document.getElementById('pgTotal').textContent='\u2014';
@@ -1620,6 +1620,44 @@ function initScrollPinchZoom(){
          AND prevents content floating off-screen when zoomed in). */
       const c = clamp(wrap, scale, tx, ty);
       springTo(wrap, scale, c.x, c.y);
+    }
+  },{passive:true});
+
+  /* ── ONE-FINGER PAN (when zoomed in) ──
+     When scale > 1 we intercept single-touch moves and drive tx/ty directly.
+     This is needed because the CSS transform approach means the scroll container
+     has no awareness of the translated content — native scroll stops at 0 for
+     the top/left edges even though there is content off-screen in those directions.
+     We prevent default on touchmove so native scroll doesn't fight us.         */
+  let panStartX = 0, panStartY = 0, panStartTx = 0, panStartTy = 0, isPanning = false;
+
+  sa.addEventListener('touchstart', e=>{
+    if(e.touches.length === 1 && scale > 1){
+      isPanning = true;
+      panStartX  = e.touches[0].clientX;
+      panStartY  = e.touches[0].clientY;
+      panStartTx = tx;
+      panStartTy = ty;
+      const wrap = getWrap(); if(wrap) wrap.style.transition = 'none';
+    } else {
+      isPanning = false;
+    }
+  },{passive:true});
+
+  sa.addEventListener('touchmove', e=>{
+    if(!isPanning || e.touches.length !== 1 || isPinching) return;
+    e.preventDefault();
+    const dx = e.touches[0].clientX - panStartX;
+    const dy = e.touches[0].clientY - panStartY;
+    const wrap = getWrap(); if(!wrap) return;
+    const c = clamp(wrap, scale, panStartTx + dx, panStartTy + dy);
+    tx = c.x; ty = c.y;
+    applyNow(wrap, scale, tx, ty);
+  },{passive:false});
+
+  sa.addEventListener('touchend', e=>{
+    if(isPanning && e.touches.length === 0){
+      isPanning = false;
     }
   },{passive:true});
 
