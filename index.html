@@ -2,10 +2,9 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=no">
 <meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="black">
-<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="GMF Choir">
 <meta name="theme-color" content="#0a2540">
 <link rel="manifest" href="/manifest.json">
@@ -22,7 +21,7 @@ html,body{touch-action:pan-x pan-y;}
   --rm:16px;--rs:12px;
   --aw:480px;--nh:64px;--hh:200px;
 }
-@media(min-width:600px) and (max-width:899px){:root{--aw:700px;--hh:420px;--nh:68px;}}
+@media(min-width:600px) and (max-width:899px){:root{--aw:700px;--hh:340px;--nh:68px;}}
 @media(min-width:900px){:root{--aw:960px;--hh:290px;--nh:70px;}}
 @media(min-width:1200px){:root{--aw:1140px;--hh:330px;}}
 html,body{height:100%;overflow:hidden;background:#04111e;}
@@ -198,8 +197,8 @@ body{font-family:'Nunito',sans-serif;color:var(--td);display:flex;flex-direction
 .icon-btn{width:38px;height:38px;border-radius:50%;background:rgba(255,255,255,.14);border:1px solid rgba(255,255,255,.22);display:flex;align-items:center;justify-content:center;font-size:17px;color:white;cursor:pointer;flex-shrink:0;transition:background .2s;-webkit-appearance:none;}
 .icon-btn:hover{background:rgba(255,255,255,.26);}
 @media(min-width:600px) and (max-width:899px){.icon-btn{width:44px;height:44px;font-size:19px;}}
-.pdf-scroll-area{flex:1;overflow:auto;-webkit-overflow-scrolling:touch;background:#0d1b2a;touch-action:none;position:relative;}
-.pdf-zoom-wrap{display:inline-flex;flex-direction:column;align-items:center;padding:12px 0;gap:8px;transform-origin:top left;will-change:transform;min-width:100%;}
+.pdf-scroll-area{flex:1;overflow:auto;-webkit-overflow-scrolling:touch;background:#0d1b2a;touch-action:none;}
+.pdf-zoom-wrap{display:flex;flex-direction:column;align-items:center;padding:12px 0;gap:8px;transform-origin:top center;will-change:transform;}
 .pdf-page-canvas{display:block;max-width:calc(100% - 16px);box-shadow:0 2px 20px rgba(0,0,0,.55);background:#fff;}
 .pdf-controls{background:rgba(4,17,30,.97);border-top:1px solid rgba(201,151,58,.13);padding:8px 16px;padding-bottom:calc(var(--nh)+8px);display:flex;align-items:center;justify-content:center;gap:14px;flex-shrink:0;}
 .pg-btn{width:42px;height:42px;border-radius:50%;background:rgba(14,116,144,.28);border:1px solid rgba(14,116,144,.42);display:flex;align-items:center;justify-content:center;font-size:20px;color:#7dd3e8;cursor:pointer;transition:background .2s,transform .12s;user-select:none;}
@@ -209,8 +208,8 @@ body{font-family:'Nunito',sans-serif;color:var(--td);display:flex;flex-direction
 @media(min-width:600px) and (max-width:899px){.pg-btn{width:50px;height:50px;font-size:24px;}}
 .pg-counter{font-size:13px;font-weight:700;color:rgba(255,255,255,.62);min-width:90px;text-align:center;display:flex;align-items:center;justify-content:center;gap:5px;}
 .pg-input{width:42px;background:rgba(255,255,255,.10);border:1px solid rgba(255,255,255,.2);border-radius:8px;outline:none;font-family:'Nunito',sans-serif;font-size:14px;font-weight:700;color:var(--gl);text-align:center;padding:4px 2px;}
-.pdf-canvas-area{display:none;position:fixed;inset:0;top:env(safe-area-inset-top,0px);bottom:env(safe-area-inset-bottom,0px);left:env(safe-area-inset-left,0px);right:env(safe-area-inset-right,0px);background:#0d1b2a;align-items:center;justify-content:center;touch-action:none;z-index:10;overflow:hidden;}
-.pdf-canvas-area canvas{display:block;position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);}
+.pdf-canvas-area{display:none;position:absolute;inset:0;background:#0d1b2a;align-items:center;justify-content:center;touch-action:none;z-index:10;overflow:hidden;}
+.pdf-canvas-area canvas{display:block;position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);max-width:100%;max-height:100%;object-fit:contain;}
 #pdfCanvasA{z-index:2;}
 #pdfCanvasB{z-index:1;}
 .pdf-loading{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;background:#0d1b2a;color:rgba(255,255,255,.48);font-size:13px;gap:14px;z-index:5;}
@@ -421,8 +420,8 @@ const SCORES = {
   hymns: [
     { title:"Soul of My Saviour",             type:"tonic", path:"scores/hymns/soul-of-my-saviour-tonic.pdf" },
     { title:"Soul of My Saviour",             type:"staff", path:"scores/hymns/soul-of-my-saviour-staff.pdf" },
-    { title:"Methodist Praise Vol. 1",        type:"tonicModal", notation:"tonic", localPath:"scores/hymns/methodist-praise-tonic.pdf", driveId:"1wKDRkLXp_wxCFeafORTdDxBP6wvWaISA" },
-    { title:"Methodist Praise Vol. 1",        type:"praiseModal", notation:"staff", driveId:"1cP-mta_6uEPcOnguC3xSgPsoemJyHbBG" },
+    { title:"Methodist Praise Songs",         type:"tonic", drive:"1cP-mta_6uEPcOnguC3xSgPsoemJyHbBG" },
+    { title:"Methodist Praise Songs",         type:"staff", drive:"1cP-mta_6uEPcOnguC3xSgPsoemJyHbBG" },
     { title:"Methodist Hymnbook",             type:"hymnModal", notation:"tonic", tonicId:"1as_6XVRDlv-HjNiZGAilv7_UfGlPSJbc", staffId:"15kS4RaO1tQ6d26V_Bz95ei-akzI-LYGj" },
     { title:"Methodist Hymnbook",             type:"hymnModal", notation:"staff", tonicId:"1as_6XVRDlv-HjNiZGAilv7_UfGlPSJbc", staffId:"15kS4RaO1tQ6d26V_Bz95ei-akzI-LYGj" },
   ],
@@ -582,20 +581,16 @@ const CATS = {
   christmas:   { label:"Christmas",   emoji:"\u2B50" },
   collections: { label:"Collections", emoji:"\uD83D\uDCDA" },
   general:     { label:"Documents",   emoji:"\uD83D\uDCC2" },
-  rehearsal:   { label:"Choir Picks", emoji:"\uD83C\uDFB9" }
+  rehearsal:   { label:"Rehearsal Picks", emoji:"\uD83C\uDFB9" }
 };
 
 const QUICK = [
-  { title:"Methodist Praise Vol. 1", cat:"hymns",     type:"tonicModal" },
+  { title:"Methodist Praise Songs",  cat:"hymns",     type:"tonic" },
+  { title:"Momma Yen Nkodi Adanse",  cat:"anthems",   type:"tonic" },
   { title:"Our Sacrifice of Praise", cat:"anthems",   type:"tonic" },
   { title:"Bra Onua Bra",            cat:"highlife",  type:"tonic" },
-  { title:"Mo Nyae Me",              cat:"highlife",  type:"tonic" },
-  { title:"And Lo, a Child Is Lying in a Manger", cat:"christmas", type:"tonic" },
-  { title:"Heaven Came Down",        cat:"easter",    type:"tonic" },
-  { title:"Mitso Aseye",             cat:"highlife",  type:"tonic" },
-  { title:"Gyatabruwa",              cat:"anthems",   type:"tonic" },
-  { title:"Choose You This Day",     cat:"anthems",   type:"tonic" },
-  { title:"Behold I Am the Lord",    cat:"anthems",   type:"tonic" },
+  { title:"Kae Me",                  cat:"easter",    type:"tonic" },
+  { title:"Ma Oman Yi Mu Nsem",      cat:"patriotic", type:"tonic" },
 ];
 
 const VARICK_STAFF = [
@@ -910,7 +905,7 @@ function _multiPlaceholder(){return '<div class="exec-multi-placeholder"><span c
   </div>
   <div class="pdf-scroll-area" id="pdfScrollArea">
     <div class="pdf-zoom-wrap" id="pdfZoomWrap">
-    <div class="pdf-loading" id="pdfLoad"><div class="spin"></div><div style="margin-top:6px;">Loading score...</div></div>
+      <div class="pdf-loading" id="pdfLoad"><div class="spin"></div><div style="margin-top:6px;">Loading score...</div></div>
     </div>
   </div>
   <div class="pdf-controls">
@@ -1050,7 +1045,7 @@ function _multiPlaceholder(){return '<div class="exec-multi-placeholder"><span c
     <div class="back-row">
       <button class="back-btn" onclick="goHome()">&#8592;</button>
       <div>
-        <div class="cat-name" style="color:#7defa0;">&#127929; Choir Picks</div>
+        <div class="cat-name" style="color:#7defa0;">&#127929; Rehearsal Picks</div>
         <div class="cat-hint">Updated by Choirmaster &amp; Directors</div>
       </div>
     </div>
@@ -1104,58 +1099,10 @@ function _multiPlaceholder(){return '<div class="exec-multi-placeholder"><span c
     <div id="rehSelectedStrip" style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:14px;min-height:28px;"></div>
     <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;">
       <span style="font-size:11px;color:var(--tu);">All available scores</span>
-      <div style="display:flex;gap:8px;align-items:center;">
-        <span onclick="closeRehModal()" style="font-size:11px;font-weight:700;color:#fff;cursor:pointer;padding:5px 14px;background:linear-gradient(135deg,#1a7fd4,#0f5fa8);border-radius:20px;box-shadow:0 2px 8px rgba(26,127,212,.35);">&#10003; Done</span>
-        <span onclick="clearAllPins()" style="font-size:11px;font-weight:700;color:#994040;cursor:pointer;padding:5px 12px;border:1px solid rgba(160,60,60,.25);border-radius:20px;">&#10005; Clear all</span>
-      </div>
+      <span onclick="clearAllPins()" style="font-size:11px;font-weight:700;color:#994040;cursor:pointer;padding:4px 10px;border:1px solid rgba(160,60,60,.2);border-radius:20px;">&#10005; Clear all</span>
     </div>
     <div id="rehPicksList"></div>
-  </div>
-</div>
-
-<!-- TONIC PRAISE MODAL -->
-<div class="modal-overlay" id="tonicModal" onclick="closeTonicModalOverlay(event)">
-  <div class="modal-sheet">
-    <div class="modal-title">Methodist Praise Vol. 1</div>
-    <div class="modal-sub">Tonic Sol-fa &middot; Choose how you&rsquo;d like to open it.</div>
-    <div class="modal-btn" onclick="tonicViewDirect()">
-      <div class="modal-btn-icon dl">&#128196;</div>
-      <div class="modal-btn-text">
-        <strong>Open directly</strong>
-        <span>View the score right here in the app.</span>
-      </div>
-    </div>
-    <div class="modal-btn" onclick="tonicViewDrive()">
-      <div class="modal-btn-icon drv">&#9729;</div>
-      <div class="modal-btn-text">
-        <strong>View in Google Drive</strong>
-        <span>Opens in your browser if the app viewer struggles.</span>
-      </div>
-    </div>
-    <button class="modal-cancel" onclick="closeTonicModal()">Cancel</button>
-  </div>
-</div>
-
-<!-- PRAISE MODAL -->
-<div class="modal-overlay" id="praiseModal" onclick="closePraiseModalOverlay(event)">
-  <div class="modal-sheet">
-    <div class="modal-title">Methodist Praise Vol. 1</div>
-    <div class="modal-sub">Staff Notation &middot; This is a large file. Choose how you&rsquo;d like to access it.</div>
-    <div class="modal-btn" onclick="praiseViewDrive()">
-      <div class="modal-btn-icon drv">&#9729;</div>
-      <div class="modal-btn-text">
-        <strong>View in Google Drive</strong>
-        <span>Opens Google Drive in your browser<br>where you can read it directly.</span>
-      </div>
-    </div>
-    <div class="modal-btn" onclick="praiseDownload()">
-      <div class="modal-btn-icon dl">&#11015;&#65039;</div>
-      <div class="modal-btn-text">
-        <strong>Download to device</strong>
-        <span>Saves the PDF so you can open it later<br>from your Files app without re-downloading.</span>
-      </div>
-    </div>
-    <button class="modal-cancel" onclick="closePraiseModal()">Cancel</button>
+    <button class="reh-modal-close" onclick="closeRehModal()">Done</button>
   </div>
 </div>
 
@@ -1171,7 +1118,7 @@ function _multiPlaceholder(){return '<div class="exec-multi-placeholder"><span c
 <script>
 pdfjsLib.GlobalWorkerOptions.workerSrc='https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
 let pdfDoc=null,curPage=1,totPages=0,pdfRendering=false,pdfPendPage=null;
-let pageCanvases=[],pdfFS=false,drvFS=false;
+let pageCanvases=[],pdfFS=false,drvFS=false,pdfZoomScale=1;
 let prevScr='home',curCat='anthems',curNot='tonic',allNot='tonic',allCat='all';
 let counterTimer=null,touchX0=0,touchY0=0,frontCanvas='A';
 let hymnCurrentId=null,varickDriveId=null;
@@ -1250,11 +1197,9 @@ function buildCatGrid(){
   const g=document.getElementById('catGrid');g.innerHTML='';
   Object.entries(CATS).forEach(([key,info])=>{
     const arr=SCORES[key]||[];
-    let countLabel;
-    if(key==='rehearsal'){countLabel='&#127897; Live schedule';}
-    else{const n=arr.filter(s=>s.path||s.drive||s.driveDown||s.type==='hymnModal'||s.type==='praiseModal'||s.type==='tonicModal'||s.varrick).length;countLabel=n>0?n+' item'+(n!==1?'s':''):'Coming soon';}
+    const n=arr.filter(s=>s.path||s.drive||s.driveDown||s.type==='hymnModal'||s.varrick).length;
     const d=document.createElement('div');d.className='cat-card';
-    d.innerHTML='<span class="cat-emoji">'+info.emoji+'</span><div class="cat-lbl">'+info.label+'</div><div class="cat-count">'+countLabel+'</div>';
+    d.innerHTML='<span class="cat-emoji">'+info.emoji+'</span><div class="cat-lbl">'+info.label+'</div><div class="cat-count">'+(n>0?n+' item'+(n!==1?'s':''):'Coming soon')+'</div>';
     d.onclick=()=>{if(key==='general')openGeneral();else if(key==='rehearsal')openRehCategory();else openCat(key);};g.appendChild(d);
   });
 }
@@ -1262,7 +1207,7 @@ function buildCatGrid(){
 function buildQuickList(filter){
   const list=document.getElementById('quickList'),lbl=document.getElementById('quickLabel');let items;
   if(filter){items=Object.entries(SCORES).flatMap(([cat,arr])=>arr.filter(s=>s.title.toLowerCase().includes(filter.toLowerCase())).map(s=>({...s,cat})));lbl.textContent='Search Results';}
-  else{items=QUICK.map(q=>{const m=(SCORES[q.cat]||[]).find(s=>s.title===q.title&&(s.type===q.type||s.type==='hymnModal'||s.type==='praiseModal'||s.type==='tonicModal'));return m?{...m,cat:q.cat}:{...q};});lbl.textContent='Quick Access';}
+  else{items=QUICK.map(q=>{const m=(SCORES[q.cat]||[]).find(s=>s.title===q.title&&(s.type===q.type||s.type==='hymnModal'));return m?{...m,cat:q.cat}:{...q};});lbl.textContent='Quick Access';}
   list.innerHTML='';
   if(!items.length){list.innerHTML='<div style="text-align:center;padding:32px;color:var(--tu);font-size:13px;">No scores found for \u201c'+filter+'\u201d</div>';return;}
   items.forEach(it=>{
@@ -1279,7 +1224,7 @@ function switchNot(t){curNot=t;updTabs();renderScores();}
 function updTabs(){document.getElementById('tab-tonic').className='notab'+(curNot==='tonic'?' active':'');document.getElementById('tab-staff').className='notab'+(curNot==='staff'?' active':'');}
 function renderScores(){
   const wrap=document.getElementById('scoresList');
-  const scores=(SCORES[curCat]||[]).filter(s=>s.type==='hymnModal'?s.notation===curNot:s.type==='praiseModal'?s.notation===curNot:s.type==='tonicModal'?s.notation===curNot:s.type===curNot);
+  const scores=(SCORES[curCat]||[]).filter(s=>s.type==='hymnModal'?s.notation===curNot:s.type===curNot);
   wrap.innerHTML='';
   if(!scores.length){wrap.innerHTML='<div class="empty-state"><div class="empty-icon">&#127964;</div><div class="empty-txt">No '+(curNot==='tonic'?'Tonic Sol-fa':'Staff Notation')+' scores yet for '+CATS[curCat].label+'.<br><br>Check back after the next update!</div></div>';return;}
   scores.forEach(s=>wrap.appendChild(makeScoreCard(s,curCat,'cat')));
@@ -1307,7 +1252,7 @@ function renderAllScores(){
   const wrap=document.getElementById('allScoresList');wrap.innerHTML='';let found=false;
   Object.entries(SCORES).forEach(([cat,arr])=>{
     if(cat==='general')return;if(allCat!=='all'&&cat!==allCat)return;
-    const scores=arr.filter(s=>s.type==='hymnModal'?s.notation===allNot:s.type==='praiseModal'?s.notation===allNot:s.type==='tonicModal'?s.notation===allNot:s.type===allNot);
+    const scores=arr.filter(s=>s.type==='hymnModal'?s.notation===allNot:s.type===allNot);
     if(!scores.length)return;found=true;
     const lbl=document.createElement('div');lbl.className='sec-lbl';lbl.style.padding='16px 16px 8px';lbl.innerHTML=CATS[cat].emoji+' '+CATS[cat].label;wrap.appendChild(lbl);
     scores.forEach(s=>wrap.appendChild(makeScoreCard(s,cat,'all')));
@@ -1316,14 +1261,11 @@ function renderAllScores(){
 }
 
 function makeScoreCard(s,cat,from){
-  const isU=!s.path&&!s.drive&&!s.driveDown&&s.type!=='hymnModal'&&s.type!=='praiseModal'&&s.type!=='tonicModal'&&!s.varrick;
+  const isU=!s.path&&!s.drive&&!s.driveDown&&s.type!=='hymnModal'&&!s.varrick;
   const c=document.createElement('div');c.className='score-card'+(isU?' unavailable':'');
   const tag=(s.type==='tonic'||s.notation==='tonic')?'Tonic Sol-fa':'Staff Notation';
   let badge='';
-  if(s.type==='praiseModal')badge='<span class="score-cloud">&#9729; Large file</span>';
-  else if(s.type==='tonicModal')badge='<span class="score-cloud">&#9729; Large file</span>';
-  else if(s.path&&s.drive)badge='<span class="score-cloud">&#9729; Drive fallback</span>';
-  else if(s.drive&&!s.varrick)badge='<span class="score-cloud">&#9729; Google Drive</span>';
+  if(s.drive&&!s.varrick)badge='<span class="score-cloud">&#9729; Google Drive</span>';
   else if(s.type==='hymnModal')badge='<span class="score-cloud">&#9729; Large file</span>';
   else if(s.varrick)badge='<span class="score-cloud">&#9729; Collection</span>';
   else if(isU)badge='<span class="score-na">&#9888; Not available yet</span>';
@@ -1333,7 +1275,7 @@ function makeScoreCard(s,cat,from){
 
 function openScore(score,from){
   prevScr=from;
-  if(!score.path&&!score.drive&&!score.driveDown&&score.type!=='hymnModal'&&score.type!=='praiseModal'&&score.type!=='tonicModal'&&!score.varrick){
+  if(!score.path&&!score.drive&&!score.driveDown&&score.type!=='hymnModal'&&!score.varrick){
     const nt=(score.type==='tonic'||score.notation==='tonic')?'Tonic Sol-fa':'Staff Notation';
     document.getElementById('unavailTitle').textContent=score.title;
     document.getElementById('unavailNotation').textContent=nt+' \u00b7 Not available';
@@ -1341,45 +1283,18 @@ function openScore(score,from){
     document.getElementById('unavailMsg').textContent=nt+' notation for \u201c'+score.title+'\u201d is not available at the moment. Check back after the next update or contact the music team.';
     showScreen('s-unavail');return;
   }
-  if(score.type==='tonicModal'){
-    tonicPraiseScore=score;
-    document.getElementById('tonicModal').classList.add('open');return;
-  }
-  if(score.type==='praiseModal'){
-    praiseCurrentId=score.driveId;
-    document.getElementById('praiseModal').classList.add('open');return;
-  }
   if(score.type==='hymnModal'){
     hymnCurrentId=score.notation==='tonic'?score.tonicId:score.staffId;
     document.getElementById('hymnModalSub').textContent='Methodist Hymnbook ('+(score.notation==='tonic'?'Tonic Sol-fa':'Staff Notation')+') is a large file. Choose how you\u2019d like to access it.';
     document.getElementById('hymnModal').classList.add('open');return;
   }
   if(score.varrick){varickDriveId=score.drive;showScreen('s-varick');return;}
-  /* tonic with drive fallback — try local path first, open drive on error */
-  if(score.path&&score.drive){openPdfWithFallback(score.title,score.path,score.drive);return;}
   if(score.drive)openDrv(score.title,score.drive);
   else if(score.path)openPdf(score.title,score.path);
 }
 
 function hymnDownload(){if(!hymnCurrentId)return;window.open('https://drive.google.com/uc?export=download&id='+hymnCurrentId,'_blank');closeHymnModal();}
 function hymnViewDrive(){if(!hymnCurrentId)return;window.open('https://drive.google.com/file/d/'+hymnCurrentId+'/view','_blank');closeHymnModal();}
-
-let praiseCurrentId=null;
-function praiseViewDrive(){if(!praiseCurrentId)return;window.open('https://drive.google.com/file/d/'+praiseCurrentId+'/view','_blank');closePraiseModal();}
-function praiseDownload(){if(!praiseCurrentId)return;window.open('https://drive.google.com/uc?export=download&id='+praiseCurrentId,'_blank');closePraiseModal();}
-function closePraiseModal(){document.getElementById('praiseModal').classList.remove('open');}
-function closePraiseModalOverlay(e){if(e.target===document.getElementById('praiseModal'))closePraiseModal();}
-
-let tonicPraiseScore=null;
-function tonicViewDirect(){if(!tonicPraiseScore)return;closeTonicModal();openPdf(tonicPraiseScore.title,tonicPraiseScore.localPath);}
-function tonicViewDrive(){if(!tonicPraiseScore)return;window.open('https://drive.google.com/file/d/'+tonicPraiseScore.driveId+'/view','_blank');closeTonicModal();}
-function closeTonicModal(){document.getElementById('tonicModal').classList.remove('open');}
-function closeTonicModalOverlay(e){if(e.target===document.getElementById('tonicModal'))closeTonicModal();}
-
-function openPdfWithFallback(title,path,driveId){
-  /* Try local first; if it fails (e.g. file too large/crashes) Drive opens instead */
-  openPdf(title,path,driveId);
-}
 function closeHymnModal(){document.getElementById('hymnModal').classList.remove('open');}
 function closeHymnModalOverlay(e){if(e.target===document.getElementById('hymnModal'))closeHymnModal();}
 
@@ -1387,7 +1302,7 @@ function openPdf(title,path){
   exitPdfFS();
   document.getElementById('pdfTitle').textContent=title;
   const sa=document.getElementById('pdfScrollArea');
-  sa.innerHTML='<div class="pdf-zoom-wrap" id="pdfZoomWrap"><div class="pdf-loading" id="pdfLoad"><div class="spin"></div><div style="margin-top:6px;">Loading score...</div></div></div>';
+  sa.innerHTML='<div class="pdf-loading" id="pdfLoad" style="position:absolute;inset:0;z-index:5;display:flex;flex-direction:column;align-items:center;justify-content:center;background:#0d1b2a;color:rgba(255,255,255,.48);font-size:13px;gap:14px;"><div class="spin"></div><div style="margin-top:6px;">Loading score...</div></div><div class="pdf-zoom-wrap" id="pdfZoomWrap"></div>';
   sa.scrollLeft=0;sa.scrollTop=0;
   pdfDoc=null;curPage=1;totPages=0;pdfRendering=false;pageCanvases=[];frontCanvas='A';
   document.getElementById('pgTotal').textContent='\u2014';
@@ -1400,8 +1315,8 @@ function openPdf(title,path){
     document.getElementById('pgIn').max=totPages;
     document.getElementById('btnNext').disabled=totPages<=1;
     const le=document.getElementById('pdfLoad');if(le)le.remove();
-    document.dispatchEvent(new Event('pdfLoaded'));
     renderAllPages();initScrollPageDetect();
+    document.dispatchEvent(new Event('pdfLoaded'));
   }).catch(()=>{const le=document.getElementById('pdfLoad');if(le)le.innerHTML='<div style="color:rgba(255,160,100,.9);font-size:13px;text-align:center;padding:28px;line-height:1.9;">&#9888; Could not load score.<br><br>Check your internet connection<br>or contact the music team.</div>';});
 }
 function renderAllPages(){
@@ -1412,17 +1327,12 @@ function renderAllPages(){
 }
 function initScrollPageDetect(){
   const sa=document.getElementById('pdfScrollArea');
-  sa.addEventListener('scroll',()=>{
-    const mid=sa.scrollTop/scale+sa.clientHeight/2;
-    let best=1;
-    pageCanvases.forEach((cv,i)=>{if(!cv)return;if(cv.offsetTop<=mid)best=i+1;});
-    if(best!==curPage){curPage=best;document.getElementById('pgIn').value=curPage;document.getElementById('btnPrev').disabled=curPage<=1;document.getElementById('btnNext').disabled=curPage>=totPages;}
-  },{passive:true});
+  sa.addEventListener('scroll',()=>{const mid=sa.scrollTop+sa.clientHeight/2;let best=1;pageCanvases.forEach((cv,i)=>{if(!cv)return;if(cv.offsetTop<=mid)best=i+1;});if(best!==curPage){curPage=best;document.getElementById('pgIn').value=curPage;document.getElementById('btnPrev').disabled=curPage<=1;document.getElementById('btnNext').disabled=curPage>=totPages;}},{passive:true});
 }
 function scrollToPage(n){
   if(!pdfDoc)return;n=Math.max(1,Math.min(totPages,n));curPage=n;
   document.getElementById('pgIn').value=n;document.getElementById('btnPrev').disabled=n<=1;document.getElementById('btnNext').disabled=n>=totPages;
-  const cv=pageCanvases[n-1];if(cv)document.getElementById('pdfScrollArea').scrollTo({top:cv.offsetTop*scale-8,behavior:'smooth'});
+  const cv=pageCanvases[n-1];if(cv)document.getElementById('pdfScrollArea').scrollTo({top:cv.offsetTop*pdfZoomScale-8,behavior:'smooth'});
 }
 
 function enterPdfFS(){
@@ -1439,16 +1349,8 @@ function renderFSPage(n){
   pdfRendering=true;curPage=n;showImmCounter(n);
   document.getElementById('pgIn').value=n;document.getElementById('btnPrev').disabled=n<=1;document.getElementById('btnNext').disabled=n>=totPages;
   pdfDoc.getPage(n).then(pg=>{
-    const v0=pg.getViewport({scale:1});const dpr=window.devicePixelRatio||1;
-    /* Use screen dimensions for the most accurate full-portrait fill */
-    const aW=Math.max(window.innerWidth,window.screen&&window.screen.width?Math.min(window.screen.width,window.innerWidth*1.05):window.innerWidth);
-    const aH=Math.max(window.innerHeight,window.screen&&window.screen.height?Math.min(window.screen.height,window.innerHeight*1.05):window.innerHeight);
-    /* Scale to fill width — portrait scores fill portrait phone perfectly */
-    const scW=aW/v0.width;const scH=aH/v0.height;
-    /* If PDF is portrait and screen is portrait: width-fill. If landscape PDF or landscape screen: contain */
-    const pdfIsPortrait=v0.height>=v0.width;const screenIsPortrait=aH>=aW;
-    const sc=(pdfIsPortrait&&screenIsPortrait)?scW:Math.min(scW,scH);
-    const vp=pg.getViewport({scale:sc});
+    const area=document.getElementById('pdfArea');const v0=pg.getViewport({scale:1});const dpr=window.devicePixelRatio||1;
+    const sc=Math.min(area.clientWidth/v0.width,area.clientHeight/v0.height);const vp=pg.getViewport({scale:sc});
     const bid=frontCanvas==='A'?'B':'A';const back=document.getElementById('pdfCanvas'+bid);
     back.width=vp.width*dpr;back.height=vp.height*dpr;back.style.width=vp.width+'px';back.style.height=vp.height+'px';
     const ctx=back.getContext('2d');ctx.scale(dpr,dpr);
@@ -1463,137 +1365,130 @@ function nextFSPage(){if(pdfDoc&&curPage<totPages)renderFSPage(curPage+1);}
 function prevFSPage(){if(pdfDoc&&curPage>1)renderFSPage(curPage-1);}
 function initPdfTouch(){
   const area=document.getElementById('pdfArea');
-  area.addEventListener('touchstart',e=>{if(e.touches.length===1){touchX0=e.changedTouches[0].screenX;touchY0=e.changedTouches[0].screenY;}},{passive:true});
-  area.addEventListener('touchend',e=>{if(e.changedTouches.length===1){const dx=e.changedTouches[0].screenX-touchX0,dy=e.changedTouches[0].screenY-touchY0;if(Math.abs(dx)>=Math.abs(dy)){if(Math.abs(dx)>40){dx<0?nextFSPage():prevFSPage();}}else{if(Math.abs(dy)>40){dy>0?nextFSPage():prevFSPage();}}}},{passive:true});
+  area.addEventListener('touchstart',e=>{touchX0=e.changedTouches[0].screenX;touchY0=e.changedTouches[0].screenY;},{passive:true});
+  area.addEventListener('touchend',e=>{const dx=e.changedTouches[0].screenX-touchX0,dy=e.changedTouches[0].screenY-touchY0;if(Math.abs(dx)>=Math.abs(dy)){if(Math.abs(dx)>40){dx<0?nextFSPage():prevFSPage();}}else{if(Math.abs(dy)>40){dy>0?nextFSPage():prevFSPage();}}},{passive:true});
   area.addEventListener('click',e=>{if(!pdfFS)return;const x=e.clientX,w=area.clientWidth;if(x<w*.35)prevFSPage();else if(x>w*.65)nextFSPage();});
 }
-/* JS pinch-zoom for the non-fullscreen scroll area (viewport is locked app-wide) */
 function initScrollPinchZoom(){
-  /* ── DEFINITIVE APPROACH ────────────────────────────────────────────
-     The wrap is scaled with transform-origin:top left + scale(s).
-     Its CSS width/height is set to naturalW*s and naturalH*s so the
-     scroll container (overflow:auto) knows the true scrollable size.
-     Native scrollLeft/scrollTop handle ALL panning — this gives iOS
-     momentum, rubber-band, and correct behaviour in every direction.
-     Pivot math (keeps pinch midpoint fixed in viewport):
-       contentX = (scrollLeft + midX) / oldScale
-       newScrollLeft = contentX * newScale - midX
-     ──────────────────────────────────────────────────────────────── */
+  /*
+   * CORRECT APPROACH — scale(s) on wrap + scrollLeft/scrollTop for pan.
+   * transform-origin: top center  → zoom-out stays centred horizontally.
+   * The wrap's CSS width/height = natural × scale  → scroll range grows correctly.
+   * Pivot: contentPt = (scroll + mid) / oldScale;  newScroll = contentPt × newS - mid
+   * Native scroll gives momentum + rubber-band for free.
+   */
   const sa = document.getElementById('pdfScrollArea');
-  const MIN = 0.5, MAX = 5.0, SNAP_1 = 0.06, EASE = 'cubic-bezier(.25,.46,.45,.94)';
-  let scale = 1, naturalW = 0, naturalH = 0;
+  const MIN = 0.45, MAX = 5.0, EASE = 'cubic-bezier(.25,.46,.45,.94)';
+  let naturalW = 0, naturalH = 0;
   let startDist = 0, startScale = 1, startSL = 0, startST = 0, midX = 0, midY = 0;
-  let isPinch = false, lastPinchEnd = 0, springTid = null;
+  let isPinch = false, lastPinchEnd = 0, stid = null;
+  let ltap = 0, ltx = 0, lty = 0;
 
   function gw(){ return document.getElementById('pdfZoomWrap'); }
-  function dist(t){ const dx=t[0].clientX-t[1].clientX, dy=t[0].clientY-t[1].clientY; return Math.sqrt(dx*dx+dy*dy); }
+  function pdist(t){ const dx=t[0].clientX-t[1].clientX,dy=t[0].clientY-t[1].clientY; return Math.sqrt(dx*dx+dy*dy); }
 
-  function measureNatural(){
-    const w = gw(); if(!w) return;
-    /* Record natural (scale=1) size once pages are rendered */
-    w.style.transform = '';
-    w.style.width = ''; w.style.height = '';
-    naturalW = w.scrollWidth; naturalH = w.scrollHeight;
+  function measure(){
+    const w=gw(); if(!w) return;
+    w.style.transform=''; w.style.width=''; w.style.height='';
+    naturalW=w.scrollWidth; naturalH=w.scrollHeight;
+    w.style.transformOrigin='top center';
   }
 
-  function applyScale(s, animate){
-    const w = gw(); if(!w) return;
-    if(!naturalW){ measureNatural(); }
-    scale = Math.min(MAX, Math.max(MIN, s));
-    w.style.transition = animate ? ('transform '+EASE+' .3s') : 'none';
-    w.style.transformOrigin = 'top left';
-    w.style.transform = 'scale('+scale+')';
-    /* Expand the element's layout size so scrollbar range is correct */
-    w.style.width  = (naturalW * scale) + 'px';
-    w.style.height = (naturalH * scale) + 'px';
-    if(animate) springTid = setTimeout(()=>{ const ww=gw(); if(ww) ww.style.transition='none'; }, 350);
+  function setScale(s, anim){
+    const w=gw(); if(!w) return;
+    if(!naturalW) measure();
+    pdfZoomScale = Math.min(MAX, Math.max(MIN, s));
+    w.style.transition = anim ? ('transform .3s '+EASE) : 'none';
+    w.style.transformOrigin = 'top center';
+    w.style.transform = 'scale('+pdfZoomScale+')';
+    /* Expand layout size so scroll range matches zoomed content */
+    w.style.width  = (naturalW * pdfZoomScale) + 'px';
+    w.style.height = (naturalH * pdfZoomScale) + 'px';
+    if(anim){ stid=setTimeout(()=>{const ww=gw();if(ww)ww.style.transition='none';},350); }
   }
 
   function springTo(s){
-    clearTimeout(springTid);
-    const vpW = sa.clientWidth, vpH = sa.clientHeight;
-    const cx = (sa.scrollLeft + vpW/2) / scale;
-    const cy = (sa.scrollTop  + vpH/2) / scale;
-    applyScale(s, true);
+    clearTimeout(stid);
+    /* Keep viewport centre fixed during spring */
+    const vpW=sa.clientWidth, vpH=sa.clientHeight;
+    const cx=(sa.scrollLeft+vpW/2)/pdfZoomScale;
+    const cy=(sa.scrollTop +vpH/2)/pdfZoomScale;
+    setScale(s, true);
     requestAnimationFrame(()=>{
-      sa.scrollLeft = cx * s - vpW/2;
-      sa.scrollTop  = cy * s - vpH/2;
+      sa.scrollLeft = cx*s - vpW/2;
+      sa.scrollTop  = cy*s - vpH/2;
     });
   }
 
-  /* ── PINCH START ── */
+  /* PINCH START */
   sa.addEventListener('touchstart', e=>{
-    if(e.touches.length !== 2) return;
+    if(e.touches.length!==2) return;
     e.preventDefault();
-    clearTimeout(springTid);
-    isPinch = true;
-    startDist  = dist(e.touches);
-    startScale = scale;
+    clearTimeout(stid);
+    isPinch=true;
+    startDist  = pdist(e.touches);
+    startScale = pdfZoomScale;
     startSL    = sa.scrollLeft;
     startST    = sa.scrollTop;
     const r    = sa.getBoundingClientRect();
-    midX = (e.touches[0].clientX + e.touches[1].clientX)/2 - r.left;
-    midY = (e.touches[0].clientY + e.touches[1].clientY)/2 - r.top;
-    const w = gw(); if(w) w.style.transition = 'none';
+    midX = (e.touches[0].clientX+e.touches[1].clientX)/2 - r.left;
+    midY = (e.touches[0].clientY+e.touches[1].clientY)/2 - r.top;
+    const w=gw(); if(w) w.style.transition='none';
   },{passive:false});
 
-  /* ── PINCH MOVE ── */
+  /* PINCH MOVE */
   sa.addEventListener('touchmove', e=>{
-    if(!isPinch || e.touches.length !== 2) return;
+    if(!isPinch||e.touches.length!==2) return;
     e.preventDefault();
-    const s = Math.min(MAX, Math.max(MIN*0.75, startScale * dist(e.touches)/startDist));
-    applyScale(s, false);
-    /* Correct scroll so pinch midpoint stays fixed */
-    sa.scrollLeft = (startSL + midX) * (s/startScale) - midX;
-    sa.scrollTop  = (startST + midY) * (s/startScale) - midY;
+    const s = Math.min(MAX, Math.max(MIN*0.8, startScale*pdist(e.touches)/startDist));
+    setScale(s, false);
+    /* Correct scroll: same content point stays under pinch midpoint */
+    sa.scrollLeft = (startSL+midX)*(s/startScale) - midX;
+    sa.scrollTop  = (startST+midY)*(s/startScale) - midY;
   },{passive:false});
 
-  /* ── PINCH END ── */
+  /* PINCH END */
   sa.addEventListener('touchend', e=>{
     if(!isPinch) return;
-    if(e.touches.length >= 2) return;
-    isPinch = false; lastPinchEnd = Date.now();
-    if(scale < MIN){ springTo(MIN); }
-    else if(Math.abs(scale-1) < SNAP_1){ springTo(1); }
-    /* else: user's chosen scale — leave it */
+    if(e.touches.length>=2) return;
+    isPinch=false; lastPinchEnd=Date.now();
+    /* Snap to MIN if over-pinched; snap to 1 if near 1 */
+    if(pdfZoomScale < MIN){ springTo(MIN); }
+    else if(Math.abs(pdfZoomScale-1)<0.08){ springTo(1); }
+    /* else leave at chosen scale */
   },{passive:true});
 
-  /* ── DOUBLE-TAP ── */
-  let ltap=0, ltx=0, lty=0;
+  /* DOUBLE-TAP */
   sa.addEventListener('touchend', e=>{
-    if(e.touches.length > 0 || Date.now()-lastPinchEnd < 350) return;
-    if(e.changedTouches.length !== 1) return;
+    if(e.touches.length>0 || Date.now()-lastPinchEnd<350) return;
+    if(e.changedTouches.length!==1) return;
     const now=Date.now(), t=e.changedTouches[0];
-    if(now-ltap < 300 && Math.abs(t.clientX-ltx)<40 && Math.abs(t.clientY-lty)<40){
-      ltap = 0;
-      if(scale > 1.1){
+    if(now-ltap<300 && Math.abs(t.clientX-ltx)<40 && Math.abs(t.clientY-lty)<40){
+      ltap=0;
+      if(pdfZoomScale>1.1){
         springTo(1);
       } else {
-        const r  = sa.getBoundingClientRect();
-        const tx = t.clientX - r.left, ty = t.clientY - r.top;
-        const ns = 2.5;
-        const cx = (sa.scrollLeft + tx) / scale;
-        const cy = (sa.scrollTop  + ty) / scale;
-        applyScale(ns, true);
-        requestAnimationFrame(()=>{
-          sa.scrollLeft = cx * ns - tx;
-          sa.scrollTop  = cy * ns - ty;
-        });
+        const r=sa.getBoundingClientRect();
+        const tx=t.clientX-r.left, ty=t.clientY-r.top;
+        const ns=2.5;
+        const cx=(sa.scrollLeft+tx)/pdfZoomScale;
+        const cy=(sa.scrollTop +ty)/pdfZoomScale;
+        setScale(ns, true);
+        requestAnimationFrame(()=>{ sa.scrollLeft=cx*ns-tx; sa.scrollTop=cy*ns-ty; });
       }
       return;
     }
     ltap=now; ltx=t.clientX; lty=t.clientY;
   },{passive:true});
 
-  /* ── RESET on new PDF load ── */
+  /* RESET on new PDF */
   document.addEventListener('pdfLoaded',()=>{
-    scale=1; isPinch=false; clearTimeout(springTid);
+    pdfZoomScale=1; isPinch=false; clearTimeout(stid);
     naturalW=0; naturalH=0;
     const w=gw();
-    if(w){ w.style.transition='none'; w.style.transform=''; w.style.transformOrigin=''; w.style.width=''; w.style.height=''; }
+    if(w){w.style.transition='none';w.style.transform='';w.style.transformOrigin='top center';w.style.width='';w.style.height='';}
     sa.scrollLeft=0; sa.scrollTop=0;
-    /* Measure natural size after pages render */
-    setTimeout(measureNatural, 600);
+    setTimeout(measure, 500);
   });
 }
 function initPdfWheel(){const area=document.getElementById('pdfArea');area.addEventListener('wheel',e=>{if(!pdfFS)return;e.preventDefault();if(e.deltaY>0)nextFSPage();else prevFSPage();},{passive:false});}
@@ -1635,53 +1530,21 @@ function setNav(t){document.querySelectorAll('.nav-btn').forEach(b=>b.classList.
 /* ── REHEARSAL PICKS CATEGORY — Google Sheet (read by all members) ── */
 const SHEET_CSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vSiCcjnvrEmKlNaxKPrfkqrbHK4T0_Mtz-8i9DkC312mVNqxvPOzdKOK4hrCWNHYb9B0GpzwMSOn6j_/pub?gid=0&single=true&output=csv';
 
-function normalizeTitle(t){return (t||'').toLowerCase().replace(/[\u0251-\u0254\u025b\u0254\u0259]/g,'').replace(/[^a-z0-9 ]/g,'').replace(/\s+/g,' ').trim();}
-
-function findScore(cat,title,type){
-  const arr=SCORES[cat]||[];
-  /* 1. Exact case-insensitive match */
-  let s=arr.find(sc=>sc.title.toLowerCase()===title.toLowerCase()&&sc.type===type);
-  if(s)return s;
-  /* 2. Normalized fuzzy match (strips diacritics/special chars) */
-  const nt=normalizeTitle(title);
-  s=arr.find(sc=>normalizeTitle(sc.title)===nt&&sc.type===type);
-  if(s)return s;
-  /* 3. Cross-category fallback — search all cats */
-  for(const [c,a] of Object.entries(SCORES)){
-    const m=a.find(sc=>normalizeTitle(sc.title)===nt&&sc.type===type);
-    if(m)return {score:m,cat:c};
-  }
-  return null;
-}
-
 function openRehCategory(){
   showScreen('s-reh-cat');setNav('');
   const wrap=document.getElementById('rehCatList');
-  wrap.innerHTML='<div class="reh-empty"><div class="reh-empty-icon" style="font-size:26px;">&#8987;</div><div class="reh-empty-txt" style="font-size:12px;">Loading from schedule...</div></div>';
+  wrap.innerHTML='<div class="reh-empty"><div class="reh-empty-icon" style="font-size:26px;">&#8987;</div><div class="reh-empty-txt" style="font-size:12px;">Loading...</div></div>';
   function show(pins){
     wrap.innerHTML='';
-    if(!pins.length){
-      wrap.innerHTML='<div class="reh-empty"><div class="reh-empty-icon">&#127929;</div><div class="reh-empty-txt">No songs selected yet.</div><div class="reh-empty-hint">The Choirmaster or Directors will add songs here before rehearsal or performance.</div></div>';
-      return;
-    }
-    let found=0;
+    if(!pins.length){wrap.innerHTML='<div class="reh-empty"><div class="reh-empty-icon">&#127929;</div><div class="reh-empty-txt">No songs selected yet.</div><div class="reh-empty-hint">The Choirmaster or Directors will add songs here before rehearsal or performance.</div></div>';return;}
     pins.forEach(p=>{
-      const res=findScore(p.cat,p.title,p.type);
-      if(!res)return;
-      const isCross=res.score; /* cross-cat result has .score and .cat */
-      const sc=isCross?res.score:res;
-      const useCat=isCross?res.cat:p.cat;
-      wrap.appendChild(makeScoreCard(sc,useCat,'reh-cat'));
-      found++;
+      const s=(SCORES[p.cat]||[]).find(sc=>sc.title.toLowerCase()===p.title.toLowerCase()&&sc.type===p.type);
+      if(s)wrap.appendChild(makeScoreCard(s,p.cat,'reh-cat'));
     });
-    if(!found)wrap.innerHTML='<div class="reh-empty"><div class="reh-empty-icon">&#127929;</div><div class="reh-empty-txt">Songs listed in the schedule were not found in the library.<br><br>Check that the Category, Title and Type spelling in the Google Sheet matches the score library exactly.</div></div>';
   }
-  fetch(SHEET_CSV_URL)
-    .then(r=>{ if(!r.ok)throw new Error('HTTP '+r.status); return r.text(); })
-    .then(csv=>show(parseSheetCSV(csv)))
-    .catch(()=>{
-      wrap.innerHTML='<div class="reh-empty"><div class="reh-empty-icon">&#127756;</div><div class="reh-empty-txt">Schedule unavailable right now.</div><div class="reh-empty-hint">Please check your internet connection and try again. If the problem persists, contact the Music Team.</div></div>';
-    });
+  if(SHEET_CSV_URL){
+    fetch(SHEET_CSV_URL).then(r=>r.text()).then(csv=>show(parseSheetCSV(csv))).catch(()=>show([]));
+  } else { show([]); }
 }
 
 function parseSheetCSV(csv){
