@@ -1910,6 +1910,23 @@ function buildRehPicksList(){
 function closeRehModal(){document.getElementById('rehModal').classList.remove('open');renderMyPicksList();}
 function closeRehModalOverlay(e){if(e.target===document.getElementById('rehModal'))closeRehModal();}
 </script>
-<script>if('serviceWorker' in navigator){navigator.serviceWorker.register('/sw.js');}</script>
+<script>
+if('serviceWorker' in navigator){
+  navigator.serviceWorker.register('/sw.js').then(reg=>{
+    reg.addEventListener('updatefound',()=>{
+      const nw=reg.installing;
+      nw.addEventListener('statechange',()=>{
+        if(nw.state==='activated') window.location.reload();
+      });
+    });
+  });
+  navigator.serviceWorker.addEventListener('controllerchange',()=>window.location.reload());
+  document.addEventListener('visibilitychange',()=>{
+    if(document.visibilityState==='visible'){
+      navigator.serviceWorker.getRegistration().then(r=>{if(r)r.update();});
+    }
+  });
+}
+</script>
 </body>
 </html>
